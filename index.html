@@ -201,6 +201,21 @@ table.spdsum tr{cursor:pointer} table.spdsum tr:hover td{background:#F7F8F5}
 table.spdsum tr.on td{background:var(--serial);font-weight:600}
 #langSw{margin-bottom:10px}
 #langSw button{padding:3px 10px;font-size:12px}
+.card.today{margin-bottom:14px;padding:12px 16px}
+.tdtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.tdtop .sp{flex:1}
+.tdgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px 16px;margin-top:8px}
+.tdh{font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:4px}
+.tdh.due{background:var(--serial);color:var(--serial-ink)} .tdh.doing{background:var(--good-bg);color:var(--good)} .tdh.late{background:var(--bad-bg);color:var(--bad)}
+.today ul{list-style:none;margin:0;padding:0}
+.today li{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);padding:4px 0}
+.tdgo{flex:1;min-width:0;border:0;background:none;text-align:left;cursor:pointer;padding:2px 0;font-size:13px;line-height:1.35}
+.tdgo:hover b{text-decoration:underline}
+.tdgo .hint{display:block;font-size:11.5px}
+.tdep{font-size:11.5px;font-weight:700;color:var(--ink2)} .tdst{font-size:12.5px;font-weight:600;color:var(--launch)}
+.tdok{padding:2px 8px;font-size:12px;flex:none}
+.cl.flashc{animation:flashc 2.2s ease}
+@keyframes flashc{0%,60%{box-shadow:inset 0 0 0 3px var(--now);background:#FFF6D6}100%{}}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1216,7 +1231,8 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。"," 메일만 사용할 수 있어요.":" のメールのみ利用できます。","메일만 사용할 수 있어요.":"のメールのみ利用できます。",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","진행 중":"進行中","오늘 마감":"本日締切","오늘 진행 중":"本日進行中","지난 일정 · 완료 확인 필요":"過ぎた予定・完了確認が必要","지난 일정 미완료":"過ぎた予定 未完了",
+"오늘 처리할 단계가 없어요.":"今日処理する工程はありません。","오늘은 휴일이에요":"今日は休日です","이 칸으로 이동":"このセルへ移動","✓ 완료":"✓ 完了","건 더 보기":"件をもっと見る","영업일 지남":"営業日超過"," 메일만 사용할 수 있어요.":" のメールのみ利用できます。","메일만 사용할 수 있어요.":"のメールのみ利用できます。",
 };
 const JA_WORD={"작품":"作品","회차":"話","제작":"制作","런칭":"ローンチ","공개":"公開","휴재":"休載","연재":"連載","완결":"完結","착수":"着手","대기":"待機","중단":"中断","재개":"再開","미정":"未定","담당":"担当","일정":"スケジュール",
 "승인":"承認","피드백":"フィードバック","영상":"映像","최종":"最終","수정":"修正","번역":"翻訳","자막":"字幕","더빙":"吹替","믹싱":"ミキシング","사운드":"サウンド","녹음":"録音","캐스팅":"キャスティング","묶음":"バッチ","납품":"納品","계약":"契約",
@@ -1756,6 +1772,38 @@ const duTxt=(c,late)=>c.slip?`${c.d}일 <b class="ovd">지정 ${md(c.pin)} 못 �
 const ckBtn=(c,k,s)=>`<button type="button" class="ck${isOk(c)?" on":""}" data-ck="${k}" data-s="${s.k}" title="${c.done&&c.kind!=="ok"?"완료 — '1차 제작 완료 회차'로 관리":isOk(c)?"완료됨 — 누르면 완료 취소":"완료 처리"}" aria-label="${esc(s.n)} ${isOk(c)?"완료 취소":"완료 처리"}">${isOk(c)?"✓":""}</button>`;
 /* 완료일: 예정일이 이미 지났으면 예정일, 아니면 오늘(휴일이면 직전 영업일) */
 const doneDate=(c)=>{ const t=isBD(TODAY)?TODAY:prevBD(TODAY); return c.e<t?c.e:t; };
+/* ── 오늘 할 일: 오늘 마감 · 오늘 진행 중 · 지난 일정 미완료 (작품-단계) ── */
+let TODAY_MORE=false, FOCUS=null;
+function todayItems(){
+  const t=TODAY, out=[];
+  WORKS.forEach(w=>{ const S=schedule(w), N=S.held?(S.N0||0):S.N, seen=new Set();
+    for(let k=1;k<=N;k++){ const E=S.eps[k]; if(!E) continue;
+      S.ST.forEach(s=>{ const c=E.cells[s.k]; if(!c||c.skip||isOk(c)||s.k==="contract") return;
+        const kk=ovKey(c,s,k); if(seen.has(kk)) return; seen.add(kk);
+        const st=c.s||c.e, e=c.e;
+        const g=key(e)===key(t)?"due":e<t?"late":(st<=t&&t<=e?"doing":null);
+        if(!g) return;
+        const kk2=c.work?1:c.batch?c.batch[0]:k;
+        out.push({w,S,k:kk2,s,c,g,ep:c.work?"작품 1회":c.batch?`${c.batch[0]}~${c.batch[1]}화`:`${k}화`}); }); }
+  });
+  const ord={late:0,due:1,doing:2};
+  return out.sort((a,b)=>ord[a.g]-ord[b.g]||a.c.e-b.c.e||(a.w.pos||0)-(b.w.pos||0));
+}
+function todayPanel(){
+  const items=todayItems(), by=(g)=>items.filter(x=>x.g===g);
+  const late=by("late"), due=by("due"), doing=by("doing");
+  const row=(x)=>`<li class="td-${x.g}"><button type="button" class="tdgo" data-tw="${x.w.id}" data-tk="${x.k}" data-ts="${x.s.k}" title="이 칸으로 이동">
+      <span class="lnd ${lineOf(x.w)}"></span><b>${esc(x.w.n)}</b> <span class="tdep">${x.ep}</span> <span class="tdst">${esc(labelOf(x.s,x.w))}</span>
+      <span class="hint">${esc(teamOf(x.s,x.w))} · ${x.c.s?`${md(x.c.s)}~`:""}${md(x.c.e)}${x.g==="late"?` · <b style="color:var(--bad)">${bdDiff(x.c.e,TODAY)}영업일 지남</b>`:""}</span></button>
+      <button type="button" class="btn tdok" data-tw="${x.w.id}" data-tk="${x.k}" data-ts="${x.s.k}" title="완료 처리">✓ 완료</button></li>`;
+  const LIM=6, sec=(title,cls,arr,more)=>arr.length?`<div class="tdsec"><div class="tdh ${cls}">${title} <b>${arr.length}</b></div><ul>${(more||TODAY_MORE?arr:arr.slice(0,LIM)).map(row).join("")}</ul>
+      ${!more&&!TODAY_MORE&&arr.length>LIM?`<button type="button" class="btn tdmore" style="padding:2px 10px;font-size:12px">외 ${arr.length-LIM}건 더 보기</button>`:""}</div>`:"";
+  return `<div class="card today">
+    <div class="tdtop"><b>오늘 할 일</b> <span class="hint">${ymd(TODAY)} (${WD[TODAY.getUTCDay()]})${isBD(TODAY)?"":" · 오늘은 휴일이에요"}</span>
+      <span class="sp"></span><span class="hint">오늘 마감 ${due.length} · 진행 중 ${doing.length} · 지난 일정 미완료 ${late.length}</span>${TODAY_MORE?`<button type="button" class="btn tdless" style="padding:2px 10px;font-size:12px">접기</button>`:""}</div>
+    ${items.length?`<div class="tdgrid">${sec("오늘 마감","due",due,true)}${sec("오늘 진행 중","doing",doing)}${sec("지난 일정 · 완료 확인 필요","late",late)}</div>`
+      :`<p class="hint" style="margin:6px 0 0">오늘 처리할 단계가 없어요.</p>`}</div>`;
+}
 function toggleDone(w,S,k,sk){
   const s=CONF.stages.find(x=>x.k===sk), c=S.eps[k].cells[sk], K=ovKey(c,s,k), o={...((w.ov||{})[K]||{})};
   if(c.done&&c.kind!=="ok"){ alert("이 칸은 작품 설정의 '1차 제작 완료 회차'로 완료 처리된 회차입니다. 바꾸려면 그 숫자를 고쳐 주세요."); return; }
@@ -1805,7 +1853,7 @@ function renderProd(){
   if(!WORKS.length){ $("v-prod").innerHTML=`<div class="card"><p>등록된 작품이 없습니다.</p><button type="button" class="btn pri" id="addW">+ 작품 추가</button></div>`; $("addW").onclick=(e)=>{e.stopPropagation();addWork(e);}; return; }
   if(!WORKS.some(w=>w.id===SEL)) SEL=WORKS[0].id;
   const w=WORKS.find(x=>x.id===SEL), S=schedule(w), B=schedule(w,false);
-  let h=`<div class="prodlay"><nav class="wlist" aria-label="작품 목록">`;
+  let h=todayPanel()+`<div class="prodlay"><nav class="wlist" aria-label="작품 목록">`;
   WORKS.forEach(x=>{const s=schedule(x);
     h+=`<button type="button" class="wi" data-w="${x.id}" aria-current="${x.id===SEL}"><b>${esc(x.n)}${ageBadge(x)}</b>
       ${x.tbd||pauseOf(x)?`<span class="ws">${tbdTag(x,1)}${pauseOf(x)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(x))}</span>`:""}</span>`:""}<span class="ws"><span class="lnd ${lineOf(x)}"></span>${(()=>{const L=lenStats(x);return L.avg!=null?`평균 ${fmtLen(L.avg)} · `:"";})()}${s.held?`<span style="font-weight:600">런칭 미정</span>`:`${ymd(s.L).slice(2)} 런칭`}${x.voice==="ai"?" · AI 성우":""}</span></button>`;});
@@ -1913,6 +1961,12 @@ function renderProd(){
   $("addW").onclick=(e)=>{e.stopPropagation();addWork(e);};
   $("delW").onclick=()=>{ if(confirm(`'${w.n}' 작품을 삭제합니다. 모든 사람 화면에서 사라집니다. 계속할까요?`)) delWork(w.id); };
   if($("more")) $("more").onclick=()=>{SHOWALL=!SHOWALL;render();};
+  document.querySelectorAll("#v-prod .tdgo").forEach(b=>b.onclick=()=>{ SEL=b.dataset.tw; FOCUS={k:+b.dataset.tk,s:b.dataset.ts}; SHOWALL=+b.dataset.tk>20?true:SHOWALL; render(); });
+  document.querySelectorAll("#v-prod .tdok").forEach(b=>b.onclick=()=>{ const ww=WORKS.find(x=>x.id===b.dataset.tw); if(!ww) return; toggleDone(ww,schedule(ww),+b.dataset.tk,b.dataset.ts); });
+  document.querySelectorAll("#v-prod .tdmore").forEach(b=>b.onclick=()=>{ TODAY_MORE=true; render(); });
+  document.querySelectorAll("#v-prod .tdless").forEach(b=>b.onclick=()=>{ TODAY_MORE=false; render(); });
+  if(FOCUS){ const el=document.querySelector(`#v-prod .cl[data-ep="${FOCUS.k}"][data-s="${FOCUS.s}"]`); FOCUS=null;
+    if(el){ el.scrollIntoView({block:"center",inline:"center"}); el.classList.add("flashc"); setTimeout(()=>el.classList.remove("flashc"),2200); } }
   document.querySelectorAll("#v-prod [data-addep]").forEach(b=>b.onclick=()=>{
     const n=clamp((+w.total||0)+(+b.dataset.addep),5,300); SHOWALL=true; edit(w.id,[{p:["total"],v:n}]); });
   document.querySelectorAll("#v-prod [data-f]").forEach(el=>el.onchange=()=>{
