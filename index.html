@@ -2602,7 +2602,8 @@ function vFiltered(){
     &&(!VF.owner||(v.owner||"").includes(VF.owner))&&(!q||JSON.stringify(v).toLowerCase().includes(q)));
   const po={high:0,mid:1,low:2}, so=Object.fromEntries(V_STAGES.map((s,i)=>[s[0],i]));
   const nd=(v)=>v.nextDue||"9999";
-  return list.sort((a,b)=>VF.sort==="next"?nd(a).localeCompare(nd(b)):VF.sort==="stage"?(so[b.stage]||0)-(so[a.stage]||0):VF.sort==="country"?(a.country||"").localeCompare(b.country||""):(po[a.prio||"mid"]-po[b.prio||"mid"])||((so[b.stage]||0)-(so[a.stage]||0)));
+  const last=(v)=>v.stage==="no"?1:0;   // 진행 불가는 항상 맨 아래
+  return list.sort((a,b)=>(last(a)-last(b))||(VF.sort==="next"?nd(a).localeCompare(nd(b)):VF.sort==="stage"?(so[b.stage]||0)-(so[a.stage]||0):VF.sort==="country"?(a.country||"").localeCompare(b.country||""):(po[a.prio||"mid"]-po[b.prio||"mid"])||((so[b.stage]||0)-(so[a.stage]||0))));
 }
 function renderVendors(){
   const L=vFiltered(), all=VENDORS, cnt=(f,k)=>all.filter(v=>f(v)===k).length;
