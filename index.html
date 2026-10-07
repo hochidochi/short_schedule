@@ -216,6 +216,22 @@ table.spdsum tr.on td{background:var(--serial);font-weight:600}
 .tdok{padding:2px 8px;font-size:12px;flex:none}
 .cl.flashc{animation:flashc 2.2s ease}
 @keyframes flashc{0%,60%{box-shadow:inset 0 0 0 3px var(--now);background:#FFF6D6}100%{}}
+.vpipe{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.vps{display:flex;flex-direction:column;align-items:flex-start;min-width:88px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;cursor:pointer;text-align:left}
+.vps b{font-size:18px;line-height:1.1} .vps span{font-size:11.5px;color:var(--ink2)} .vps.z{opacity:.5} .vps.on{border-color:var(--launch);box-shadow:inset 0 0 0 1px var(--launch);background:var(--serial)}
+.vfil{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:10px 14px;margin-bottom:10px}
+.vfil .sog{font-size:11.5px;font-weight:700;color:var(--ink2);margin-left:6px} .vfil .sog:first-child{margin-left:0}
+.vfil .in{min-height:28px;padding:2px 6px;font-size:12.5px} .vsp{flex:1}
+.vchip{border:1px solid var(--line2);background:var(--surface);border-radius:14px;padding:2px 10px;font-size:12.5px;cursor:pointer}
+.vchip span{color:var(--muted);font-size:11px} .vchip.on{background:var(--ink);color:#fff;border-color:var(--ink)} .vchip.on span{color:#C9CCD1}
+table.std.vtab{max-width:none;font-size:12.5px} table.std.vtab th{background:#F7F8F5;position:sticky;top:0;white-space:nowrap} table.std.vtab td{vertical-align:top;white-space:normal}
+table.vtab tr.off td{opacity:.5} .vwrap{min-width:140px;max-width:240px;word-break:keep-all}
+.vsel{min-height:26px;padding:1px 4px;font-size:12px;font-weight:600}
+.vsel.p-high{color:var(--bad);border-color:var(--bad)} .vsel.p-low{color:var(--muted)}
+.vsel.s-signed{color:var(--good);border-color:var(--good)} .vsel.s-no{color:var(--muted)} .vsel.s-sampleD,.vsel.s-deal{color:var(--launch);border-color:var(--launch)}
+.vlink{font-size:11px} .vod{color:var(--bad);font-weight:700;font-size:11.5px}
+.pop.wide{width:min(640px,94vw)} .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:10px 0}
+.vgrid .vf{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted)} .vgrid textarea{font:inherit;font-size:12.5px;resize:vertical}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -358,6 +374,7 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
     <button type="button" role="tab" data-tab="prod">제작 일정</button>
     <button type="button" role="tab" data-tab="std">공정 기준</button>
     <button type="button" role="tab" data-tab="sim">시뮬레이션</button>
+    <button type="button" role="tab" data-tab="vendors">외주사 관리</button>
     <button type="button" role="tab" data-tab="users" id="tabUsers" hidden>사용자 승인</button>
   </nav>
   <span class="seg sm" id="langSw" data-notr role="group" aria-label="Language"><button type="button" data-lang="ko">한국어</button><button type="button" data-lang="ja">日本語</button></span>
@@ -371,6 +388,7 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   <section id="v-prod" hidden></section>
   <section id="v-std" hidden></section>
   <section id="v-sim" hidden></section>
+  <section id="v-vendors" hidden></section>
   <section id="v-users" hidden></section>
 </main>
 <div class="pop" id="pop" hidden></div>
@@ -455,6 +473,7 @@ const DEFAULT_CONF={
     {k:"ratingFb",n:"등급 분류 피드백",   s:"등급 피드백", team:"내부관계자",       v:{ih:2, ia:2, eh:2, ea:2},  sc:"ep",    upto:3, conc:"author"},   // 1~3화만 · 승인과 병렬 (추가 기간 없음)
     {k:"prodF",   n:"영상 최종 수정",     s:"영상 최종",   team:"내부 제작팀",      v:{ih:5, ia:5, eh:5, ea:5},  sc:"ep",    upto:{i:3,e:0}},   // 내부: 1~3화만 · 외부: 전 회차
     {k:"trans",   n:"대사 번역",         s:"대사 번역",   team:"GW content",       v:{ih:5, ia:5, eh:0, ea:0},  sc:"batch"},  // 5회차씩 · 외부: 제작사가 대사·녹음 대본 준비 → 없음
+    {k:"vtrans",  n:"영상 번역 (번인)",   s:"영상 번역",   team:"미정 (업체 선정 중)", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", conc:true, par:true, tbdDur:true},   // 대사 번역과 동시 시작 · 기간 미정 (업체 정해지면 공정 기준에서 일수 입력)
     {k:"script",  n:"성우 대사집 확정",   s:"대사집 확정", team:"사운드 스튜디오",  v:{ih:7, ia:0, eh:0, ea:0},  sc:"batch"},  // ┐ 외부는 '더빙·믹싱'에 포함
     {k:"subtr",   n:"자막 번역",         s:"자막 번역",   team:"GW content",       v:{ih:2, ia:2, eh:0, ea:0},  sc:"batch", par:true},   // │ 병렬 (5회차씩)
     {k:"casting", n:"성우 캐스팅",       s:"성우 캐스팅", team:"사운드 스튜디오",  v:{ih:2, ia:0, eh:3, ea:0},  sc:"work",  gate:"next", atStart:{e:true}, tx:"제작사 후보 · 당사 피드백 2일"},   // │ 사운드 통으로 30 + 최초 묶음만 캐스팅 2일
@@ -472,7 +491,7 @@ function normConf(c){
   return {pv:PV,contCount:false,staff:{n:c.staff&&c.staff.n!=null?+c.staff.n:2,order:c.staff&&Array.isArray(c.staff.order)?c.staff.order:[]},lockBD:c.lockBD!=null?+c.lockBD:DEFAULT_CONF.lockBD, migr:Array.isArray(c.migr)?c.migr:[],
     hol:Array.isArray(c.hol)&&c.hol.length?c.hol:clone(DEFAULT_HOL),
     stages:DEFAULT_CONF.stages.map(d=>{const x=saved.find(y=>y.k===d.k)||{};
-      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,team:x.team||d.team,upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false)};})};
+      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,tbdDur:d.tbdDur,team:x.team||d.team,upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false)};})};
 }
 
 /* ---------- 기본 작품 (기존 HTML 값 이관) ---------- */
@@ -853,7 +872,7 @@ const concOf=(s,w,k)=>{ if(s&&typeof s.conc==="object"&&s.conc){ const c=s.conc[
   if(s.conc===true) return true;
   if(s.conc!=="ext"&&s.conc!=="author") return false; if(s.conc==="ext"&&lineOf(w)!=="ext") return false;
   if(k==null) return true; const a=CONF.stages.find(x=>x.k==="author"), u=a?uptoOf(a,w):0; return !(u>0&&k>u); };
-const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||durOf(s,w)>0);
+const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||durOf(s,w)>0||s.tbdDur);
 function batchesOf(w,N){
   const out=[]; let a=1, size=clamp(+w.b1||BATCH,1,N);
   while(a<=N){ const b=Math.min(N,a+size-1); out.push([a,b]); a=b+1; size=BATCH; }
@@ -945,9 +964,9 @@ function scheduleCore(w,useOv=true){
         const o=ov[`${a}:${s.k}`]||null; let d=durO(o,bBase);
         let st=null; for(let k=a;k<=b;k++){const x=conc?(lastMain[k]||start0):(prev[k]?nextBD(prev[k]):start0); if(!st||x>st) st=x;}
         if(seqOf(s,w)&&ends.length>=SLn){const x=nextBD(ends[ends.length-SLn]); if(x>st) st=x;}   // 한 번에 SLn 묶음씩
-        let e=d>0?addBD(st,d-1):prevBD(st);
+        let e=d>0?addBD(st,d-1):(s.tbdDur?st:prevBD(st));   // 기간 미정 단계는 시작일만 표시
         let slip=false, pin=null; if(o&&o.f){ pin=fixD(o.f); if(st&&pin<st&&!o.ok&&!o.lock&&!conc&&!s.par) slip=true; else { e=pin; if(e<st) st=null; else d=bdDiff(st,e)+1; } }   // 앞 단계가 늦어져 지정일을 못 지키면 밀림
-        for(let k=a;k<=b;k++){ eps[k].cells[s.k]={s:st,e,d,base:bBase,kind:mkKind(o),m:o&&o.m||"",batch:[a,b],slip,pin,par:!!s.par};
+        for(let k=a;k<=b;k++){ eps[k].cells[s.k]={s:st,e,d,base:bBase,kind:mkKind(o),m:o&&o.m||"",batch:[a,b],slip,pin,par:!!s.par,tbd:!!s.tbdDur&&d===0&&!(o&&o.f)};
           if(s.par){ if(!parEnds[k]||e>parEnds[k]) parEnds[k]=e; } else { bump(k,e); markMain(s,k,eps[k].cells[s.k]); } }
         prevB=e; ends.push(e);
       });
@@ -1231,7 +1250,12 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","진행 중":"進行中","오늘 마감":"本日締切","오늘 진행 중":"本日進行中","지난 일정 · 완료 확인 필요":"過ぎた予定・完了確認が必要","지난 일정 미완료":"過ぎた予定 未完了",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
+"높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
+"검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
+"우선순위와 진행 단계는 표에서 바로 바꿀 수 있고, 나머지는 [수정]에서 고쳐요. 바꾼 내용은 모든 사람에게 바로 공유돼요.":"優先度と進行段階は表で直接変更でき、その他は[編集]から修正します。変更内容はすぐに全員に共有されます。",
+"상세 상황":"詳細状況","주요 일정":"主要日程","다음 액션 기한":"次のアクション期限","컨택 담당자":"コンタクト担当者","상대 담당자":"先方担当者","이메일":"メール","전화":"電話","소개":"紹介","단가":"単価","저장":"保存","삭제":"削除","까지":"まで","영상 번역 (번인)":"映像翻訳 (焼き込み)","영상 번역":"映像翻訳","기간 미정":"期間未定","미정 (업체 선정 중)":"未定 (業者選定中)","시작 · 기간 미정":"開始・期間未定","진행 중":"進行中","오늘 마감":"本日締切","오늘 진행 중":"本日進行中","지난 일정 · 완료 확인 필요":"過ぎた予定・完了確認が必要","지난 일정 미완료":"過ぎた予定 未完了",
 "오늘 처리할 단계가 없어요.":"今日処理する工程はありません。","오늘은 휴일이에요":"今日は休日です","이 칸으로 이동":"このセルへ移動","✓ 완료":"✓ 完了","건 더 보기":"件をもっと見る","영업일 지남":"営業日超過"," 메일만 사용할 수 있어요.":" のメールのみ利用できます。","메일만 사용할 수 있어요.":"のメールのみ利用できます。",
 };
 const JA_WORD={"작품":"作品","회차":"話","제작":"制作","런칭":"ローンチ","공개":"公開","휴재":"休載","연재":"連載","완결":"完結","착수":"着手","대기":"待機","중단":"中断","재개":"再開","미정":"未定","담당":"担当","일정":"スケジュール",
@@ -1293,9 +1317,9 @@ function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]})`;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===TAB)));
-  ["open","prod","std","sim","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
+  ["open","prod","std","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
   try{
-    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else renderStd();
+    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors") renderVendors(); else renderStd();
   }catch(e){
     console.error(e);
     $("v-"+TAB).innerHTML=`<div class="card"><b>화면을 그리지 못했습니다.</b><p class="hint">${esc(e.message)} — 공정 기준 탭에서 JSON을 내보내 확인하거나, 새로고침해 주세요.</p></div>`;
@@ -1768,7 +1792,7 @@ function renderSim(){
 /* ── 제작 일정 ── */
 const isOk=(c)=>c.kind==="ok"||!!c.done;
 const stCls=(c)=>(c.slip?" slip":"")+(isOk(c)?"":(c.e<TODAY?" over":""));   // 예정일이 지났는데 완료 처리 안 됨
-const duTxt=(c,late)=>c.slip?`${c.d}일 <b class="ovd">지정 ${md(c.pin)} 못 지킴</b>`:c.kind==="ok"?"완료":`${c.d}일${late>0?` <em>+${late}</em>`:""}${c.e<TODAY?` <b class="ovd">완료 확인</b>`:""}`;
+const duTxt=(c,late)=>c.tbd?`<span style="color:var(--warn);font-weight:700">기간 미정</span>`:c.slip?`${c.d}일 <b class="ovd">지정 ${md(c.pin)} 못 지킴</b>`:c.kind==="ok"?"완료":`${c.d}일${late>0?` <em>+${late}</em>`:""}${c.e<TODAY?` <b class="ovd">완료 확인</b>`:""}`;
 const ckBtn=(c,k,s)=>`<button type="button" class="ck${isOk(c)?" on":""}" data-ck="${k}" data-s="${s.k}" title="${c.done&&c.kind!=="ok"?"완료 — '1차 제작 완료 회차'로 관리":isOk(c)?"완료됨 — 누르면 완료 취소":"완료 처리"}" aria-label="${esc(s.n)} ${isOk(c)?"완료 취소":"완료 처리"}">${isOk(c)?"✓":""}</button>`;
 /* 완료일: 예정일이 이미 지났으면 예정일, 아니면 오늘(휴일이면 직전 영업일) */
 const doneDate=(c)=>{ const t=isBD(TODAY)?TODAY:prevBD(TODAY); return c.e<t?c.e:t; };
@@ -1794,7 +1818,7 @@ function todayPanel(){
   const late=by("late"), due=by("due"), doing=by("doing");
   const row=(x)=>`<li class="td-${x.g}"><button type="button" class="tdgo" data-tw="${x.w.id}" data-tk="${x.k}" data-ts="${x.s.k}" title="이 칸으로 이동">
       <span class="lnd ${lineOf(x.w)}"></span><b>${esc(x.w.n)}</b> <span class="tdep">${x.ep}</span> <span class="tdst">${esc(labelOf(x.s,x.w))}</span>
-      <span class="hint">${esc(teamOf(x.s,x.w))} · ${x.c.s?`${md(x.c.s)}~`:""}${md(x.c.e)}${x.g==="late"?` · <b style="color:var(--bad)">${bdDiff(x.c.e,TODAY)}영업일 지남</b>`:""}</span></button>
+      <span class="hint">${esc(teamOf(x.s,x.w))} · ${x.c.tbd?`${md(x.c.s||x.c.e)} 시작 · 기간 미정`:`${x.c.s?`${md(x.c.s)}~`:""}${md(x.c.e)}`}${x.g==="late"?` · <b style="color:var(--bad)">${bdDiff(x.c.e,TODAY)}영업일 지남</b>`:""}</span></button>
       <button type="button" class="btn tdok" data-tw="${x.w.id}" data-tk="${x.k}" data-ts="${x.s.k}" title="완료 처리">✓ 완료</button></li>`;
   const LIM=6, sec=(title,cls,arr,more)=>arr.length?`<div class="tdsec"><div class="tdh ${cls}">${title} <b>${arr.length}</b></div><ul>${(more||TODAY_MORE?arr:arr.slice(0,LIM)).map(row).join("")}</ul>
       ${!more&&!TODAY_MORE&&arr.length>LIM?`<button type="button" class="btn tdmore" style="padding:2px 10px;font-size:12px">외 ${arr.length-LIM}건 더 보기</button>`:""}</div>`:"";
@@ -1906,7 +1930,7 @@ function renderProd(){
       <span style="background:#F4F3EC;padding:0 6px;border-radius:4px">음영 열 = ${BATCH}화 묶음 · 작품 1회 단계</span>
     </div></div>
     <div class="gridwrap"><table class="eg"><thead><tr><th class="ep">회차</th><th class="lenh">길이<small>분:초</small></th>`;
-  S.ST.forEach(s=>h+=`<th class="${s.sc!=="ep"&&s.k!=="prod1"?"dubh":""}" title="${esc(s.n)} · ${SC_LABEL[s.k==="prod1"?"ep":s.sc]}${s.sc==="ep"&&uptoOf(s,w)>0?` · 1~${uptoOf(s,w)}화만`:""}${s.sc==="work"?(s.gate==="open"?" · 런칭 전까지 완료":" · 다음 단계가 기다림"):""}">${esc(labelOf(s,w))}${s.sc==="ep"&&uptoOf(s,w)>0?` <span class="upto">1~${uptoOf(s,w)}화</span>`:""}${concOf(s,w)&&(s.conc==="ext"||s.conc==="author")?` <span class="upto" title="1~3화는 작가 승인과 동시에 진행(추가 기간 없음) · 4화부터 ${durOf(s,w)}일 따로">1~3화 병렬</span>`:""}${s.par?` <span class="upto" title="다음 단계와 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병행</span>`:""}<small>${esc(teamOf(s,w))}</small></th>`);
+  S.ST.forEach(s=>h+=`<th class="${s.sc!=="ep"&&s.k!=="prod1"?"dubh":""}" title="${esc(s.n)} · ${SC_LABEL[s.k==="prod1"?"ep":s.sc]}${s.sc==="ep"&&uptoOf(s,w)>0?` · 1~${uptoOf(s,w)}화만`:""}${s.sc==="work"?(s.gate==="open"?" · 런칭 전까지 완료":" · 다음 단계가 기다림"):""}">${esc(labelOf(s,w))}${s.sc==="ep"&&uptoOf(s,w)>0?` <span class="upto">1~${uptoOf(s,w)}화</span>`:""}${s.tbdDur&&!(durOf(s,w)>0)?` <span class="upto" style="background:var(--warn-bg);color:var(--warn)" title="업체·기간 미정 — 작업 챙기기용 (일정에는 영향 없음)">기간 미정</span>`:""}${concOf(s,w)&&(s.conc==="ext"||s.conc==="author")?` <span class="upto" title="1~3화는 작가 승인과 동시에 진행(추가 기간 없음) · 4화부터 ${durOf(s,w)}일 따로">1~3화 병렬</span>`:""}${s.par?` <span class="upto" title="다음 단계와 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병행</span>`:""}<small>${esc(teamOf(s,w))}</small></th>`);
   h+=`<th class="rd">최종본 완료<small>오픈 ${CONF.lockBD}영업일 전까지</small></th><th class="op">오픈일<small>${S.held?"런칭 미정":`매주 ${WD[S.L.getUTCDay()]}요일`}</small></th></tr></thead><tbody>`;
   const NR=S.held?(S.N0||0):S.N;   // 실제 계산된 회차 수
   const lim=SHOWALL?NR:Math.min(NR,Math.max(20,(S.crit||0)+2));
@@ -2076,7 +2100,7 @@ function renderStd(){
   <table class="std"><thead><tr><th>단계</th><th>담당 부서</th>${VK.map(k=>`<th class="r">${VAR_LABEL[k]}</th>`).join("")}<th>진행 단위</th><th title="비우면 전 회차">적용 회차</th><th title="다음 단계를 막지 않고 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병렬</th><th title="앞 단계와 같은 날 시작">동시 시작</th></tr></thead><tbody>`;
   st.forEach((s,i)=>{
     const num=(k)=>`<input class="in n" style="width:58px" type="number" min="0" max="120" data-i="${i}" data-c="v" data-var="${k}" value="${s.v[k]}">`;
-    h+=`<tr><td>${esc(s.n)}${s.k==="prod1"?`<div class="hint">작품별 설정이 우선 · 새 작품 기본값</div>`:s.k==="contract"?`<div class="hint">제작 시작 N영업일 전까지 (일정 영향 없음)</div>`:s.k==="casting"?`<div class="hint">내부: 첫 묶음만 +2일 · 외부: 제작 시작과 함께 3일 (일정 영향 없음)</div>`:s.k==="dub"?`<div class="hint">외부: '더빙·믹싱' 통으로 · 한 번에 한 묶음씩 · 5화 미만 묶음은 비례 단축</div>`:s.k==="imgcut"?`<div class="hint">외부 1화만 · 1일째 공유 + 1일 피드백 (영상 1차와 동시)</div>`:s.k==="dubchk"?`<div class="hint">외부 1화만 · 첫 묶음 사운드 6일차 공유 + 3일 피드백</div>`:s.k==="burn"?`<div class="hint">외부: 사운드 납품 후 당사가 회차당 1일씩 (자막 번역·입히기)</div>`:s.k==="trans"?`<div class="hint">외부: 제작사가 대사·녹음 대본 준비 (0일)</div>`:""}</td>
+    h+=`<tr><td>${esc(s.n)}${s.k==="prod1"?`<div class="hint">작품별 설정이 우선 · 새 작품 기본값</div>`:s.k==="contract"?`<div class="hint">제작 시작 N영업일 전까지 (일정 영향 없음)</div>`:s.k==="casting"?`<div class="hint">내부: 첫 묶음만 +2일 · 외부: 제작 시작과 함께 3일 (일정 영향 없음)</div>`:s.k==="dub"?`<div class="hint">외부: '더빙·믹싱' 통으로 · 한 번에 한 묶음씩 · 5화 미만 묶음은 비례 단축</div>`:s.k==="imgcut"?`<div class="hint">외부 1화만 · 1일째 공유 + 1일 피드백 (영상 1차와 동시)</div>`:s.k==="dubchk"?`<div class="hint">외부 1화만 · 첫 묶음 사운드 6일차 공유 + 3일 피드백</div>`:s.k==="burn"?`<div class="hint">외부: 사운드 납품 후 당사가 회차당 1일씩 (자막 번역·입히기)</div>`:s.k==="trans"?`<div class="hint">외부: 제작사가 대사·녹음 대본 준비 (0일)</div>`:s.k==="vtrans"?`<div class="hint">대사 번역과 동시 시작 · 영상 속 글자 번역·번인 · <b>기간 미정</b>(0이면 일정 영향 없음, 업체 정해지면 일수 입력)</div>`:""}</td>
       <td><input class="in" style="width:130px" data-i="${i}" data-c="team" value="${esc(s.team)}" aria-label="${esc(s.n)} 담당 부서"></td>
       ${VK.map(k=>`<td class="r">${num(k)}${s.vf&&s.vf[k]!=null?`<div class="hint" style="white-space:nowrap">첫 묶음 <input class="in n" style="width:46px;min-height:24px;padding:1px 4px" type="number" min="0" max="120" data-i="${i}" data-c="vf" data-var="${k}" value="${s.vf[k]}"></div>`:""}</td>`).join("")}
       <td>${s.k==="contract"?`<span class="hint">작품 1회 · 기한</span>`:s.k==="prod1"?`<span class="hint">회차별 · 순차</span>`:`<select class="in" data-i="${i}" data-c="sc">${Object.entries(SC_LABEL).map(([v,t])=>`<option value="${v}"${s.sc===v?" selected":""}>${t}</option>`).join("")}</select>`}</td>
@@ -2458,7 +2482,137 @@ async function pullAll(force){
   if(WORKS.length!==before) changed=true;
   WORKS.sort((a,b)=>(a.pos||0)-(b.pos||0));
   if(cf&&cf.length&&(force||cf[0].updated_at!==CONF_SEEN)){ CONF=normConf(cf[0].data); setHol(CONF.hol); CONF_SEEN=cf[0].updated_at; changed=true; }
+  try{ if(await vPull(force)) changed=true; }catch(e){ console.warn("외주사 목록을 불러오지 못했어요",e); }
   return {changed,empty:!rows.length&&!(cf&&cf.length)};
+}
+
+/* ======================= 외주사 관리 =======================
+   공유 저장소: anime_config 테이블의 id="vendors" 행 (data.list). 일정 데이터와 따로 저장.
+   수정은 패치로 보내고, 저장 직전에 최신 목록을 받아 합침 → 여러 명이 동시에 고쳐도 덮어쓰지 않음 */
+const V_STAGES=[["contact","컨택 전"],["meeting","미팅 예정"],["met","미팅 완료"],["sampleC","샘플 계약 진행"],["sampleP","샘플 제작 중"],["sampleD","샘플 납품·평가"],["deal","본계약 협의"],["signed","계약 완료"],["hold","보류"],["no","진행 불가"]];
+const V_PRIO=[["high","높음"],["mid","보통"],["low","낮음"]];
+const V_COUNTRY=["한국","일본","중국","미국","기타"];
+const vStage=(k)=>(V_STAGES.find(x=>x[0]===k)||["","–"])[1], vPrio=(k)=>(V_PRIO.find(x=>x[0]===k)||["","–"])[1];
+let VENDORS=[], V_SEEN=null, V_PENDING=[], V_TIMER=null;
+let VF={country:new Set(),prio:new Set(),stage:new Set(),owner:"",q:"",sort:"prio"};
+const V_SEED=[
+ {owner:"남선녀 / 고도경",name:"HNS",country:"중국",intro:"선녀님 추천",contact:"선녀님 통해 컨택",stage:"sampleD",status:"샘플 제작 완료",keyDate:"9/30 납품",prio:"mid"},
+ {owner:"고도경",name:"StoryCo",country:"미국",intro:"도경님 추천",contact:"Justin Alanís",email:"justin@story.co",stage:"sampleD",status:"피드백 전달 완료 / 2차 샘플 논의 중",keyDate:"9/30 납품",prio:"mid"},
+ {owner:"하루키",name:"StudioComee",country:"일본",stage:"sampleC",status:"샘플 계약 진행 중",keyDate:"10월 중순",prio:"mid"},
+ {owner:"하루키",name:"KaKa Creation",country:"일본",url:"https://kakacreation.co.jp",intro:"윤정 서칭",contact:"石井 凌 / Ryo Ishii 프로듀서",email:"ishii-ryo@kakacreation.com",stage:"sampleC",status:"샘플 계약 진행 중",prio:"mid"},
+ {owner:"하루키",name:"Passione",country:"일본",url:"https://passione-anime.com/",intro:"윤정 리코팀 미팅",contact:"Youichi Beppu 프로듀서",email:"fai.beppu@gmail.com",stage:"sampleC",status:"샘플 계약 진행 중",prio:"mid"},
+ {owner:"하루키",name:"Human&AI",country:"일본",stage:"meeting",status:"미팅 예정",prio:"mid"},
+ {owner:"하루키",name:"BilliBilli",country:"중국",stage:"meeting",status:"미팅 예정",prio:"mid"},
+ {owner:"하루키",name:"OiiOii",country:"일본",url:"https://www.oiioii.ai",intro:"치원님 추천",contact:"牟 珊珊 (ム サンサン) Head of Japan Business",email:"sansan.mss@hogi.ai",stage:"sampleC",status:"샘플 계약 진행 중",keyDate:"10월 중순",prio:"mid"},
+ {owner:"김윤정",name:"엠스토리허브",country:"한국",intro:"EB팀 연결",contact:"윤동섭 해외사업본부장 / 김충연 CCO",email:"dongsub.yoon@mstoryhub.com / kcy2078@mstoryhub.com",stage:"sampleC",status:"샘플 계약 진행 중",prio:"mid"},
+ {owner:"김윤정",name:"스튜디오리코",country:"한국",stage:"sampleC",status:"샘플 계약 진행 중",prio:"mid"},
+ {owner:"김윤정",name:"사이퍼 스튜디오",country:"한국",url:"https://cypherstudio.net/\nhttps://www.kmdb.or.kr/db/per/00020731",intro:"베테랑 영화 제작자 최낙권 대표님이 영상 제작 …",contact:"최낙권 대표",email:"billychoice@naver.com",phone:"010-8924-1082",stage:"sampleC",status:"샘플 계약 진행 중 (시연 미팅 예정)",note:"빠른 연락과 진행 여부 결정 필요",interest:"레사, 검은머리 영국의사",prio:"high"},
+ {owner:"김윤정",name:"윙카디아",country:"한국",url:"https://youtu.be/lwluETzp554?si=Cpe7ecaJt_dM6ReA",intro:"YouTube 중심 고퀄리티 영상 제작사, 네이버웹툰 마케팅 영상 제작 등 협업 경험 有",contact:"조준영 대표",email:"jo@winkadia.com",phone:"010-3082-5149",stage:"sampleC",status:"샘플 계약 진행 중 (로맨스 작품 추가 전달 필요)",note:"빠른 연락과 진행 여부 결정 필요",next:"로맨스 작품 추가 전달",prio:"high"},
+ {owner:"김윤정",name:"스튜디오 프리윌루전",country:"한국",url:"https://studiofreewillusion.com/",intro:"우리나라 최초이자 최대 AI 전문 스튜디오, 권한슬 감독이 창업자 겸 대표자",contact:"구도형 부대표",email:"kdh@studiofreewill.com",phone:"010-4871-9573",stage:"sampleC",status:"샘플 계약 진행 중",note:"현재 제작 라인을 홀드 중으로 빠른 연락 필요",prio:"high"},
+ {owner:"김윤정",name:"크릭스에이아이",country:"한국",url:"https://www.mateoaistudio.com/\nhttps://wowtale.net/2026/04/27/257720/",intro:"'마테오 AI 스튜디오' 자회사, 우리나라 대표 A…",contact:"조형래 실장",email:"hrcho@crexai.co",phone:"010-3399-9978",stage:"sampleC",status:"샘플 계약 진행 중",note:"빠른 연락과 진행 여부 결정 필요",prio:"high"},
+ {owner:"김윤정",name:"MBC C&I",country:"한국",url:"http://www.mbccni.co.kr/\nhttps://www.viva100.com/article/20260905500107",intro:"국내 최고 AI 아티스트들의 산실이며 안정적 …",contact:"이상욱 팀장",email:"solart7208@gmail.com",phone:"010-5317-7900",stage:"sampleC",status:"샘플 계약 진행 중",note:"연내 제작 가능성만 타진",prio:"low"},
+ {owner:"김윤정",name:"웨스트월드",country:"한국",url:"https://www.westworld.co.kr/",intro:"국내 최대 CG/VFX 업체인 웨스트월드 내부 …",contact:"김지현 소장",email:"june@june-art.net",phone:"010-8748-2427",stage:"meeting",status:"미팅 예정",note:"빠른 연락과 진행 여부 결정 필요",interest:"샤머니즘",prio:"high"},
+ {owner:"김윤정",name:"모피어스 스튜디오",country:"한국",url:"https://aicron.io/\nhttps://biz.heraldcorp.com/article/10852731",intro:"'김부장' AI 영상 제작사이자 aicron 운영사 …",contact:"이수영 대표",email:"seanlee@morpheus-studio.com",phone:"010-9455-7326",stage:"meeting",status:"미팅 예정",note:"연내 제작 가능성만 타진",prio:"low"},
+ {owner:"김윤정",name:"큐폴라",country:"한국",contact:"이종목 대표",email:"zeliace@qpola.net",stage:"meeting",status:"미팅 예정",prio:"mid"},
+ {owner:"김윤정",name:"시나몬",country:"한국",intro:"김준구님 추천",contact:"홍두성 대표",email:"knock@cinamon.io",phone:"010-7735-6701",stage:"no",status:"샘플 제작 및 단가 협의 불가",note:"1회 미팅 진행, 사업 소개와 가능성만 타진한 상태",prio:"low"},
+].map((v,i)=>({id:"v"+(i+1),...v,upd:key(TODAY)}));
+function vApply(list,p){
+  if(p.op==="add") return list.some(x=>x.id===p.v.id)?list:[...list,p.v];
+  if(p.op==="del") return list.filter(x=>x.id!==p.id);
+  return list.map(x=>x.id===p.id?{...x,...p.v,upd:key(TODAY),updBy:(ME&&(ME.name||ME.email))||x.updBy||""}:x);
+}
+function vEdit(p){ VENDORS=vApply(VENDORS,p); if(SB.on){ V_PENDING.push(p); clearTimeout(V_TIMER); V_TIMER=setTimeout(vPush,400); } render(); }
+async function vPush(){
+  const ps=V_PENDING; if(!ps.length) return; V_PENDING=[];
+  try{ const r=await sb("GET",T_CONF,"?id=eq.vendors&select=data");
+    let list=r&&r.length&&r[0].data&&Array.isArray(r[0].data.list)?r[0].data.list:clone(VENDORS);
+    if(r&&r.length) ps.forEach(p=>{ list=vApply(list,p); });
+    const now=new Date().toISOString();
+    await sb("POST",T_CONF,"",[{id:"vendors",data:{list},updated_at:now}],"resolution=merge-duplicates");
+    V_SEEN=now; VENDORS=list; V_PENDING.forEach(p=>{ VENDORS=vApply(VENDORS,p); }); setSync("on",`공유 중 · ${hhmm()} 저장됨`); safeRender();
+  }catch(e){ V_PENDING=ps.concat(V_PENDING); setSync("err","외주사 저장 실패 — 5초 뒤 다시 시도"); clearTimeout(V_TIMER); V_TIMER=setTimeout(vPush,5000); }
+}
+async function vPull(force){
+  if(!SB.on) return false;
+  const r=await sb("GET",T_CONF,"?id=eq.vendors&select=data,updated_at");
+  if(!r||!r.length){ if(!VENDORS.length){ VENDORS=clone(V_SEED); const now=new Date().toISOString();   // 처음 한 번: 시트 내용으로 채움
+      await sb("POST",T_CONF,"",[{id:"vendors",data:{list:VENDORS},updated_at:now}],"resolution=merge-duplicates"); V_SEEN=now; return true; } return false; }
+  if(V_PENDING.length||(!force&&r[0].updated_at===V_SEEN)) return false;
+  V_SEEN=r[0].updated_at; VENDORS=(r[0].data&&r[0].data.list)||[]; return true;
+}
+function vFiltered(){
+  const q=VF.q.trim().toLowerCase();
+  const list=VENDORS.filter(v=>(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.stage.size||VF.stage.has(v.stage||"contact"))
+    &&(!VF.owner||(v.owner||"").includes(VF.owner))&&(!q||JSON.stringify(v).toLowerCase().includes(q)));
+  const po={high:0,mid:1,low:2}, so=Object.fromEntries(V_STAGES.map((s,i)=>[s[0],i]));
+  const nd=(v)=>v.nextDue||"9999";
+  return list.sort((a,b)=>VF.sort==="next"?nd(a).localeCompare(nd(b)):VF.sort==="stage"?(so[b.stage]||0)-(so[a.stage]||0):VF.sort==="country"?(a.country||"").localeCompare(b.country||""):(po[a.prio||"mid"]-po[b.prio||"mid"])||((so[b.stage]||0)-(so[a.stage]||0)));
+}
+function renderVendors(){
+  const L=vFiltered(), all=VENDORS, cnt=(f,k)=>all.filter(v=>f(v)===k).length;
+  const chip=(grp,k,label,n)=>`<button type="button" class="vchip${VF[grp].has(k)?" on":""}" data-vf="${grp}" data-k="${k}">${esc(label)} <span>${n}</span></button>`;
+  const owners=[...new Set(all.flatMap(v=>(v.owner||"").split("/").map(x=>x.trim()).filter(Boolean)))];
+  const overdue=all.filter(v=>v.nextDue&&v.nextDue<key(TODAY)&&!["signed","no"].includes(v.stage)).length;
+  let h=`<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
+    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">전체 ${all.length}곳 · 진행 중 ${all.filter(v=>!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">다음 액션 기한 지남 ${overdue}곳</b>`:""}</span></p></div>
+    <button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></div>
+  <div class="vpipe">${V_STAGES.map(([k,l])=>{const n=cnt(v=>v.stage||"contact",k);return `<button type="button" class="vps${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><b>${n}</b><span>${l}</span></button>`;}).join("")}</div>
+  <div class="card vfil">
+    <span class="sog">국가</span>${V_COUNTRY.map(c=>chip("country",c,c,all.filter(v=>(V_COUNTRY.includes(v.country)?v.country:"기타")===c).length)).join("")}
+    <span class="sog">우선순위</span>${V_PRIO.map(([k,l])=>chip("prio",k,l,cnt(v=>v.prio||"mid",k))).join("")}
+    <span class="vsp"></span>
+    <select class="in" id="vOwner"><option value="">컨택 담당자 전체</option>${owners.map(o=>`<option${VF.owner===o?" selected":""}>${esc(o)}</option>`).join("")}</select>
+    <select class="in" id="vSort">${[["prio","우선순위순"],["stage","진행 단계순"],["next","다음 액션 기한순"],["country","국가순"]].map(([k,l])=>`<option value="${k}"${VF.sort===k?" selected":""}>${l}</option>`).join("")}</select>
+    <input class="in" id="vQ" placeholder="검색 (이름·담당·메모)" value="${esc(VF.q)}" style="width:180px">
+    ${VF.country.size||VF.prio.size||VF.stage.size||VF.owner||VF.q?`<button type="button" class="btn" id="vClr" style="padding:2px 10px;font-size:12px">필터 초기화</button>`:""}
+  </div>
+  <div class="card" style="overflow-x:auto;padding:0"><table class="std vtab"><thead><tr><th>외주 제작사</th><th>국가</th><th>우선순위</th><th>진행 단계</th><th>상세 상황 · 주요 일정</th><th>다음 액션</th><th>관심·배정 작품</th><th>컨택 담당</th><th>상대 담당자 · 연락처</th><th>비고</th><th></th></tr></thead><tbody>`;
+  L.forEach(v=>{ const od=v.nextDue&&v.nextDue<key(TODAY)&&!["signed","no"].includes(v.stage);
+    const urls=(v.url||"").split(/\s+/).filter(Boolean);
+    h+=`<tr class="${["no","hold"].includes(v.stage)?"off":""}">
+      <td class="vwrap" style="min-width:170px"><b>${esc(v.name)}</b>${urls.map((u,i)=>` <a href="${esc(u)}" target="_blank" rel="noopener" class="vlink" title="${esc(u)}">링크${urls.length>1?i+1:""}</a>`).join("")}${v.intro?`<div class="hint vwrap">${esc(v.intro)}</div>`:""}</td>
+      <td style="white-space:nowrap">${esc(v.country||"")}</td>
+      <td><select class="in vsel p-${v.prio||"mid"}" data-vid="${v.id}" data-vk="prio">${V_PRIO.map(([k,l])=>`<option value="${k}"${(v.prio||"mid")===k?" selected":""}>${l}</option>`).join("")}</select></td>
+      <td><select class="in vsel s-${v.stage||"contact"}" data-vid="${v.id}" data-vk="stage">${V_STAGES.map(([k,l])=>`<option value="${k}"${(v.stage||"contact")===k?" selected":""}>${l}</option>`).join("")}</select></td>
+      <td class="vwrap">${esc(v.status||"")}${v.keyDate?`<div><span class="tag good" style="font-size:10.5px">${esc(v.keyDate)}</span></div>`:""}</td>
+      <td class="vwrap">${v.next?esc(v.next):`<span class="hint">–</span>`}${v.nextDue?`<div class="${od?"vod":"hint"}">${od?"기한 지남 · ":""}${esc(v.nextDue.slice(5).replace("-","/"))}까지</div>`:""}</td>
+      <td class="vwrap">${esc(v.interest||"")}</td>
+      <td style="min-width:70px">${esc(v.owner||"")}</td>
+      <td class="vwrap">${esc(v.contact||"")}${v.email?`<div class="hint">${esc(v.email)}</div>`:""}${v.phone?`<div class="hint">${esc(v.phone)}</div>`:""}</td>
+      <td class="vwrap">${esc(v.note||"")}${v.price?`<div class="hint">단가: ${esc(v.price)}</div>`:""}</td>
+      <td style="white-space:nowrap"><button type="button" class="btn vedit" data-vid="${v.id}" style="padding:2px 9px;font-size:12px">수정</button>${v.upd?`<div class="hint" style="font-size:10.5px">${esc(v.upd.slice(5).replace("-","/"))}${v.updBy?` · ${esc(v.updBy)}`:""}</div>`:""}</td></tr>`; });
+  h+=`</tbody></table>${L.length?"":`<p class="hint" style="padding:12px 16px;margin:0">조건에 맞는 외주사가 없어요.</p>`}</div>
+  <p class="hint" style="margin:8px 0 0">우선순위와 진행 단계는 표에서 바로 바꿀 수 있고, 나머지는 [수정]에서 고쳐요. 바꾼 내용은 모든 사람에게 바로 공유돼요.</p>`;
+  $("v-vendors").innerHTML=h;
+  document.querySelectorAll("#v-vendors [data-vf]").forEach(b=>b.onclick=()=>{ const s=VF[b.dataset.vf], k=b.dataset.k; s.has(k)?s.delete(k):s.add(k); render(); });
+  $("vOwner").onchange=(e)=>{VF.owner=e.target.value;render();}; $("vSort").onchange=(e)=>{VF.sort=e.target.value;render();};
+  $("vQ").oninput=(e)=>{ VF.q=e.target.value; clearTimeout(vQ._t); vQ._t=setTimeout(()=>{ render(); const i=$("vQ"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length);} },250); };
+  if($("vClr")) $("vClr").onclick=()=>{ VF={country:new Set(),prio:new Set(),stage:new Set(),owner:"",q:"",sort:VF.sort}; render(); };
+  document.querySelectorAll("#v-vendors .vsel").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
+  document.querySelectorAll("#v-vendors .vedit").forEach(b=>b.onclick=(e)=>{e.stopPropagation();vEditor(VENDORS.find(x=>x.id===b.dataset.vid),b);});
+  $("vAdd").onclick=(e)=>{e.stopPropagation();vEditor(null,e.currentTarget);};
+}
+function vEditor(v,anchor){
+  const isNew=!v; v=v||{id:"v"+Date.now().toString(36),country:"한국",prio:"mid",stage:"contact",owner:(ME&&ME.name)||""};
+  const F=[["name","외주 제작사","text"],["country","국가","country"],["prio","우선순위","prio"],["stage","진행 단계","stage"],["status","상세 상황","text"],["keyDate","주요 일정","text"],
+    ["next","다음 액션","text"],["nextDue","다음 액션 기한","date"],["interest","관심·배정 작품","text"],["owner","컨택 담당자","text"],["contact","상대 담당자","text"],["email","이메일","text"],["phone","전화","text"],
+    ["url","링크 (여러 개는 줄바꿈)","area"],["intro","소개","area"],["price","단가 (예: 분당 ○원)","text"],["note","비고","area"]];
+  const inp=([k,l,t])=>`<label class="vf"><span>${l}</span>${t==="country"?`<select class="in" data-ef="${k}">${V_COUNTRY.map(c=>`<option${v[k]===c?" selected":""}>${c}</option>`).join("")}</select>`
+    :t==="prio"?`<select class="in" data-ef="${k}">${V_PRIO.map(([a,b])=>`<option value="${a}"${(v[k]||"mid")===a?" selected":""}>${b}</option>`).join("")}</select>`
+    :t==="stage"?`<select class="in" data-ef="${k}">${V_STAGES.map(([a,b])=>`<option value="${a}"${(v[k]||"contact")===a?" selected":""}>${b}</option>`).join("")}</select>`
+    :t==="area"?`<textarea class="in" data-ef="${k}" rows="2">${esc(v[k]||"")}</textarea>`:`<input class="in" type="${t==="date"?"date":"text"}" data-ef="${k}" value="${esc(v[k]||"")}">`}</label>`;
+  const pop=$("pop"); pop.classList.add("wide");
+  pop.innerHTML=`<h4>${isNew?"외주사 추가":esc(v.name)+" 수정"}</h4><div class="vgrid">${F.map(inp).join("")}</div>
+    <div class="acts">${isNew?"":`<button type="button" class="btn danger" id="veDel">삭제</button><span style="flex:1"></span>`}<button type="button" class="btn" id="veX">닫기</button><button type="button" class="btn pri" id="veOk">${isNew?"추가":"저장"}</button></div>`;
+  pop.hidden=false;
+  const r=anchor.getBoundingClientRect(), cw=document.documentElement.clientWidth;
+  pop.style.left=Math.max(8,Math.min(r.left+window.scrollX-300,window.scrollX+cw-640))+"px"; pop.style.top=(r.bottom+window.scrollY+6)+"px";
+  const close=()=>{ pop.classList.remove("wide"); closePop(); };
+  $("veX").onclick=close;
+  $("veOk").onclick=()=>{ const o={}; pop.querySelectorAll("[data-ef]").forEach(el=>{ o[el.dataset.ef]=el.value.trim(); });
+    if(!o.name){ toast("외주 제작사 이름을 넣어 주세요"); return; }
+    vEdit(isNew?{op:"add",v:{...v,...o,upd:key(TODAY),updBy:(ME&&(ME.name||ME.email))||""}}:{op:"set",id:v.id,v:o}); close(); };
+  if($("veDel")) $("veDel").onclick=()=>{ if(confirm(`'${v.name}'을(를) 목록에서 삭제할까요? 모든 사람 화면에서 사라집니다.`)){ vEdit({op:"del",id:v.id}); close(); } };
 }
 
 /* ---------- 탭 · 시작 ---------- */
@@ -2478,10 +2632,10 @@ if(LANG==="ja"){ document.documentElement.lang="ja"; document.title="アニメ�
 TR_OBS.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["title","placeholder","aria-label"]});
 (async function init(){
   try{ const q=new URLSearchParams(location.search);
-    if(["open","prod","std","sim","users"].includes(q.get("tab"))) TAB=q.get("tab");
+    if(["open","prod","std","sim","vendors","users"].includes(q.get("tab"))) TAB=q.get("tab");
     if(q.get("w")) SEL=q.get("w"); }catch(e){}
   if(!SB.on){
-    WORKS=clone(DEFAULT_WORKS).map(normW);
+    WORKS=clone(DEFAULT_WORKS).map(normW); VENDORS=clone(V_SEED);
     setSync("off","공유 저장소 미설정 — 고친 내용이 이 창에만 남습니다");
     runMigrations(); render(); return;
   }
