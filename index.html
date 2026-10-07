@@ -263,7 +263,7 @@ table.vt td.c-w{min-width:150px;max-width:230px} table.vt td.c-w2{min-width:220p
 a.vname,span.vname{font-size:15px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-.01em} a.vname:hover{color:var(--launch);text-decoration:underline}
 .vcty{appearance:none;-webkit-appearance:none;border:0;border-radius:4px;font:inherit;font-size:10.5px;font-weight:700;padding:1px 6px;cursor:pointer;background:var(--page);color:var(--ink2)}
 .vcty.c-한국{background:#E3ECFA;color:#2A4E92} .vcty.c-일본{background:#FBE4E4;color:#A23838} .vcty.c-중국{background:#FCEFD3;color:#8C5A06} .vcty.c-미국{background:#E4F2EA;color:#22704A}
-.vpen{border:0;background:none;color:#B9BCB5;cursor:pointer;font-size:12px;padding:0 2px;opacity:0} table.vt tr:hover .vpen{opacity:1} .vpen:hover{color:var(--launch)}
+.vpen{border:1px solid transparent;background:none;color:#B0B3AC;cursor:pointer;font-size:11px;padding:0 5px;border-radius:4px} table.vt tr:hover .vpen{color:var(--ink2);border-color:var(--line2)} .vpen:hover{color:var(--launch)!important;border-color:var(--launch)!important}
 .vnedit{margin:4px 0;padding:4px 6px;border:1px dashed var(--line2);border-radius:6px;background:#fff}
 .vprog{display:flex;gap:2px;margin-top:5px} .vprog i{flex:1;height:4px;border-radius:2px;background:#E3E5DF} .vprog i.d{background:#9FB6E6} .vprog i.c{background:var(--launch)}
 .vprog.off{font-size:10.5px;color:var(--muted);display:block}
@@ -1304,7 +1304,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -2634,8 +2634,7 @@ function renderVendors(){
     h+=`<tr class="${["no","hold"].includes(st)?"off":""} pr-${v.prio||"mid"}">
       <td class="c-name"><div class="vnrow">${home?`<a class="vname" href="${esc(home)}" target="_blank" rel="noopener" title="홈페이지 열기 · ${esc(home)}">${esc(v.name)}</a>`:`<span class="vname">${esc(v.name)}</span>`}
           <select class="vcty c-${esc(v.country||"기타")}" data-vid="${v.id}" data-vk="country" title="국가">${V_COUNTRY.map(c=>`<option${(v.country||"")===c?" selected":""}>${c}</option>`).join("")}</select>
-          <button type="button" class="vpen" data-vid="${v.id}" title="이름·홈페이지 수정">✎</button></div>
-        <div class="vnedit" hidden>${ve(v,"name","이름")}${ve(v,"url","홈페이지 주소","vsub")}</div>
+          <button type="button" class="vpen" data-vid="${v.id}" title="이름·홈페이지 수정">✎ 수정</button></div>
 </td>
       <td><select class="in vsel p-${v.prio||"mid"}" data-vid="${v.id}" data-vk="prio">${V_PRIO.map(([k,l])=>`<option value="${k}"${(v.prio||"mid")===k?" selected":""}>${l}</option>`).join("")}</select></td>
       <td class="c-stage"><select class="in vsel s-${st}" data-vid="${v.id}" data-vk="stage">
@@ -2657,11 +2656,28 @@ function renderVendors(){
   $("vQ").oninput=(e)=>{ VF.q=e.target.value; clearTimeout(vQ._t); vQ._t=setTimeout(()=>{ render(); const i=$("vQ"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length);} },250); };
   if($("vClr")) $("vClr").onclick=()=>{ VF={country:new Set(),prio:new Set(),stage:new Set(),owner:"",q:"",sort:VF.sort}; render(); };
   document.querySelectorAll("#v-vendors .vsel").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
-  document.querySelectorAll("#v-vendors .vpen").forEach(b=>b.onclick=()=>{ const box=b.closest("td").querySelector(".vnedit"); box.hidden=!box.hidden; if(!box.hidden) vInline(box.querySelector(".ve")); });
+  document.querySelectorAll("#v-vendors .vpen").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); vLinkEditor(VENDORS.find(x=>x.id===b.dataset.vid),b); });
   document.querySelectorAll("#v-vendors .vcty,#v-vendors .vdate").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
   document.querySelectorAll("#v-vendors .vdel").forEach(b=>b.onclick=()=>{ const v=VENDORS.find(x=>x.id===b.dataset.vid); if(v&&confirm(`'${v.name}'을(를) 목록에서 삭제할까요? 모든 사람 화면에서 사라집니다.`)) vEdit({op:"del",id:v.id}); });
   document.querySelectorAll("#v-vendors .ve").forEach(el=>{ const go=()=>vInline(el); el.onclick=go; el.onkeydown=(e)=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } }; });
   $("vAdd").onclick=(e)=>{e.stopPropagation();vEditor(null,e.currentTarget);};
+}
+/* 이름 · 홈페이지 주소 수정 (작은 창) */
+function vLinkEditor(v,anchor){
+  if(!v) return; const pop=$("pop");
+  pop.innerHTML=`<h4>이름 · 홈페이지 수정</h4><p class="ps">이름을 누르면 첫 번째 주소가 열려요</p>
+    <div class="row"><span>제작사 이름</span><input class="in" id="lkN" style="flex:1" value="${esc(v.name||"")}"></div>
+    <div class="row" style="align-items:flex-start"><span>홈페이지</span><textarea class="in" id="lkU" rows="3" style="flex:1;font:inherit;font-size:12.5px" placeholder="https://… (여러 개면 줄바꿈 · 첫 줄이 이름 링크)">${esc(v.url||"")}</textarea></div>
+    <div class="acts"><button type="button" class="btn" id="lkX">닫기</button><button type="button" class="btn pri" id="lkOk">저장</button></div>`;
+  pop.hidden=false;
+  const r=anchor.getBoundingClientRect(); pop.style.left=Math.max(8,r.left+window.scrollX)+"px"; pop.style.top=(r.bottom+window.scrollY+6)+"px";
+  $("lkN").focus();
+  $("lkX").onclick=closePop;
+  $("lkOk").onclick=()=>{ const n=$("lkN").value.trim();
+    if(!n){ toast("외주 제작사 이름은 비울 수 없어요"); return; }
+    const u=$("lkU").value.split(/\s+/).map(x=>x.trim()).filter(Boolean).map(x=>/^https?:\/\//i.test(x)?x:"https://"+x).join("\n");
+    vEdit({op:"set",id:v.id,v:{name:n,url:u}}); closePop(); };
+  pop.onkeydown=(e)=>{ if(e.key==="Escape") closePop(); if(e.key==="Enter"&&e.target.id==="lkN"){ e.preventDefault(); $("lkOk").click(); } };
 }
 function vInline(el){
   if(el.querySelector("textarea")) return;
