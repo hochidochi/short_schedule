@@ -2636,7 +2636,7 @@ function renderVendors(){
           <select class="vcty c-${esc(v.country||"기타")}" data-vid="${v.id}" data-vk="country" title="국가">${V_COUNTRY.map(c=>`<option${(v.country||"")===c?" selected":""}>${c}</option>`).join("")}</select>
           <button type="button" class="vpen" data-vid="${v.id}" title="이름·홈페이지 수정">✎</button></div>
         <div class="vnedit" hidden>${ve(v,"name","이름")}${ve(v,"url","홈페이지 주소","vsub")}</div>
-        ${ve(v,"intro","+ 소개","vsub")}</td>
+</td>
       <td><select class="in vsel p-${v.prio||"mid"}" data-vid="${v.id}" data-vk="prio">${V_PRIO.map(([k,l])=>`<option value="${k}"${(v.prio||"mid")===k?" selected":""}>${l}</option>`).join("")}</select></td>
       <td class="c-stage"><select class="in vsel s-${st}" data-vid="${v.id}" data-vk="stage">
           <optgroup label="진행 순서">${V_FLOW.map(([k,l],i)=>`<option value="${k}"${st===k?" selected":""}>${i+1}. ${l}</option>`).join("")}</optgroup>
