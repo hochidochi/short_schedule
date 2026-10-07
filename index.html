@@ -434,6 +434,136 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   .fgrid .gl{padding-top:0}
   .cal .rl{min-width:150px;max-width:150px}
 }
+
+/* ======================================================================
+   외주사 관리 탭 — 「숏애니 작품 제작 리스트」 화면 톤에 맞춘 통일 스타일
+   (#v-vendors 와 그 팝업에만 적용 · 다른 탭은 영향 없음)
+   포인트: 따뜻한 오프화이트 · 둥근 카드/알약 칩 · 네이비·블루 포인트 · 한 단계 큰 글자
+   ====================================================================== */
+body:has(#v-vendors:not([hidden])){ --vp:#FBFAF7; --vcard:#FFFFFF; --vline:#E4E2DB; --vline2:#CFCDC5; --vblue:#2459C9; --vnavy:#16295B; --vrow:#F4F7FC; --vmut:#8A8E94; background:var(--vp); }
+#v-vendors{ font-size:14px; color:var(--ink); }
+
+/* 제목 */
+#v-vendors .lead{ font-size:24px; font-weight:700; letter-spacing:-.03em; line-height:1.3; margin:0 }
+#v-vendors .lead .hint{ display:block; margin-top:4px; font-size:13.5px!important; font-weight:400!important; color:var(--vmut) }
+#v-vendors .hint{ font-size:12.5px; color:var(--vmut) }
+
+/* 버튼 */
+#v-vendors .btn, body:has(#v-vendors:not([hidden])) #pop .btn{ border:1px solid #2A2D33; background:#fff; border-radius:8px; padding:0 16px; height:38px; font-size:14px; font-weight:600; color:var(--ink); transition:background .12s,border-color .12s }
+#v-vendors .btn:hover, body:has(#v-vendors:not([hidden])) #pop .btn:hover{ background:#F6F5F1; border-color:#000 }
+#v-vendors .btn.pri, body:has(#v-vendors:not([hidden])) #pop .btn.pri{ background:var(--vblue); border-color:var(--vblue); color:#fff }
+#v-vendors .btn.pri:hover, body:has(#v-vendors:not([hidden])) #pop .btn.pri:hover{ background:#1B48A8; border-color:#1B48A8 }
+#v-vendors .btn.danger, body:has(#v-vendors:not([hidden])) #pop .btn.danger{ color:var(--bad); border-color:#E3B5B0 }
+#v-vendors .vcalbar .btn{ height:32px; padding:0 12px }
+
+/* 표 / 캘린더 토글 (알약 세그먼트: 회색 바탕 + 흰 선택) */
+#v-vendors .seg{ background:#F0EEE8; border:0; border-radius:10px; padding:3px; gap:2px; flex-wrap:nowrap }
+#v-vendors .seg button{ border:1px solid transparent; border-radius:8px; padding:0 18px; height:34px; font-size:14px; font-weight:500; color:var(--ink2) }
+#v-vendors .seg button[aria-pressed="true"]{ background:#fff; color:var(--ink); font-weight:700; border-color:var(--vline2); box-shadow:0 1px 2px rgba(20,24,30,.06) }
+
+/* 진행 단계 요약 = 상단 통계 카드 느낌 (라벨 위 · 큰 숫자 아래) */
+#v-vendors .vpipe{ gap:16px; margin:18px 0 16px; align-items:stretch }
+#v-vendors .vflow{ gap:10px; min-width:640px }
+#v-vendors .vstep{ clip-path:none; margin-left:0; border-radius:12px; padding:14px 16px 12px; background:var(--vcard); border:1px solid var(--vline); color:var(--ink2); align-items:flex-start; box-shadow:0 1px 0 rgba(20,24,30,.02); transition:border-color .12s,box-shadow .12s }
+#v-vendors .vstep:first-child, #v-vendors .vstep:last-child{ clip-path:none; border-radius:12px; padding:14px 16px 12px }
+#v-vendors .vstep:not(.z){ background:var(--vcard) }
+#v-vendors .vstep:hover{ filter:none; border-color:var(--vline2) }
+#v-vendors .vstep .vtx{ flex-direction:column-reverse; gap:2px; font-size:13px; font-weight:500; color:var(--ink2); line-height:1.3 }
+#v-vendors .vstep .vtx b{ font-size:28px; font-weight:700; letter-spacing:-.03em; line-height:1.15; color:var(--ink) }
+#v-vendors .vstep .vno{ display:none }
+#v-vendors .vstep.z{ opacity:1 } #v-vendors .vstep.z .vtx b{ color:#B5B8BC }
+#v-vendors .vstep.on{ background:#fff; border-color:var(--vblue); box-shadow:inset 0 0 0 1px var(--vblue) }
+#v-vendors .vstep.on .vtx{ color:var(--vblue) } #v-vendors .vstep.on .vtx b{ color:var(--vblue) }
+#v-vendors .vside{ border-left:1px solid var(--vline); padding-left:16px; gap:10px }
+#v-vendors .vsl{ font-size:12px; color:var(--vmut); letter-spacing:.04em }
+#v-vendors .vsbtn{ border:1px solid var(--vline); border-style:solid; background:var(--vcard); border-radius:12px; padding:14px 16px 12px; font-size:13px; font-weight:500; color:var(--ink2); flex-direction:column-reverse; align-items:flex-start; gap:2px; min-width:88px }
+#v-vendors .vsbtn b{ font-size:28px; font-weight:700; letter-spacing:-.03em; line-height:1.15; color:var(--ink) }
+#v-vendors .vsbtn.z{ opacity:1 } #v-vendors .vsbtn.z b{ color:#B5B8BC }
+#v-vendors .vsbtn.on{ background:#fff; color:var(--vblue); border-color:var(--vblue); box-shadow:inset 0 0 0 1px var(--vblue) } #v-vendors .vsbtn.on b{ color:var(--vblue) }
+#v-vendors .vsbtn.no:not(.z) b{ color:var(--bad) }
+
+/* 필터 줄: 카드 테두리 없이 가볍게, 칩은 알약 */
+#v-vendors .vfil{ background:none; border:0; border-radius:0; padding:0; gap:10px 10px; margin:0 0 14px }
+#v-vendors .vfil .sog{ font-size:13px; font-weight:600; color:var(--ink2); margin-left:10px }
+#v-vendors .vfil .sog:first-child{ margin-left:0 }
+#v-vendors .in{ border:1px solid var(--vline2); border-radius:7px; height:38px; min-height:38px; padding:0 12px; font-size:14px; background:#fff; color:var(--ink) }
+#v-vendors .in:focus{ outline:none; border-color:var(--vblue); box-shadow:0 0 0 3px rgba(36,89,201,.14) }
+#v-vendors .vfil .in{ min-height:38px; padding:0 12px; font-size:14px }
+#v-vendors .vchip{ border:1px solid var(--vline2); background:#fff; border-radius:999px; padding:0 14px; height:32px; font-size:14px; font-weight:500; color:var(--ink2); transition:background .12s,border-color .12s }
+#v-vendors .vchip:hover{ border-color:#9A9DA3 }
+#v-vendors .vchip span{ font-size:13px; color:var(--vmut); margin-left:2px }
+#v-vendors .vchip.on{ background:var(--vnavy); border-color:var(--vnavy); color:#fff; font-weight:600 }
+#v-vendors .vchip.on span{ color:#B9C4E3 }
+#v-vendors #vClr{ height:32px!important; border-radius:999px; font-size:13px!important; padding:0 14px!important }
+
+/* 표 */
+#v-vendors .vtwrap{ background:#fff; border:1px solid var(--vline); border-radius:12px; box-shadow:none }
+#v-vendors table.vt{ font-size:14px; min-width:1480px }
+#v-vendors table.vt th{ background:#fff; color:var(--vmut); font-size:12.5px; font-weight:600; padding:12px 14px; border-bottom:2px solid #B9B7AE; border-right:0 }
+#v-vendors table.vt td{ padding:14px 14px; border-bottom:1px solid #ECEAE4; border-right:0; background:#fff; line-height:1.5 }
+#v-vendors table.vt tbody tr:nth-child(even) td{ background:#fff }
+#v-vendors table.vt tbody tr:hover td{ background:var(--vrow) }
+#v-vendors table.vt tbody tr:last-child td{ border-bottom:0 }
+#v-vendors table.vt th.c-name, #v-vendors table.vt td.c-name{ min-width:240px; max-width:280px; border-right:1px solid var(--vline) }
+#v-vendors table.vt td.c-name{ box-shadow:inset 3px 0 0 var(--vblue) }
+#v-vendors table.vt tr.pr-high td.c-name{ box-shadow:inset 3px 0 0 var(--bad) }
+#v-vendors table.vt tr.pr-low td.c-name{ box-shadow:inset 3px 0 0 #D5D7D1 }
+#v-vendors table.vt td.c-w{ min-width:170px; max-width:250px } #v-vendors table.vt td.c-w2{ min-width:240px; max-width:300px } #v-vendors table.vt td.c-stage{ min-width:170px }
+#v-vendors a.vname, #v-vendors span.vname, #v-vendors .ve.vname{ font-size:16px; font-weight:700; letter-spacing:-.02em }
+#v-vendors .vnrow{ gap:8px }
+
+/* 칸 텍스트 */
+#v-vendors .ve{ line-height:1.5; min-height:21px; border-radius:6px }
+#v-vendors .ve.vsub{ font-size:12.5px; color:var(--vmut); margin-top:3px }
+#v-vendors .ve .ph{ font-size:12.5px; color:#BFC2BA }
+#v-vendors .ve.vurl{ font-size:11.5px }
+#v-vendors .ve.vkey:not(.empty){ background:#1F9D6B; color:#fff; font-weight:700; font-size:12.5px; padding:2px 10px; border-radius:999px }
+#v-vendors .ve.editing{ box-shadow:inset 0 0 0 2px var(--vblue) }
+
+/* 국가 · 우선순위 · 단계 = 알약형 */
+#v-vendors .vcty{ font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px }
+#v-vendors .vcty.c-한국{ background:#E4ECFB; color:#24498F } #v-vendors .vcty.c-일본{ background:#FBE6E6; color:#A23838 }
+#v-vendors .vcty.c-중국{ background:#FCF0D6; color:#8C5A06 } #v-vendors .vcty.c-미국{ background:#E2F3EA; color:#1F704A }
+#v-vendors .vsel{ min-height:34px; height:34px; border-radius:999px; padding:0 12px; font-size:13.5px; font-weight:600; background:#fff; border:1px solid var(--vline2); color:var(--ink2); cursor:pointer }
+#v-vendors .vsel.p-high{ background:#FDEDEB; color:var(--bad); border-color:#E7A9A3 } #v-vendors .vsel.p-low{ color:var(--vmut) }
+#v-vendors .vsel.s-signed{ background:#E3F5EC; color:#17734D; border-color:#46B183 }
+#v-vendors .vsel.s-sampleD, #v-vendors .vsel.s-deal{ background:#E9EFFC; color:var(--vblue); border-color:#9FB6E6 }
+#v-vendors .vsel.s-no{ background:#F3F2EE; color:var(--vmut) }
+#v-vendors .vprog{ gap:3px; margin-top:8px } #v-vendors .vprog i{ height:5px; border-radius:3px; background:#E7E5DE } #v-vendors .vprog i.d{ background:#A9BDEA } #v-vendors .vprog i.c{ background:var(--vblue) }
+#v-vendors .vprog.off{ font-size:12px }
+
+/* 다음 액션 · 날짜 · 삭제 */
+#v-vendors .vact{ margin-top:7px; padding-top:7px; border-top:1px dashed var(--vline2) }
+#v-vendors .vacl{ font-size:11px; background:var(--vnavy); border-radius:4px; padding:1px 6px }
+#v-vendors .vdate{ margin-top:6px; border:1px solid var(--vline2); border-radius:6px; font-size:12.5px; padding:2px 6px }
+#v-vendors .vod{ font-size:12px }
+#v-vendors .vpen{ font-size:12px; border-radius:6px; padding:1px 7px }
+#v-vendors .vdel{ width:30px; height:30px; border:1px solid var(--vline); border-radius:7px; font-size:12px; color:#B0B3AC; background:#fff }
+#v-vendors .vdel:hover{ color:var(--bad); border-color:#E3B5B0 }
+#v-vendors table.vt td.c-act{ width:62px }
+
+/* 캘린더 */
+#v-vendors .vcalbar{ gap:10px; margin:2px 0 12px }
+#v-vendors .vcalt{ font-size:19px; font-weight:700; letter-spacing:-.02em; min-width:110px }
+#v-vendors .vcal{ border:1px solid var(--vline); border-radius:12px; background:#fff }
+#v-vendors .vcalh{ background:#fff; font-size:12.5px; font-weight:600; color:var(--vmut); border-bottom:2px solid #B9B7AE }
+#v-vendors .vcalh div{ padding:10px 10px; border-right:0 }
+#v-vendors .vday{ min-height:116px; padding:6px 7px; gap:3px; border-top:1px solid #ECEAE4; border-right:1px solid #ECEAE4 }
+#v-vendors .vday:hover{ background:var(--vrow) } #v-vendors .vday.out{ background:#FAF9F6 }
+#v-vendors .vday.today{ box-shadow:inset 0 0 0 2px var(--vblue) }
+#v-vendors .vdn{ font-size:13px; font-weight:700 } #v-vendors .vhol{ font-size:10.5px }
+#v-vendors .vev{ font-size:12px; padding:3px 8px; border-radius:6px; line-height:1.35 }
+#v-vendors .vev.t-meet{ background:#E4ECFB; color:#24498F } #v-vendors .vev.t-sample{ background:#E2F3EA; color:#1F704A }
+#v-vendors .vev.t-next{ box-shadow:inset 0 0 0 1px var(--vnavy); color:var(--vnavy) }
+#v-vendors .vev.t-key{ background:#E3F5EC; color:#17734D; border:1px dashed #8CCFAE }
+#v-vendors .vmore{ font-size:11.5px; color:var(--vblue); font-weight:600 }
+
+/* 팝업 (일정 · 이름/홈페이지 · 외주사 추가) */
+body:has(#v-vendors:not([hidden])) #pop{ border-radius:14px; border:1px solid var(--vline); box-shadow:0 12px 40px rgba(20,24,30,.16); font-size:14px }
+body:has(#v-vendors:not([hidden])) #pop h4{ font-size:17px; font-weight:700; letter-spacing:-.02em }
+body:has(#v-vendors:not([hidden])) #pop .in{ border:1px solid var(--vline2); border-radius:7px; min-height:38px; height:38px; padding:0 12px; font-size:14px }
+body:has(#v-vendors:not([hidden])) #pop textarea.in{ height:auto; padding:8px 12px }
+body:has(#v-vendors:not([hidden])) #pop .vgrid .vf{ font-size:12.5px; font-weight:600; color:var(--ink2) }
 </style>
 </head>
 <body>
