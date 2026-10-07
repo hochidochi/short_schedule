@@ -461,21 +461,28 @@ body:has(#v-vendors:not([hidden])){ --vp:#FBFAF7; --vcard:#FFFFFF; --vline:#E4E2
 #v-vendors .seg button{ border:1px solid transparent; border-radius:8px; padding:0 12px; height:26px; font-size:12.5px; font-weight:500; color:var(--ink2) }
 #v-vendors .seg button[aria-pressed="true"]{ background:#fff; color:var(--ink); font-weight:700; border-color:var(--vline2); box-shadow:0 1px 2px rgba(20,24,30,.06) }
 
-/* 진행 단계 요약 = 상단 통계 카드 느낌 (라벨 위 · 큰 숫자 아래) */
-#v-vendors .vpipe{ gap:16px; margin:14px 0 12px; align-items:stretch }
-#v-vendors .vflow{ gap:8px; min-width:640px }
-#v-vendors .vstep{ clip-path:none; margin-left:0; border-radius:12px; padding:10px 12px 8px; background:var(--vcard); border:1px solid var(--vline); color:var(--ink2); align-items:flex-start; box-shadow:0 1px 0 rgba(20,24,30,.02); transition:border-color .12s,box-shadow .12s }
-#v-vendors .vstep:first-child, #v-vendors .vstep:last-child{ clip-path:none; border-radius:12px; padding:10px 12px 8px }
+/* 진행 단계 요약 = 순서가 보이는 프로세스 (번호 노드가 카드 위에 걸치고, 카드 사이 화살표로 연결) */
+#v-vendors .vpipe{ gap:16px; margin:20px 0 12px; align-items:stretch }
+#v-vendors .vflow{ gap:22px; min-width:640px; position:relative }
+#v-vendors .vflow::before{ content:""; position:absolute; left:14px; right:14px; top:0; height:2px; background:linear-gradient(90deg,#C9D6F3,#C9D6F3); border-radius:2px }
+#v-vendors .vstep{ clip-path:none; margin-left:0; margin-top:2px; border-radius:12px; padding:18px 12px 9px; background:var(--vcard); border:1px solid var(--vline); color:var(--ink2); align-items:flex-start; box-shadow:0 1px 0 rgba(20,24,30,.02); transition:border-color .12s,box-shadow .12s; overflow:visible }
+#v-vendors .vstep:first-child, #v-vendors .vstep:last-child{ clip-path:none; border-radius:12px; padding:18px 12px 9px }
 #v-vendors .vstep:not(.z){ background:var(--vcard) }
 #v-vendors .vstep:hover{ filter:none; border-color:var(--vline2) }
-#v-vendors .vstep .vtx{ flex-direction:column-reverse; gap:2px; font-size:11.5px; font-weight:500; color:var(--ink2); line-height:1.3 }
+#v-vendors .vstep .vtx{ flex-direction:column-reverse; gap:2px; font-size:11.5px; font-weight:500; color:var(--ink2); line-height:1.3; white-space:normal; word-break:keep-all; overflow:visible }
 #v-vendors .vstep .vtx b{ font-size:22px; font-weight:700; letter-spacing:-.03em; line-height:1.15; color:var(--ink) }
-#v-vendors .vstep .vno{ display:none }
-#v-vendors .vstep.z{ opacity:1 } #v-vendors .vstep.z .vtx b{ color:#B5B8BC }
+/* 번호 노드 */
+#v-vendors .vstep .vno{ position:absolute; top:-12px; left:12px; width:22px; height:22px; font-size:11.5px; font-weight:700; background:#fff; color:var(--vmut); border:2px solid var(--vline2); z-index:2 }
+#v-vendors .vstep:not(.z) .vno{ background:#E9EFFC; color:var(--vblue); border-color:#9FB6E6 }
+#v-vendors .vstep.on .vno{ background:var(--vblue); color:#fff; border-color:var(--vblue) }
+/* 다음 단계로 이어지는 화살표 */
+#v-vendors .vstep:not(:last-child)::after{ content:"›"; position:absolute; right:-21px; top:50%; transform:translateY(-50%); width:20px; height:20px; border-radius:50%; background:#fff; border:1px solid var(--vline); color:#7F8FB5; font-size:15px; font-weight:700; line-height:17px; text-align:center; z-index:3; pointer-events:none }
+#v-vendors .vstep.z .vtx b{ color:#B5B8BC }
+#v-vendors .vstep.z{ opacity:1 }
 #v-vendors .vstep.on{ background:#fff; border-color:var(--vblue); box-shadow:inset 0 0 0 1px var(--vblue) }
 #v-vendors .vstep.on .vtx{ color:var(--vblue) } #v-vendors .vstep.on .vtx b{ color:var(--vblue) }
-#v-vendors .vside{ border-left:1px solid var(--vline); padding-left:16px; gap:10px }
-#v-vendors .vsl{ font-size:12px; color:var(--vmut); letter-spacing:.04em }
+#v-vendors .vside{ border-left:1px solid var(--vline); padding-left:16px; gap:10px; margin-top:2px }
+#v-vendors .vsl{ writing-mode:horizontal-tb; width:30px; font-size:11px; line-height:1.3; color:var(--vmut); letter-spacing:0; white-space:normal; word-break:keep-all; text-align:center; align-self:center }
 #v-vendors .vsbtn{ border:1px solid var(--vline); border-style:solid; background:var(--vcard); border-radius:12px; padding:10px 12px 8px; font-size:11.5px; font-weight:500; color:var(--ink2); flex-direction:column-reverse; align-items:flex-start; gap:2px; min-width:72px }
 #v-vendors .vsbtn b{ font-size:22px; font-weight:700; letter-spacing:-.03em; line-height:1.15; color:var(--ink) }
 #v-vendors .vsbtn.z{ opacity:1 } #v-vendors .vsbtn.z b{ color:#B5B8BC }
@@ -1465,6 +1472,25 @@ const JA_WORD={"작품":"作品","회차":"話","제작":"制作","런칭":"ロ�
 "영업일":"営業日","공휴일":"祝日","인간":"人間","시트":"シート","진행":"進行","준비":"準備","필요":"必要","가능":"可能","공유":"共有","관리":"管理","가정":"想定","계산":"計算","기한":"期限","순차":"順次","해당":"該当","영향":"影響","주말":"週末","오픈":"公開","시즌":"シーズン","추가":"追加","삭제":"削除","저장":"保存","확인":"確認","실패":"失敗","인턴":"インターン","곧 종료":"まもなく終了","투입":"投入","신규":"新規","인력":"人員","충원":"補充",
 "부터":"から","까지":"まで","이후":"以降","이전":"以前"};
 const JA_EXACT={"과":"と","와":"と","은":"は","는":"は","일":"日","화":"火","인간":"人間","작품별":"作品別","+n주":"+n週","-n주":"-n週","5회차씩":"5話ずつ","월 1작품":"月1作品","월 2작품":"月2作品","월 3작품":"月3作品"};
+/* ── 외주사 관리 일본어 보강 (기존 항목은 덮어쓰지 않고 없는 것만 추가) ── */
+(()=>{
+  const add=(obj,m)=>Object.keys(m).forEach(k=>{ if(!(k in obj)) obj[k]=m[k]; });
+  add(JA_EXACT,{"월":"月","수":"水","목":"木","금":"金","토":"土","초":"上旬","중순":"中旬","말":"下旬","상순":"上旬","하순":"下旬"});
+  add(JA_PHRASE,{
+    "가이드 라인":"ガイドライン","가이드라인":"ガイドライン","구체적인":"具体的な","제작 가이드":"制作ガイド",
+    "해외사업본부장":"海外事業本部長","해외사업":"海外事業","해외 사업":"海外事業","프로듀서":"プロデューサー",
+    "진행 중":"進行中","검토 중":"検討中","조율 중":"調整中","협의 중":"協議中","제작 중":"制作中","대기 중":"待機中","확인 중":"確認中","회신 대기":"返信待ち",
+    "회신 받기":"返信受領","견적 회신":"見積もり回答","추가 전달":"追加送付","공유 민감":"共有はセンシティブ",
+    "협의 결렬":"協議決裂","제작사":"制作会社","로맨스":"ロマンス","대략":"概算","예:":"例:","여러 개는 줄바꿈":"複数の場合は改行","여러 개면 줄바꿈":"複数の場合は改行","첫 줄이 이름 링크":"1行目が名前のリンク","분당":"1分あたり","1차":"1次","2차":"2次","3차":"3次","미팅 일정":"ミーティング日程","샘플 계약":"サンプル契約","샘플 제작":"サンプル制作","샘플 납품":"サンプル納品"
+  });
+  add(JA_WORD,{
+    "시연":"デモ","회신":"返信","협의":"協議","결렬":"決裂","견적":"見積もり","조율":"調整","전달":"送付","원함":"希望",
+    "민감":"センシティブ","컨택":"コンタクト","통해":"経由","회당":"1話あたり","대표":"代表","문의":"問い合わせ","요청":"依頼",
+    "확인":"確認","검토":"検討","발송":"送信","수령":"受領","답변":"回答","연락":"連絡","계약서":"契約書","수정":"修正","초안":"草案",
+    "진행":"進行","불가":"不可","해외":"海外","사업":"事業","본부장":"本部長","팀장":"チーム長","이메일":"メール","전화":"電話","회사":"会社","정보":"情報","내용":"内容"
+  });
+})();
+
 const JA_KEYS=Object.keys(JA_PHRASE).sort((a,b)=>b.length-a.length), JA_WKEYS=Object.keys(JA_WORD).sort((a,b)=>b.length-a.length);
 const WD_JA={"일":"日","월":"月","화":"火","수":"水","목":"木","금":"金","토":"土"};
 let LANG=(()=>{ try{ const v=localStorage.getItem("anime_lang"); if(v) return v; }catch(e){} return (navigator.language||"").startsWith("ja")?"ja":"ko"; })();
@@ -1479,9 +1505,12 @@ function trText(t){
   for(const [a,b] of names) if(r.includes(a)) r=r.split(a).join(b);
   for(const k of JA_KEYS) if(r.includes(k)) r=r.split(k).join(JA_PHRASE[k]);
   r=r.replace(/(\d+)\s?~\s?(\d+)화/g,"$1〜$2話").replace(/(\d+)화/g,"$1話").replace(/(\d+)영업일/g,"$1営業日").replace(/(\d+)일차/g,"$1日目").replace(/(\d+)\s?주/g,"$1週")
-    .replace(/(\d+)년/g,"$1年").replace(/(\d+)월/g,"$1月").replace(/(\d+)일/g,"$1日").replace(/(\d+)작품/g,"$1作品").replace(/(\d+)개/g,"$1件").replace(/(\d+)명/g,"$1名").replace(/(\d+)분/g,"$1分").replace(/(\d+)회/g,"$1回")
+    .replace(/(\d+)월\s?(초|상순)/g,"$1月上旬").replace(/(\d+)월\s?중순/g,"$1月中旬").replace(/(\d+)월\s?(말|하순)/g,"$1月下旬").replace(/(\d+)년/g,"$1年").replace(/(\d+)월/g,"$1月").replace(/(\d+)일/g,"$1日").replace(/(\d+)작품/g,"$1作品").replace(/(\d+)개/g,"$1件").replace(/(\d+)명/g,"$1名").replace(/(\d+)분/g,"$1分").replace(/(\d+)회/g,"$1回")
     .replace(/\(([일월화수목금토])\)/g,(m,d)=>`(${WD_JA[d]})`).replace(/([일월화수목금토])요일/g,(m,d)=>WD_JA[d]+"曜日");
   if(/[가-힣]/.test(r)) for(const k of JA_WKEYS) if(r.includes(k)) r=r.split(k).join(JA_WORD[k]);
+  r=r.replace(/(\d+)건/g,"$1件").replace(/(\d[\d,.]*)만\s?원/g,"$1万ウォン").replace(/(\d[\d,.]*)원/g,"$1ウォン").replace(/○원/g,"○ウォン").replace(/(\d[\d,.]*)만(?![가-힣])/g,"$1万")
+    .replace(/(?<=[가-힣\u3040-\u30ff\u4e00-\u9fff]) 중(?![가-힣])/g,"中");
+  if(!/[가-힣]/.test(r)) r=r.replace(/(?<=[\u3040-\u30ff\u4e00-\u9fff]) (?=[\u3040-\u30ff\u4e00-\u9fff])/g,"");
   TR_CACHE.set(t,r); return r;
 }
 const TR_SKIP="script,style,textarea,.sql,[data-notr]";
@@ -1492,7 +1521,7 @@ function trNode(root){
   const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:(n)=>n.parentElement&&n.parentElement.closest(TR_SKIP)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   const list=[]; while(tw.nextNode()) list.push(tw.currentNode);
   list.forEach(n=>{ const v=trText(n.nodeValue); if(v!==n.nodeValue) n.nodeValue=v; });
-  [root,...root.querySelectorAll("[title],[placeholder],[aria-label]")].forEach(el=>{ if(!el.getAttribute||el.closest(TR_SKIP)) return;
+  [root,...root.querySelectorAll("[title],[placeholder],[aria-label]")].forEach(el=>{ if(!el.getAttribute||el.closest("script,style,.sql,[data-notr]")) return;
     ["title","placeholder","aria-label"].forEach(a=>{ const v=el.getAttribute(a); if(v&&/[가-힣]/.test(v)){ const t=trText(v); if(t!==v) el.setAttribute(a,t); } }); });
 }
 const TR_OBS=new MutationObserver((ms)=>{ if(LANG!=="ja") return; ms.forEach(m=>{ if(m.type==="characterData") trNode(m.target); else m.addedNodes.forEach(n=>trNode(n)); if(m.type==="attributes") trNode(m.target); }); });
