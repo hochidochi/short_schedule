@@ -280,6 +280,9 @@ table.vt tr:hover .ve.empty .ph{opacity:1}
 .ve.vkey:not(.empty){display:inline-block;background:var(--good-bg);color:var(--good);font-weight:700;font-size:11.5px;padding:1px 7px;margin:0}
 .ve.editing{background:#fff;box-shadow:inset 0 0 0 2px var(--launch)}
 .vin{width:100%;min-width:120px;border:0;outline:0;font:inherit;resize:vertical;background:transparent;padding:0}
+.vin.memo{min-width:220px;line-height:1.55;background:#FFFDF3}
+.vmh{font-size:10.5px;color:var(--muted);margin-top:3px}
+.ve.vmemo{line-height:1.55} .ve.vmemo a.vml{color:var(--launch);word-break:break-all}
 .vmeta{display:flex;gap:8px;align-items:center;margin:3px 0 2px;flex-wrap:wrap}
 .vmini{border:1px solid var(--line2);border-radius:4px;font-size:11px;padding:0 2px;background:var(--page);color:var(--ink2)}
 .vdate{margin-top:4px;border:1px solid var(--line);border-radius:4px;font-size:11.5px;padding:1px 4px;color:var(--ink2);background:transparent}
@@ -1358,7 +1361,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -2844,7 +2847,8 @@ function renderVendors(){
   </div>
   `;
   // 칸 = 클릭해서 바로 고치는 글자 (빈 칸은 회색 '+')
-  const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}" data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?esc(v[k]):`<span class="ph">${ph||"+"}</span>`}</div>`;
+  const linkify=(t)=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,(u)=>`<a href="${u}" target="_blank" rel="noopener" class="vml">${u.length>42?u.slice(0,40)+"…":u}</a>`);
+  const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}" data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
   if(VVIEW==="cal"){ h+=renderVCal(L); }
   else { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>일정 및 액션</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
   L.forEach(v=>{ const od=v.nextDue&&v.nextDue<key(TODAY)&&!["signed","prod","no"].includes(v.stage);
@@ -2885,7 +2889,8 @@ function renderVendors(){
   document.querySelectorAll("#v-vendors .vpen").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); vLinkEditor(VENDORS.find(x=>x.id===b.dataset.vid),b); });
   document.querySelectorAll("#v-vendors .vcty,#v-vendors .vdate").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
   document.querySelectorAll("#v-vendors .vdel").forEach(b=>b.onclick=()=>{ const v=VENDORS.find(x=>x.id===b.dataset.vid); if(v&&confirm(`'${v.name}'을(를) 목록에서 삭제할까요? 모든 사람 화면에서 사라집니다.`)) vEdit({op:"del",id:v.id}); });
-  document.querySelectorAll("#v-vendors .ve").forEach(el=>{ const go=()=>vInline(el); el.onclick=go; el.onkeydown=(e)=>{ if(e.key==="Enter"){ e.preventDefault(); go(); } }; });
+  document.querySelectorAll("#v-vendors .ve a.vml").forEach(a=>a.addEventListener("click",(e)=>e.stopPropagation()));
+  document.querySelectorAll("#v-vendors .ve").forEach(el=>{ const go=(e)=>{ if(e&&e.target&&e.target.closest("a")) return; vInline(el); }; el.onclick=go; el.onkeydown=(e)=>{ if(e.target.tagName==="TEXTAREA") return; if(e.key==="Enter"){ e.preventDefault(); go(); } }; });
   $("vAdd").onclick=(e)=>{e.stopPropagation();vEditor(null,e.currentTarget);};
 }
 /* 이름 · 홈페이지 주소 수정 (작은 창) */
@@ -2908,15 +2913,21 @@ function vLinkEditor(v,anchor){
 function vInline(el){
   if(el.querySelector("textarea")) return;
   const v=VENDORS.find(x=>x.id===el.dataset.vid), k=el.dataset.vk; if(!v) return;
-  const ta=document.createElement("textarea"); ta.className="vin"; ta.value=v[k]||""; ta.rows=Math.max(1,Math.min(6,(ta.value.match(/\n/g)||[]).length+1));
-  el.innerHTML=""; el.appendChild(ta); el.classList.add("editing"); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
+  const memo=k==="note";   // 비고는 메모장처럼: Enter = 줄바꿈, 다른 곳 누르면 저장
+  const fit=()=>{ ta.rows=Math.max(memo?3:1,Math.min(memo?18:6,(ta.value.match(/\n/g)||[]).length+1)); };
+  const ta=document.createElement("textarea"); ta.className="vin"+(memo?" memo":""); ta.value=v[k]||""; fit();
+  el.innerHTML=""; el.appendChild(ta); if(memo){ const h=document.createElement("div"); h.className="vmh"; h.textContent="Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소"; el.appendChild(h); }
+  el.classList.add("editing"); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length);
   let done=false;
   const fin=(save)=>{ if(done) return; done=true; el.classList.remove("editing");
     const nv=ta.value.trim();
     if(save&&nv!==(v[k]||"")){ if(k==="name"&&!nv){ toast("외주 제작사 이름은 비울 수 없어요"); render(); return; } vEdit({op:"set",id:v.id,v:{[k]:nv}}); }
     else render(); };
-  ta.onkeydown=(e)=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); fin(true); } else if(e.key==="Escape"){ e.preventDefault(); fin(false); } };
-  ta.oninput=()=>{ ta.rows=Math.max(1,Math.min(6,(ta.value.match(/\n/g)||[]).length+1)); };
+  ta.onkeydown=(e)=>{
+    if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); fin(true); return; }
+    if(e.key==="Enter"&&!e.shiftKey&&!memo&&!e.isComposing){ e.preventDefault(); fin(true); }
+    else if(e.key==="Escape"){ e.preventDefault(); fin(false); } };
+  ta.oninput=fit;
   ta.onblur=()=>fin(true);
 }
 function vEditor(v,anchor){
