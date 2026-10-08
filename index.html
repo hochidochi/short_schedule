@@ -303,6 +303,8 @@ table.vt tr:hover .ve.empty .ph{opacity:1}
 .vev.t-key{background:var(--good-bg);color:var(--good);border:1px dashed #9ED3B4}
 .vev.done{opacity:.45;text-decoration:line-through}
 .vmore{border:0;background:none;font-size:10.5px;color:var(--launch);cursor:pointer;text-align:left;padding:0 4px}
+.mt.svl{font-size:10.5px;color:var(--ink2)} .mt.svl.warn{color:var(--bad);font-weight:600}
+#v-vendors{zoom:.8}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -434,143 +436,6 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   .fgrid .gl{padding-top:0}
   .cal .rl{min-width:150px;max-width:150px}
 }
-
-/* ======================================================================
-   외주사 관리 탭 — 「숏애니 작품 제작 리스트」 화면 톤에 맞춘 통일 스타일
-   (#v-vendors 와 그 팝업에만 적용 · 다른 탭은 영향 없음)
-   포인트: 따뜻한 오프화이트 · 둥근 카드/알약 칩 · 네이비·블루 포인트 · 한 단계 큰 글자
-   ====================================================================== */
-body:has(#v-vendors:not([hidden])){ --vp:#FBFAF7; --vcard:#FFFFFF; --vline:#E4E2DB; --vline2:#CFCDC5; --vblue:#2459C9; --vnavy:#16295B; --vrow:#F4F7FC; --vmut:#8A8E94; background:var(--vp); }
-#v-vendors{ font-size:13px; color:var(--ink); }
-
-/* 제목 */
-#v-vendors .lead{ font-size:20px; font-weight:700; letter-spacing:-.03em; line-height:1.3; margin:0 }
-#v-vendors .lead .hint{ display:block; margin-top:4px; font-size:12px!important; font-weight:400!important; color:var(--vmut) }
-#v-vendors .hint{ font-size:12px; color:var(--vmut) }
-
-/* 버튼 */
-#v-vendors .btn, body:has(#v-vendors:not([hidden])) #pop .btn{ border:1px solid #2A2D33; background:#fff; border-radius:8px; padding:0 12px; height:30px; font-size:12.5px; font-weight:600; color:var(--ink); transition:background .12s,border-color .12s }
-#v-vendors .btn:hover, body:has(#v-vendors:not([hidden])) #pop .btn:hover{ background:#F6F5F1; border-color:#000 }
-#v-vendors .btn.pri, body:has(#v-vendors:not([hidden])) #pop .btn.pri{ background:var(--vblue); border-color:var(--vblue); color:#fff }
-#v-vendors .btn.pri:hover, body:has(#v-vendors:not([hidden])) #pop .btn.pri:hover{ background:#1B48A8; border-color:#1B48A8 }
-#v-vendors .btn.danger, body:has(#v-vendors:not([hidden])) #pop .btn.danger{ color:var(--bad); border-color:#E3B5B0 }
-#v-vendors .vcalbar .btn{ height:26px; padding:0 10px }
-
-/* 표 / 캘린더 토글 (알약 세그먼트: 회색 바탕 + 흰 선택) */
-#v-vendors .seg{ background:#F0EEE8; border:0; border-radius:10px; padding:3px; gap:2px; flex-wrap:nowrap }
-#v-vendors .seg button{ border:1px solid transparent; border-radius:8px; padding:0 12px; height:26px; font-size:12.5px; font-weight:500; color:var(--ink2) }
-#v-vendors .seg button[aria-pressed="true"]{ background:#fff; color:var(--ink); font-weight:700; border-color:var(--vline2); box-shadow:0 1px 2px rgba(20,24,30,.06) }
-
-/* 진행 단계 요약 = 순서가 보이는 프로세스 (번호 노드가 카드 위에 걸치고, 카드 사이 화살표로 연결) */
-#v-vendors .vpipe{ gap:16px; margin:20px 0 12px; align-items:stretch }
-#v-vendors .vflow{ gap:22px; min-width:640px; position:relative }
-#v-vendors .vflow::before{ content:""; position:absolute; left:14px; right:14px; top:0; height:2px; background:linear-gradient(90deg,#C9D6F3,#C9D6F3); border-radius:2px }
-#v-vendors .vstep{ clip-path:none; margin-left:0; margin-top:2px; border-radius:12px; padding:18px 12px 9px; background:var(--vcard); border:1px solid var(--vline); color:var(--ink2); align-items:flex-start; box-shadow:0 1px 0 rgba(20,24,30,.02); transition:border-color .12s,box-shadow .12s; overflow:visible }
-#v-vendors .vstep:first-child, #v-vendors .vstep:last-child{ clip-path:none; border-radius:12px; padding:18px 12px 9px }
-#v-vendors .vstep:not(.z){ background:var(--vcard) }
-#v-vendors .vstep:hover{ filter:none; border-color:var(--vline2) }
-#v-vendors .vstep .vtx{ flex-direction:column-reverse; gap:2px; font-size:11.5px; font-weight:500; color:var(--ink2); line-height:1.3; white-space:normal; word-break:keep-all; overflow:visible }
-#v-vendors .vstep .vtx b{ font-size:22px; font-weight:700; letter-spacing:-.03em; line-height:1.15; color:var(--ink) }
-/* 번호 노드 */
-#v-vendors .vstep .vno{ position:absolute; top:-12px; left:12px; width:22px; height:22px; font-size:11.5px; font-weight:700; background:#fff; color:var(--vmut); border:2px solid var(--vline2); z-index:2 }
-#v-vendors .vstep:not(.z) .vno{ background:#E9EFFC; color:var(--vblue); border-color:#9FB6E6 }
-#v-vendors .vstep.on .vno{ background:var(--vblue); color:#fff; border-color:var(--vblue) }
-/* 다음 단계로 이어지는 화살표 */
-#v-vendors .vstep:not(:last-child)::after{ content:"›"; position:absolute; right:-21px; top:50%; transform:translateY(-50%); width:20px; height:20px; border-radius:50%; background:#fff; border:1px solid var(--vline); color:#7F8FB5; font-size:15px; font-weight:700; line-height:17px; text-align:center; z-index:3; pointer-events:none }
-#v-vendors .vstep.z .vtx b{ color:#B5B8BC }
-#v-vendors .vstep.z{ opacity:1 }
-#v-vendors .vstep.on{ background:#fff; border-color:var(--vblue); box-shadow:inset 0 0 0 1px var(--vblue) }
-#v-vendors .vstep.on .vtx{ color:var(--vblue) } #v-vendors .vstep.on .vtx b{ color:var(--vblue) }
-#v-vendors .vside{ border-left:1px solid var(--vline); padding-left:16px; gap:10px; margin-top:2px }
-#v-vendors .vsl{ writing-mode:horizontal-tb; width:30px; font-size:11px; line-height:1.3; color:var(--vmut); letter-spacing:0; white-space:normal; word-break:keep-all; text-align:center; align-self:center }
-#v-vendors .vsbtn{ border:1px solid var(--vline); border-style:solid; background:var(--vcard); border-radius:12px; padding:10px 12px 8px; font-size:11.5px; font-weight:500; color:var(--ink2); flex-direction:column-reverse; align-items:flex-start; gap:2px; min-width:72px }
-#v-vendors .vsbtn b{ font-size:22px; font-weight:700; letter-spacing:-.03em; line-height:1.15; color:var(--ink) }
-#v-vendors .vsbtn.z{ opacity:1 } #v-vendors .vsbtn.z b{ color:#B5B8BC }
-#v-vendors .vsbtn.on{ background:#fff; color:var(--vblue); border-color:var(--vblue); box-shadow:inset 0 0 0 1px var(--vblue) } #v-vendors .vsbtn.on b{ color:var(--vblue) }
-#v-vendors .vsbtn.no:not(.z) b{ color:var(--bad) }
-
-/* 필터 줄: 카드 테두리 없이 가볍게, 칩은 알약 */
-#v-vendors .vfil{ background:none; border:0; border-radius:0; padding:0; gap:10px 10px; margin:0 0 10px }
-#v-vendors .vfil .sog{ font-size:12px; font-weight:600; color:var(--ink2); margin-left:10px }
-#v-vendors .vfil .sog:first-child{ margin-left:0 }
-#v-vendors .in{ border:1px solid var(--vline2); border-radius:7px; height:30px; min-height:30px; padding:0 10px; font-size:12.5px; background:#fff; color:var(--ink) }
-#v-vendors .in:focus{ outline:none; border-color:var(--vblue); box-shadow:0 0 0 3px rgba(36,89,201,.14) }
-#v-vendors .vfil .in{ min-height:30px; padding:0 10px; font-size:12.5px }
-#v-vendors .vchip{ border:1px solid var(--vline2); background:#fff; border-radius:999px; padding:0 11px; height:26px; font-size:12px; font-weight:500; color:var(--ink2); transition:background .12s,border-color .12s }
-#v-vendors .vchip:hover{ border-color:#9A9DA3 }
-#v-vendors .vchip span{ font-size:11px; color:var(--vmut); margin-left:2px }
-#v-vendors .vchip.on{ background:var(--vnavy); border-color:var(--vnavy); color:#fff; font-weight:600 }
-#v-vendors .vchip.on span{ color:#B9C4E3 }
-#v-vendors #vClr{ height:26px!important; border-radius:999px; font-size:12px!important; padding:0 14px!important }
-
-/* 표 */
-#v-vendors .vtwrap{ background:#fff; border:1px solid var(--vline); border-radius:12px; box-shadow:none }
-#v-vendors table.vt{ font-size:12.5px; min-width:1300px }
-#v-vendors table.vt th{ background:#fff; color:var(--vmut); font-size:11.5px; font-weight:600; padding:9px 12px; border-bottom:2px solid #B9B7AE; border-right:0 }
-#v-vendors table.vt td{ padding:10px 12px; border-bottom:1px solid #ECEAE4; border-right:0; background:#fff; line-height:1.5 }
-#v-vendors table.vt tbody tr:nth-child(even) td{ background:#fff }
-#v-vendors table.vt tbody tr:hover td{ background:var(--vrow) }
-#v-vendors table.vt tbody tr:last-child td{ border-bottom:0 }
-#v-vendors table.vt th.c-name, #v-vendors table.vt td.c-name{ min-width:210px; max-width:250px; border-right:1px solid var(--vline) }
-#v-vendors table.vt td.c-name{ box-shadow:inset 3px 0 0 var(--vblue) }
-#v-vendors table.vt tr.pr-high td.c-name{ box-shadow:inset 3px 0 0 var(--bad) }
-#v-vendors table.vt tr.pr-low td.c-name{ box-shadow:inset 3px 0 0 #D5D7D1 }
-#v-vendors table.vt td.c-w{ min-width:150px; max-width:230px } #v-vendors table.vt td.c-w2{ min-width:220px; max-width:280px } #v-vendors table.vt td.c-stage{ min-width:150px }
-#v-vendors a.vname, #v-vendors span.vname, #v-vendors .ve.vname{ font-size:14px; font-weight:700; letter-spacing:-.02em }
-#v-vendors .vnrow{ gap:8px }
-
-/* 칸 텍스트 */
-#v-vendors .ve{ line-height:1.5; min-height:18px; border-radius:6px }
-#v-vendors .ve.vsub{ font-size:11.5px; color:var(--vmut); margin-top:3px }
-#v-vendors .ve .ph{ font-size:11.5px; color:#BFC2BA }
-#v-vendors .ve.vurl{ font-size:10.5px }
-#v-vendors .ve.vkey:not(.empty){ background:#1F9D6B; color:#fff; font-weight:700; font-size:11.5px; padding:1px 8px; border-radius:999px }
-#v-vendors .ve.editing{ box-shadow:inset 0 0 0 2px var(--vblue) }
-
-/* 국가 · 우선순위 · 단계 = 알약형 */
-#v-vendors .vcty{ font-size:10.5px; font-weight:700; padding:1px 8px; border-radius:999px }
-#v-vendors .vcty.c-한국{ background:#E4ECFB; color:#24498F } #v-vendors .vcty.c-일본{ background:#FBE6E6; color:#A23838 }
-#v-vendors .vcty.c-중국{ background:#FCF0D6; color:#8C5A06 } #v-vendors .vcty.c-미국{ background:#E2F3EA; color:#1F704A }
-#v-vendors .vsel{ min-height:26px; height:26px; border-radius:999px; padding:0 8px; font-size:12px; font-weight:600; background:#fff; border:1px solid var(--vline2); color:var(--ink2); cursor:pointer }
-#v-vendors .vsel.p-high{ background:#FDEDEB; color:var(--bad); border-color:#E7A9A3 } #v-vendors .vsel.p-low{ color:var(--vmut) }
-#v-vendors .vsel.s-signed{ background:#E3F5EC; color:#17734D; border-color:#46B183 }
-#v-vendors .vsel.s-sampleD, #v-vendors .vsel.s-deal{ background:#E9EFFC; color:var(--vblue); border-color:#9FB6E6 }
-#v-vendors .vsel.s-no{ background:#F3F2EE; color:var(--vmut) }
-#v-vendors .vprog{ gap:3px; margin-top:6px } #v-vendors .vprog i{ height:4px; border-radius:3px; background:#E7E5DE } #v-vendors .vprog i.d{ background:#A9BDEA } #v-vendors .vprog i.c{ background:var(--vblue) }
-#v-vendors .vprog.off{ font-size:11px }
-
-/* 다음 액션 · 날짜 · 삭제 */
-#v-vendors .vact{ margin-top:7px; padding-top:7px; border-top:1px dashed var(--vline2) }
-#v-vendors .vacl{ font-size:10px; background:var(--vnavy); border-radius:4px; padding:1px 6px }
-#v-vendors .vdate{ margin-top:6px; border:1px solid var(--vline2); border-radius:6px; font-size:11.5px; padding:2px 6px }
-#v-vendors .vod{ font-size:11px }
-#v-vendors .vpen{ font-size:11px; border-radius:6px; padding:1px 7px }
-#v-vendors .vdel{ width:26px; height:26px; border:1px solid var(--vline); border-radius:7px; font-size:12px; color:#B0B3AC; background:#fff }
-#v-vendors .vdel:hover{ color:var(--bad); border-color:#E3B5B0 }
-#v-vendors table.vt td.c-act{ width:54px }
-
-/* 캘린더 */
-#v-vendors .vcalbar{ gap:10px; margin:2px 0 12px }
-#v-vendors .vcalt{ font-size:16px; font-weight:700; letter-spacing:-.02em; min-width:110px }
-#v-vendors .vcal{ border:1px solid var(--vline); border-radius:12px; background:#fff }
-#v-vendors .vcalh{ background:#fff; font-size:11.5px; font-weight:600; color:var(--vmut); border-bottom:2px solid #B9B7AE }
-#v-vendors .vcalh div{ padding:7px 10px; border-right:0 }
-#v-vendors .vday{ min-height:100px; padding:6px 7px; gap:3px; border-top:1px solid #ECEAE4; border-right:1px solid #ECEAE4 }
-#v-vendors .vday:hover{ background:var(--vrow) } #v-vendors .vday.out{ background:#FAF9F6 }
-#v-vendors .vday.today{ box-shadow:inset 0 0 0 2px var(--vblue) }
-#v-vendors .vdn{ font-size:12px; font-weight:700 } #v-vendors .vhol{ font-size:9.5px }
-#v-vendors .vev{ font-size:11px; padding:2px 6px; border-radius:6px; line-height:1.35 }
-#v-vendors .vev.t-meet{ background:#E4ECFB; color:#24498F } #v-vendors .vev.t-sample{ background:#E2F3EA; color:#1F704A }
-#v-vendors .vev.t-next{ box-shadow:inset 0 0 0 1px var(--vnavy); color:var(--vnavy) }
-#v-vendors .vev.t-key{ background:#E3F5EC; color:#17734D; border:1px dashed #8CCFAE }
-#v-vendors .vmore{ font-size:10.5px; color:var(--vblue); font-weight:600 }
-
-/* 팝업 (일정 · 이름/홈페이지 · 외주사 추가) */
-body:has(#v-vendors:not([hidden])) #pop{ border-radius:14px; border:1px solid var(--vline); box-shadow:0 12px 40px rgba(20,24,30,.16); font-size:13px }
-body:has(#v-vendors:not([hidden])) #pop h4{ font-size:15px; font-weight:700; letter-spacing:-.02em }
-body:has(#v-vendors:not([hidden])) #pop .in{ border:1px solid var(--vline2); border-radius:7px; min-height:30px; height:30px; padding:0 10px; font-size:12.5px }
-body:has(#v-vendors:not([hidden])) #pop textarea.in{ height:auto; padding:8px 12px }
-body:has(#v-vendors:not([hidden])) #pop .vgrid .vf{ font-size:11.5px; font-weight:600; color:var(--ink2) }
 </style>
 </head>
 <body>
@@ -1083,7 +948,8 @@ const concOf=(s,w,k)=>{ if(s&&typeof s.conc==="object"&&s.conc){ const c=s.conc[
 const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||durOf(s,w)>0||s.tbdDur);
 function batchesOf(w,N){
   const out=[]; let a=1, size=clamp(+w.b1||BATCH,1,N);
-  while(a<=N){ const b=Math.min(N,a+size-1); out.push([a,b]); a=b+1; size=BATCH; }
+  const cut=+w.batchCut||0;   // 시즌 경계: 이 회차에서 묶음을 끊고 다음 회차부터 새 묶음
+  while(a<=N){ let b=Math.min(N,a+size-1); if(cut&&a<=cut&&b>cut) b=cut; out.push([a,b]); a=b+1; size=BATCH; }
   return out;
 }
 const fixD=(f)=>D(f);   // 지정한 완료일은 주말·휴일이어도 그대로 — 다음 단계는 그 다음 영업일부터
@@ -1458,7 +1324,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -1472,25 +1338,6 @@ const JA_WORD={"작품":"作品","회차":"話","제작":"制作","런칭":"ロ�
 "영업일":"営業日","공휴일":"祝日","인간":"人間","시트":"シート","진행":"進行","준비":"準備","필요":"必要","가능":"可能","공유":"共有","관리":"管理","가정":"想定","계산":"計算","기한":"期限","순차":"順次","해당":"該当","영향":"影響","주말":"週末","오픈":"公開","시즌":"シーズン","추가":"追加","삭제":"削除","저장":"保存","확인":"確認","실패":"失敗","인턴":"インターン","곧 종료":"まもなく終了","투입":"投入","신규":"新規","인력":"人員","충원":"補充",
 "부터":"から","까지":"まで","이후":"以降","이전":"以前"};
 const JA_EXACT={"과":"と","와":"と","은":"は","는":"は","일":"日","화":"火","인간":"人間","작품별":"作品別","+n주":"+n週","-n주":"-n週","5회차씩":"5話ずつ","월 1작품":"月1作品","월 2작품":"月2作品","월 3작품":"月3作品"};
-/* ── 외주사 관리 일본어 보강 (기존 항목은 덮어쓰지 않고 없는 것만 추가) ── */
-(()=>{
-  const add=(obj,m)=>Object.keys(m).forEach(k=>{ if(!(k in obj)) obj[k]=m[k]; });
-  add(JA_EXACT,{"월":"月","수":"水","목":"木","금":"金","토":"土","초":"上旬","중순":"中旬","말":"下旬","상순":"上旬","하순":"下旬"});
-  add(JA_PHRASE,{
-    "가이드 라인":"ガイドライン","가이드라인":"ガイドライン","구체적인":"具体的な","제작 가이드":"制作ガイド",
-    "해외사업본부장":"海外事業本部長","해외사업":"海外事業","해외 사업":"海外事業","프로듀서":"プロデューサー",
-    "진행 중":"進行中","검토 중":"検討中","조율 중":"調整中","협의 중":"協議中","제작 중":"制作中","대기 중":"待機中","확인 중":"確認中","회신 대기":"返信待ち",
-    "회신 받기":"返信受領","견적 회신":"見積もり回答","추가 전달":"追加送付","공유 민감":"共有はセンシティブ",
-    "협의 결렬":"協議決裂","제작사":"制作会社","로맨스":"ロマンス","대략":"概算","예:":"例:","여러 개는 줄바꿈":"複数の場合は改行","여러 개면 줄바꿈":"複数の場合は改行","첫 줄이 이름 링크":"1行目が名前のリンク","분당":"1分あたり","1차":"1次","2차":"2次","3차":"3次","미팅 일정":"ミーティング日程","샘플 계약":"サンプル契約","샘플 제작":"サンプル制作","샘플 납품":"サンプル納品"
-  });
-  add(JA_WORD,{
-    "시연":"デモ","회신":"返信","협의":"協議","결렬":"決裂","견적":"見積もり","조율":"調整","전달":"送付","원함":"希望",
-    "민감":"センシティブ","컨택":"コンタクト","통해":"経由","회당":"1話あたり","대표":"代表","문의":"問い合わせ","요청":"依頼",
-    "확인":"確認","검토":"検討","발송":"送信","수령":"受領","답변":"回答","연락":"連絡","계약서":"契約書","수정":"修正","초안":"草案",
-    "진행":"進行","불가":"不可","해외":"海外","사업":"事業","본부장":"本部長","팀장":"チーム長","이메일":"メール","전화":"電話","회사":"会社","정보":"情報","내용":"内容"
-  });
-})();
-
 const JA_KEYS=Object.keys(JA_PHRASE).sort((a,b)=>b.length-a.length), JA_WKEYS=Object.keys(JA_WORD).sort((a,b)=>b.length-a.length);
 const WD_JA={"일":"日","월":"月","화":"火","수":"水","목":"木","금":"金","토":"土"};
 let LANG=(()=>{ try{ const v=localStorage.getItem("anime_lang"); if(v) return v; }catch(e){} return (navigator.language||"").startsWith("ja")?"ja":"ko"; })();
@@ -1505,12 +1352,9 @@ function trText(t){
   for(const [a,b] of names) if(r.includes(a)) r=r.split(a).join(b);
   for(const k of JA_KEYS) if(r.includes(k)) r=r.split(k).join(JA_PHRASE[k]);
   r=r.replace(/(\d+)\s?~\s?(\d+)화/g,"$1〜$2話").replace(/(\d+)화/g,"$1話").replace(/(\d+)영업일/g,"$1営業日").replace(/(\d+)일차/g,"$1日目").replace(/(\d+)\s?주/g,"$1週")
-    .replace(/(\d+)월\s?(초|상순)/g,"$1月上旬").replace(/(\d+)월\s?중순/g,"$1月中旬").replace(/(\d+)월\s?(말|하순)/g,"$1月下旬").replace(/(\d+)년/g,"$1年").replace(/(\d+)월/g,"$1月").replace(/(\d+)일/g,"$1日").replace(/(\d+)작품/g,"$1作品").replace(/(\d+)개/g,"$1件").replace(/(\d+)명/g,"$1名").replace(/(\d+)분/g,"$1分").replace(/(\d+)회/g,"$1回")
+    .replace(/(\d+)년/g,"$1年").replace(/(\d+)월/g,"$1月").replace(/(\d+)일/g,"$1日").replace(/(\d+)작품/g,"$1作品").replace(/(\d+)개/g,"$1件").replace(/(\d+)명/g,"$1名").replace(/(\d+)분/g,"$1分").replace(/(\d+)회/g,"$1回")
     .replace(/\(([일월화수목금토])\)/g,(m,d)=>`(${WD_JA[d]})`).replace(/([일월화수목금토])요일/g,(m,d)=>WD_JA[d]+"曜日");
   if(/[가-힣]/.test(r)) for(const k of JA_WKEYS) if(r.includes(k)) r=r.split(k).join(JA_WORD[k]);
-  r=r.replace(/(\d+)건/g,"$1件").replace(/(\d[\d,.]*)만\s?원/g,"$1万ウォン").replace(/(\d[\d,.]*)원/g,"$1ウォン").replace(/○원/g,"○ウォン").replace(/(\d[\d,.]*)만(?![가-힣])/g,"$1万")
-    .replace(/(?<=[가-힣\u3040-\u30ff\u4e00-\u9fff]) 중(?![가-힣])/g,"中");
-  if(!/[가-힣]/.test(r)) r=r.replace(/(?<=[\u3040-\u30ff\u4e00-\u9fff]) (?=[\u3040-\u30ff\u4e00-\u9fff])/g,"");
   TR_CACHE.set(t,r); return r;
 }
 const TR_SKIP="script,style,textarea,.sql,[data-notr]";
@@ -1521,7 +1365,7 @@ function trNode(root){
   const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:(n)=>n.parentElement&&n.parentElement.closest(TR_SKIP)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   const list=[]; while(tw.nextNode()) list.push(tw.currentNode);
   list.forEach(n=>{ const v=trText(n.nodeValue); if(v!==n.nodeValue) n.nodeValue=v; });
-  [root,...root.querySelectorAll("[title],[placeholder],[aria-label]")].forEach(el=>{ if(!el.getAttribute||el.closest("script,style,.sql,[data-notr]")) return;
+  [root,...root.querySelectorAll("[title],[placeholder],[aria-label]")].forEach(el=>{ if(!el.getAttribute||el.closest(TR_SKIP)) return;
     ["title","placeholder","aria-label"].forEach(a=>{ const v=el.getAttribute(a); if(v&&/[가-힣]/.test(v)){ const t=trText(v); if(t!==v) el.setAttribute(a,t); } }); });
 }
 const TR_OBS=new MutationObserver((ms)=>{ if(LANG!=="ja") return; ms.forEach(m=>{ if(m.type==="characterData") trNode(m.target); else m.addedNodes.forEach(n=>trNode(n)); if(m.type==="attributes") trNode(m.target); }); });
@@ -1542,6 +1386,22 @@ function safeRender(){
 }
 document.addEventListener("focusout",()=>setTimeout(()=>{if(DEFER&&$("pop").hidden){DEFER=false;render();}},0));
 
+/* 세이브 회차: 런칭일에 최종본이 끝난 회차 − 런칭 동시 오픈 회차 · 같은 속도로 계속 만들 때 휴재 없이 갈 수 있는 마지막 회차 */
+let SAVE_CACHE=new Map();
+function saveInfo(w){
+  const ck=JSON.stringify(w)+"|"+JSON.stringify(CONF.stages).length+"|"+CONF.lockBD+"|"+HOL.size+"|"+key(TODAY);
+  if(SAVE_CACHE.has(ck)) return SAVE_CACHE.get(ck);
+  let r=null;
+  try{ const S=schedule(w);
+    if(!S.held&&S.L){ const L=S.L, K=S.K, N=S.N; let ready=0; for(let k=1;k<=N;k++) if(S.eps[k].ready<=L) ready++;
+      const MAX=Math.max(N+30,40), S2=scheduleCore({...w,total:MAX,launchAuto:true,batchCut:N}); let last=MAX;   // 20화 묶음은 그대로, 이후 회차는 새 묶음으로
+      let gapW=0;
+      for(let k=1;k<=MAX;k++){ const open=k<=K?L:addDays(L,CAD_D*(k-K)); if(S2.eps[k].need>open){ last=k-1; gapW=Math.max(1,Math.ceil(daysBetween(open,S2.eps[k].need)/7)); break; } }
+      r={ready,save:Math.max(0,ready-K),last,cont:last>=MAX,N,gapW}; } }catch(e){ r=null; }
+  if(SAVE_CACHE.size>400) SAVE_CACHE.clear(); SAVE_CACHE.set(ck,r); return r;
+}
+const daysBetween=(a,b)=>Math.round((b-a)/86400000);
+const saveTxt=(w)=>{ const x=saveInfo(w); if(!x) return ""; return `세이브 ${x.save}화 · ${x.cont?"계속 연재 가능":`${x.last}화까지 휴재 없음 · ${x.last+1}화 ${x.gapW}주 부족`}`; };
 function render(){ render0(); if(LANG==="ja") trNode(document.body); }
 function render0(){
   DEFER=false;
@@ -1660,7 +1520,7 @@ function renderOpen(){
   rows.forEach(({w,S,V},ri)=>{
     const far=mi(V.L)>=NM;
     h+=`<tr class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>
-      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${far?ymd(V.L).slice(2):md(V.L)} 런칭${FORCE&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span></th>`;
+      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${far?ymd(V.L).slice(2):md(V.L)} 런칭${FORCE&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<=x.N+3?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"계속 가능":`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
     cellsOf[ri].forEach((c,i)=>{
       const cl=(i===nowM?" now":"")+yb(i)+(c.g&&c.n?" gap":"");
       const gt=c.g?` · 휴재 ${c.g}주`:"";
@@ -2147,6 +2007,8 @@ function renderProd(){
       <div class="stat"><div class="sl">예상 런칭 (휴재 없는 최단)</div><div class="sv">${ymd(S.L)} (${WD[S.L.getUTCDay()]})</div></div>
       <div class="stat"><div class="sl">런칭일을 정하는 조건</div><div class="sv">${S.critGate?`${esc(S.critGate.s.n)} <small style="color:var(--ink2)">완료 ${ymd(S.critGate.e)} → 런칭 ${ymd(S.L)}</small>`:`${S.crit}화 <small style="color:var(--ink2)">최종본 ${ymd(CE.ready)} → 오픈 ${ymd(CE.open)}</small>`}</div></div>
       <div class="stat"><div class="sl">완결 (${S.N}화)</div><div class="sv">${ymd(S.end)}</div></div>
+      ${(()=>{const x=saveInfo(w); if(!x) return ""; return `<div class="stat"><div class="sl">런칭 시 세이브</div><div class="sv">${x.save}화 <small style="color:var(--ink2)">완료 ${x.ready}화 · ${S.K}화 동시 오픈</small></div></div>
+        <div class="stat"><div class="sl">같은 속도로 계속 만들면</div><div class="sv"${!x.cont&&x.last<=x.N+3?' style="color:var(--bad)"':""}>${x.cont?"계속 연재 가능":`${x.last}화까지`} <small style="color:var(--ink2)">${x.cont?"주 1회보다 빠름":`휴재 없음 · ${x.last+1}화부터 약 ${x.gapW}주 휴재`}</small></div></div>`;})()}
       ${lenStatHtml(w)}
       <div class="stat"><div class="sl">적용 공정</div><div class="sv" style="font-size:14px">${VAR_LABEL[VARIANT(w)]}</div></div>`}
     </div>
