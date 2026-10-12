@@ -385,6 +385,12 @@ table.simt td.lcc{min-width:250px} .lch .in.t{width:150px}
 table.simt .sins,table.simt td{white-space:nowrap}
 table.simt td.snm{min-width:200px} .snin{width:170px}
 table.simt tr.allrow .in::placeholder{color:var(--muted)}
+/* 외주사 캘린더 기간 일정: 이어지는 막대 */
+.vev.rg{border-radius:0;margin:0 -5px;width:calc(100% + 10px);padding-left:8px}
+.vev.rg-s{border-radius:4px 0 0 4px;margin-left:0;width:calc(100% + 5px)}
+.vev.rg-e{border-radius:0 4px 4px 0;margin-right:0;width:calc(100% + 5px)}
+.vev.rg-m,.vev.rg-e{border-left:0!important}
+.rgd{font-size:9.5px;font-weight:600;opacity:.75}
 /* 외주사 구분: 영상 / 성우 */
 .vkseg{display:flex;gap:6px;margin:10px 0 2px;flex-wrap:wrap}
 .vkb{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink2)}
@@ -2832,7 +2838,13 @@ function vParseKey(t){   // "9/30 납품", "10/15 시연", "10월 중순" → �
 function vCalItems(list){
   const out=[];
   list.forEach(v=>{
-    (v.events||[]).forEach((e,i)=>{ if(e.date) out.push({v,kind:"ev",i,date:e.date,text:e.text||"",type:e.type||"etc",done:!!e.done}); });
+    (v.events||[]).forEach((e,i)=>{ if(!e.date) return;
+      const base={v,kind:"ev",i,text:e.text||"",type:e.type||"etc",done:!!e.done};
+      if(e.to&&e.to>e.date){   // 기간 일정: 시작~종료 날마다 표시 (첫날·월요일에만 이름)
+        const a=D(e.date), b=D(e.to), rng=`${md(a)}~${md(b)}`;
+        for(let d=a,n=0;d<=b&&n<370;d=addDays(d,1),n++){ const k=key(d);
+          out.push({...base,date:k,rng,from:e.date,to:e.to,pos:k===e.date?"s":k===e.to?"e":"m",lab:k===e.date||d.getUTCDay()===1}); }
+      } else out.push({...base,date:e.date}); });
     if(v.nextDue) out.push({v,kind:"next",date:v.nextDue,text:v.next||"다음 액션",done:false});
     const p=vParseKey(v.keyDate); if(p) out.push({v,kind:"key",date:key(p.d),text:v.keyDate,approx:p.approx});
   });
@@ -2853,8 +2865,8 @@ function renderVCal(list){
     if(i>=35&&!inM&&d.getUTCDay()===1) break;
     const hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
     h+=`<div class="vday${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}" data-day="${k}"><div class="vdn">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>
-      ${its.slice(0,4).map(x=>{ const od=x.kind==="next"&&x.date<key(TODAY)&&!["signed","prod","no"].includes(x.v.stage);
-        return `<button type="button" class="vev t-${x.kind==="ev"?x.type:x.kind} vk-${vKind(x.v)}${x.done?" done":""}${od?" od":""}" data-cv="${x.v.id}" data-ck="${x.kind}" data-ci="${x.i??""}" title="${esc(x.v.name)} · ${esc(x.text)}${x.approx?" (대략)":""}"><b>${esc(x.v.name)}</b> <span data-tx data-notr>${esc(x.text)}</span>${x.approx?" ~":""}</button>`; }).join("")}
+      ${its.sort((a,b)=>(b.rng?1:0)-(a.rng?1:0)||(a.from||"").localeCompare(b.from||"")).slice(0,4).map(x=>{ const od=x.kind==="next"&&x.date<key(TODAY)&&!["signed","prod","no"].includes(x.v.stage);
+        return `<button type="button" class="vev t-${x.kind==="ev"?x.type:x.kind} vk-${vKind(x.v)}${x.rng?` rg rg-${x.pos}`:""}${x.done?" done":""}${od?" od":""}" data-cv="${x.v.id}" data-ck="${x.kind}" data-ci="${x.i??""}" title="${esc(x.v.name)} · ${esc(x.text)}${x.rng?` (${x.rng})`:""}${x.approx?" (대략)":""}">${x.rng&&!x.lab?"&nbsp;":`<b>${esc(x.v.name)}</b> <span data-tx data-notr>${esc(x.text)}</span>${x.rng?` <span class="rgd">${x.rng}</span>`:""}`}${x.approx?" ~":""}</button>`; }).join("")}
       ${its.length>4?`<button type="button" class="vmore" data-day="${k}">+${its.length-4}건</button>`:""}</div>`; }
   h+=`</div></div>`;
   return h;
@@ -2870,7 +2882,7 @@ function vPopAt(anchor,html){ const pop=$("pop"); pop.innerHTML=html; pop.hidden
   pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+cw-356))+"px"; pop.style.top=(r.bottom+window.scrollY+4)+"px"; return pop; }
 function vDayList(day,anchor,list){
   const its=vCalItems(list).filter(x=>x.date===day);
-  vPopAt(anchor,`<h4>${md(D(day))} 일정 ${its.length}건</h4><div class="vdl">${its.map(x=>`<div class="vev t-${x.kind==="ev"?x.type:x.kind}" style="display:block;margin:3px 0"><b>${esc(x.v.name)}</b> <span data-tx data-notr>${esc(x.text)}</span></div>`).join("")}</div>
+  vPopAt(anchor,`<h4>${md(D(day))} 일정 ${its.length}건</h4><div class="vdl">${its.map(x=>`<div class="vev t-${x.kind==="ev"?x.type:x.kind}" style="display:block;margin:3px 0"><b>${esc(x.v.name)}</b> <span data-tx data-notr>${esc(x.text)}</span>${x.rng?` <span class="rgd">${x.rng}</span>`:""}</div>`).join("")}</div>
     <div class="acts"><button type="button" class="btn" id="dlX">닫기</button></div>`);
   $("dlX").onclick=closePop;
 }
@@ -2884,7 +2896,8 @@ function vEvtEditor(v,ref,day,anchor,list){
   vPopAt(anchor,`<h4>${isNext?"다음 액션":ref?"일정 수정":"일정 추가"}</h4>
     <div class="row"><span>외주사</span>${vendorSel}</div>
     ${isNext?"":`<div class="row"><span>종류</span><select class="in" id="eY">${V_EVT.map(([k,l])=>`<option value="${k}"${(ev.type||"meet")===k?" selected":""}>${l}</option>`).join("")}</select></div>`}
-    <div class="row"><span>날짜</span><input class="in" type="date" id="eD" value="${esc(isNext?v.nextDue:ev.date||day||key(TODAY))}"></div>
+    <div class="row"><span>${isNext?"날짜":"시작일"}</span><input class="in" type="date" id="eD" value="${esc(isNext?v.nextDue:ev.date||day||key(TODAY))}"></div>
+    ${isNext?"":`<div class="row"><span>종료일</span><input class="in" type="date" id="eTo" value="${esc(ev.to||"")}"><span class="hint" style="width:auto">하루짜리면 비워 두세요</span></div>`}
     <div class="row"><span>내용</span><input class="in" id="eTx" style="flex:1" value="${esc(isNext?v.next||"":ev.text||"")}" placeholder="${isNext?"예: 견적 회신 받기":"예: 시연 미팅 · 2차 샘플 납품"}"></div>
     <div class="acts">${ref?`<button type="button" class="btn danger" id="eDel">${isNext?"다음 액션 지우기":"삭제"}</button>`:""}${ref&&!isNext?`<button type="button" class="btn" id="eDone">${ev.done?"완료 취소":"✓ 완료"}</button>`:""}<span style="flex:1"></span>
       <button type="button" class="btn" id="eX">닫기</button><button type="button" class="btn pri" id="eOk">${ref?"저장":"추가"}</button></div>`);
@@ -2894,7 +2907,9 @@ function vEvtEditor(v,ref,day,anchor,list){
   $("eOk").onclick=()=>{ const t=target(); if(!t) return; const date=$("eD").value, text=$("eTx").value.trim();
     if(!date){ toast("날짜를 넣어 주세요"); return; }
     if(isNext){ vEdit({op:"set",id:t.id,v:{next:text,nextDue:date}}); closePop(); return; }
-    const evs=clone(t.events||[]); const item={date,text,type:$("eY").value,done:!!ev.done};
+    const to=$("eTo")?$("eTo").value:"";
+    if(to&&to<date){ toast("종료일이 시작일보다 빨라요"); return; }
+    const evs=clone(t.events||[]); const item={date,text,type:$("eY").value,done:!!ev.done}; if(to&&to>date) item.to=to;
     if(ref) evs[ref.i]=item; else evs.push(item);
     vEdit({op:"set",id:t.id,v:{events:evs}}); closePop(); };
   if($("eDel")) $("eDel").onclick=()=>{ if(isNext){ vEdit({op:"set",id:v.id,v:{next:"",nextDue:""}}); }
