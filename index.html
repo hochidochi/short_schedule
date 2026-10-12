@@ -359,6 +359,10 @@ table.simt tr.sgh td{background:var(--page);font-weight:700;font-size:12.5px;pad
 table.simt td.snm{min-width:150px}
 .in.need{border-color:var(--warn);background:var(--warn-bg)}
 .cal tr.sgh th.rl,.cal tr.sgh td{background:var(--page);font-size:12px;font-weight:700;height:26px;border-bottom:1px solid var(--line2)}
+.simver{display:flex;gap:6px;align-items:center;flex-wrap:wrap} .simver .in{min-height:30px;max-width:300px}
+.snin{border:1px solid transparent;border-radius:5px;background:transparent;font:inherit;font-weight:700;font-size:13px;padding:2px 5px;width:150px}
+.snin:hover{border-color:var(--line2)} .snin:focus{border-color:var(--launch);background:#fff;outline:0}
+table.simt .sadd{float:right;padding:2px 10px;font-size:12px;font-weight:600}
 /* 외주사 구분: 영상 / 성우 */
 .vkseg{display:flex;gap:6px;margin:10px 0 2px;flex-wrap:wrap}
 .vkb{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink2)}
@@ -1740,13 +1744,19 @@ let SIM=null;
 const SIM_G0=()=>({spdI:0,spdE:0,lenCut:0,prodPar:1,sndPar:1,buf:0,rating:false});
 const SIM_R0=(w)=>({inc:true,cad:1,mode:"regular",seasonN:10,rest:"auto",gapAfter:"",gapW:"",total:+w.total||SEASON_N,openK:3,launchMode:"auto",launch:"2026-12-21",start:""});
 const SIM_A0=()=>({cad:"",mode:"",seasonN:"",rest:"",total:"",openK:"",launchMode:"",launch:"2026-12-21",scope:"all"});
-function simInit(){ SIM={g:SIM_G0(),all:SIM_A0(),rows:{},gOpen:false}; WORKS.forEach(w=>SIM.rows[w.id]=SIM_R0(w)); }
+function simInit(){ SIM={g:SIM_G0(),all:SIM_A0(),rows:{},extra:[],gOpen:false}; WORKS.forEach(w=>SIM.rows[w.id]=SIM_R0(w)); }
+const SIM_WL=()=>WORKS.concat(SIM&&SIM.extra||[]);   // 실제 작품 + 시뮬레이션에서만 추가한 작품
+function simAddWork(line){
+  const id="s"+Date.now().toString(36), w=normW({id,line,n:line==="ext"?"":"새 작품",voice:"human",done:0,start:key(nextBD(TODAY)),total:SEASON_N,b1:BATCH,simOnly:true,
+    ...(line==="ext"?{team:{prod1:"외부 제작사",prodF:"외부 제작사"},owner:"외부 제작사"}:{})});
+  w.rate=defRate(w); SIM.extra.push(w); SIM.rows[id]=SIM_R0(w); render();
+}
 const AVG_LEN=()=>{ const v=[]; WORKS.forEach(w=>{ Object.values(w.len||{}).forEach(x=>{ if(+x>0) v.push(+x); }); }); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; };
 /* 외부 작품은 '외부 작품 N' (착수 순) — 괄호 메모(예: HNS)는 그대로 붙임 */
 function simNames(){
-  const m={}; WORKS.filter(w=>lineOf(w)==="ext").sort((a,b)=>(a.start||"").localeCompare(b.start||"")||(a.pos||0)-(b.pos||0))
-    .forEach((w,i)=>{ const p=(w.n||"").match(/\(([^)]+)\)\s*$/); m[w.id]=`외부 작품 ${i+1}${p?` (${p[1]})`:""}`; });
-  return (w)=>m[w.id]||w.n;
+  const m={}; SIM_WL().filter(w=>lineOf(w)==="ext").sort((a,b)=>(a.simOnly?1:0)-(b.simOnly?1:0)||(a.start||"").localeCompare(b.start||"")||(a.pos||0)-(b.pos||0))
+    .forEach((w,i)=>{ m[w.id]=`외부 작품 ${i+1}`; });
+  return (w)=>{ const r=SIM.rows[w.id]; return (r&&r.name)||m[w.id]||w.n; };
 }
 /* 공정 조건(제작 속도·버퍼 등)을 잠깐 바꿔서 계산 (끝나면 원래대로) */
 function withSim(fn){
@@ -1795,10 +1805,13 @@ function planOpens(S,c){
 }
 function renderSim(){
   if(!SIM) simInit();
-  WORKS.forEach(w=>{ if(!SIM.rows[w.id]) SIM.rows[w.id]=SIM_R0(w); });
+  if(SIMSAVES==null){ SIMSAVES=[]; simVerLoad().then(()=>{ if(TAB==="sim") safeRender(); }); }
+  if(!SIM.extra) SIM.extra=[];
+  SIM_WL().forEach(w=>{ if(!SIM.rows[w.id]) SIM.rows[w.id]=SIM_R0(w); });
   const g=SIM.g, A=SIM.all, nm=simNames();
   const real={}; WORKS.forEach(w=>{ real[w.id]=isHeld(w)?null:schedule(w).L; });
-  const R=withSim(()=>WORKS.map(w=>{ const r=SIM.rows[w.id], x=simWork(w,r), S=schedule(x);
+  const WL=SIM_WL();
+  const R=withSim(()=>WL.map(w=>{ const r=SIM.rows[w.id], x=simWork(w,r), S=schedule(x);
     return {w,r,x,S,held:!!S.held,P:!r.inc||S.held?null:planOpens(S,r),real:real[w.id]}; }));
   const GR=[["int","내부 작품"],["ext","외부 작품"]].map(([k,l])=>[k,l,R.filter(z=>lineOf(z.w)===k)]);
   const live=R.filter(z=>z.P);
@@ -1810,7 +1823,9 @@ function renderSim(){
   const CAD=[[1,"주 1회"],[2,"격주"]], MODE=[["regular","정기"],["season","시즌제"]], REST=[["auto","자동"],...[0,1,2,3,4,6,8,12].map(n=>[n,`${n}주`])], LM=[["auto","자동"],["fixed","날짜"]];
   const KEEP=[["","그대로"]];
   let h=`<div class="simhd"><div><p class="lead">시뮬레이션</p><p class="lead-sub">작품마다 운영 방식을 바꿔 보세요. 저장되지 않아요.</p></div>
-      <button type="button" class="btn" id="simReset">처음으로</button></div>
+      <span class="simver">${SIMSAVES&&SIMSAVES.length?`<select class="in" id="simVer"><option value="">저장된 버전 ${SIMSAVES.length}개</option>${SIMSAVES.slice().reverse().map(x=>`<option value="${esc(x.id)}">${esc(x.name)} · ${esc((x.at||"").slice(5,16).replace("T"," "))}${x.by?` · ${esc(x.by)}`:""}</option>`).join("")}</select>
+        <button type="button" class="btn" id="simLoad">불러오기</button><button type="button" class="btn danger" id="simDelV" title="고른 버전 삭제">삭제</button>`:""}
+        <button type="button" class="btn pri" id="simSave">현재 버전 저장</button><button type="button" class="btn" id="simReset">처음으로</button></span></div>
     <div class="simv">${yv(2026)} · ${yv(2027)} · ${yv(2028)} 작품 오픈${hia?` · 휴재 합계 <b style="color:var(--hia)">${hia}주</b>`:" · 휴재 없음"}
       <span class="hint" style="font-size:12px">괄호 = 확정 일정 대비</span></div>
     <details class="card simg"${SIM.gOpen?" open":""}><summary>공정 조건 <span class="hint">${[g.spdI&&`내부 속도 ${g.spdI>0?"+":""}${g.spdI}%`,g.spdE&&`외부 속도 ${g.spdE>0?"+":""}${g.spdE}%`,g.lenCut&&`길이 ${g.lenCut}%`,g.prodPar>1&&`외주 영상 ${g.prodPar}화 병행`,g.sndPar>1&&`외주 사운드 ${g.sndPar}묶음`,g.buf&&`버퍼 ${g.buf/5}주`,g.rating&&"등급분류 포함"].filter(Boolean).join(" · ")||"현재 그대로"}</span></summary>
@@ -1836,11 +1851,11 @@ function renderSim(){
       <td class="r"><input class="in n" type="number" min="1" max="20" data-sa="openK" value="${A.openK}" placeholder="그대로"></td>
       <td>${launchCell("",A,true)}</td><td></td>
       <td colspan="3"><button type="button" class="btn pri" id="simApply">일괄 적용</button></td></tr>`;
-  GR.forEach(([gk,gl,rows])=>{ if(!rows.length) return;
-    h+=`<tr class="sgh ${gk}"><td colspan="12"><span class="lnd ${gk}"></span>${gl} <span class="hint">${rows.length}</span></td></tr>`;
+  GR.forEach(([gk,gl,rows])=>{
+    h+=`<tr class="sgh ${gk}"><td colspan="12"><span class="lnd ${gk}"></span>${gl} <span class="hint">${rows.length}</span><button type="button" class="btn sadd" data-sadd="${gk}">+ ${gl} 추가</button></td></tr>`;
     rows.forEach(z=>{ const {w,r,P}=z, id=w.id, hold=holdOf(w), d=P&&z.real?weeks(z.real,P.L):null;
       h+=`<tr class="${r.inc?"":"off"}"><td><input type="checkbox" data-sr="inc" data-id="${id}"${r.inc?" checked":""} aria-label="포함"></td>
-        <td class="snm"><b>${esc(nm(w))}</b>${lineOf(w)==="int"?ageBadge(w):""}${hold?` <span class="tag ${isHire(hold)?"tbd":"pzt"}" style="font-size:10px">${isHire(hold)?"착수 대기":"중단"}</span>`:""}</td>
+        <td class="snm"><input class="snin" data-sr="name" data-id="${id}" value="${esc(nm(w))}" aria-label="작품 이름">${w.simOnly?`<button type="button" class="vdel" data-sdel="${id}" title="시뮬레이션에서 추가한 작품 삭제">✕</button><span class="tag" style="font-size:10px;background:var(--serial);color:var(--serial-ink)">추가</span>`:lineOf(w)==="int"?ageBadge(w):""}${hold?` <span class="tag ${isHire(hold)?"tbd":"pzt"}" style="font-size:10px">${isHire(hold)?"착수 대기":"중단"}</span>`:""}</td>
         <td><select class="in" data-sr="cad" data-id="${id}">${opt(CAD,r.cad)}</select></td>
         <td>${modeCell(id,r,false)}</td>
         <td class="sgap"><input class="in n" type="number" min="1" max="300" data-sr="gapAfter" data-id="${id}" value="${r.gapAfter}" placeholder="–">화 뒤 <input class="in n" type="number" min="1" max="52" data-sr="gapW" data-id="${id}" value="${r.gapW}" placeholder="–">주</td>
@@ -1888,17 +1903,26 @@ function renderSim(){
     <span><i style="background:repeating-linear-gradient(90deg,#E9EAE5 0 3px,#F6F6F3 3px 6px)"></i>쉼 (시즌·중간 휴재)</span><span><i style="background:var(--hia-bg)"></i>휴재 (제작이 못 따라옴)</span></div>`;
   $("v-sim").innerHTML=h;
   // 이벤트
+  document.querySelectorAll("#v-sim [data-sadd]").forEach(b=>b.onclick=()=>simAddWork(b.dataset.sadd));
+  document.querySelectorAll("#v-sim [data-sdel]").forEach(b=>b.onclick=()=>{ SIM.extra=SIM.extra.filter(w=>w.id!==b.dataset.sdel); delete SIM.rows[b.dataset.sdel]; render(); });
+  $("simSave").onclick=simSaveVer;
+  if($("simLoad")) $("simLoad").onclick=()=>{ const v=(SIMSAVES||[]).find(x=>x.id===$("simVer").value); if(!v){ toast("불러올 버전을 골라 주세요"); return; }
+    SIM=clone(v.data); SIM.extra=(SIM.extra||[]).map(normW); toast(`'${esc(v.name)}' 버전을 불러왔어요`); render(); };
+  if($("simDelV")) $("simDelV").onclick=()=>{ const v=(SIMSAVES||[]).find(x=>x.id===$("simVer").value); if(!v){ toast("삭제할 버전을 골라 주세요"); return; }
+    if(confirm(`'${v.name}' 버전을 삭제할까요? 모든 사람 목록에서 사라집니다.`)) simVerEdit(l=>l.filter(x=>x.id!==v.id)); };
   $("simReset").onclick=()=>{ if(confirm("시뮬레이션 값을 모두 처음으로 되돌릴까요?")){ SIM=null; render(); } };
   document.querySelector("#v-sim details.simg").ontoggle=(e)=>{ SIM.gOpen=e.target.open; };
   const num=(k,v)=>{ if(v==="") return ""; if(k==="rest") return v==="auto"?"auto":+v; if(["cad","seasonN","total","openK","gapAfter","gapW"].includes(k)) return clamp(parseInt(v,10)||1,1,300); return v; };
   document.querySelectorAll("#v-sim [data-sg]").forEach(el=>el.onchange=()=>{ const k=el.dataset.sg; g[k]=k==="rating"?el.value==="1":+el.value; render(); });
   document.querySelectorAll("#v-sim [data-sa]").forEach(el=>el.onchange=()=>{ const k=el.dataset.sa; A[k]=k==="scope"||k==="launch"||k==="mode"||k==="launchMode"?el.value:num(k,el.value); render(); });
   document.querySelectorAll("#v-sim [data-sr]").forEach(el=>el.onchange=()=>{ const r=SIM.rows[el.dataset.id], k=el.dataset.sr;
+    if(k==="name"){ const v=el.value.trim(), w=WL.find(x=>x.id===el.dataset.id); r.name=v;
+      if(w&&w.simOnly&&lineOf(w)==="int") w.n=v||"새 작품"; render(); return; }
     if(k==="inc") r.inc=el.checked; else if(["mode","launchMode","launch","start"].includes(k)) r[k]=el.value;
-    else if(k==="rest") r.rest=num(k,el.value); else { const v=num(k,el.value); r[k]=v===""&&["total","openK","cad","seasonN"].includes(k)?SIM_R0(WORKS.find(w=>w.id===el.dataset.id))[k]:v; }
+    else if(k==="rest") r.rest=num(k,el.value); else { const v=num(k,el.value); r[k]=v===""&&["total","openK","cad","seasonN"].includes(k)?SIM_R0(WL.find(w=>w.id===el.dataset.id))[k]:v; }
     render(); });
   $("simApply").onclick=()=>{ let n=0;
-    WORKS.forEach(w=>{ if(A.scope!=="all"&&lineOf(w)!==A.scope) return; const r=SIM.rows[w.id];
+    WL.forEach(w=>{ if(A.scope!=="all"&&lineOf(w)!==A.scope) return; const r=SIM.rows[w.id];
       ["cad","mode","total","openK"].forEach(k=>{ if(A[k]!=="") r[k]=A[k]; });
       if(A.mode==="season"||(A.mode===""&&r.mode==="season")){ if(A.seasonN!=="") r.seasonN=A.seasonN; if(A.rest!=="") r.rest=A.rest; }
       if(A.launchMode){ r.launchMode=A.launchMode; if(A.launchMode==="fixed") r.launch=A.launch; }
@@ -1906,6 +1930,27 @@ function renderSim(){
     toast(`${n}작품에 적용했어요`); render(); };
 }
 
+/* 시뮬레이션 버전 저장: 공유 저장소(anime_config id="simsaves") · 저장소가 없으면 이 브라우저에만 */
+let SIMSAVES=null;
+async function simVerLoad(){
+  if(!SB.on){ SIMSAVES=lsGet("anime_simsaves")||[]; return; }
+  try{ const r=await sb("GET",T_CONF,"?id=eq.simsaves&select=data"); SIMSAVES=r&&r.length&&r[0].data&&r[0].data.list||[]; }catch(e){ SIMSAVES=SIMSAVES||[]; }
+}
+async function simVerEdit(fn){
+  try{
+    if(!SB.on){ SIMSAVES=fn(lsGet("anime_simsaves")||[]); lsSet("anime_simsaves",SIMSAVES); render(); return true; }
+    const r=await sb("GET",T_CONF,"?id=eq.simsaves&select=data");
+    const list=fn(r&&r.length&&r[0].data&&r[0].data.list||[]);
+    await sb("POST",T_CONF,"",[{id:"simsaves",data:{list},updated_at:new Date().toISOString()}],"resolution=merge-duplicates");
+    SIMSAVES=list; render(); return true;
+  }catch(e){ alert("저장하지 못했어요: "+e.message); return false; }
+}
+async function simSaveVer(){
+  const d=new Date(), def=`${d.getMonth()+1}/${d.getDate()} 시뮬레이션`;
+  const name=prompt("버전 이름을 적어 주세요",def); if(name==null) return;
+  const v={id:"sv"+Date.now().toString(36),name:name.trim()||def,at:new Date().toISOString(),by:(ME&&(ME.name||ME.email))||"",data:clone(SIM)};
+  if(await simVerEdit(l=>[...l,v].slice(-50))) toast(`'${esc(v.name)}' 버전을 저장했어요`);
+}
 /* ── 제작 일정 ── */
 const isOk=(c)=>c.kind==="ok"||!!c.done;
 const stCls=(c)=>(c.slip?" slip":"")+(isOk(c)?"":(c.e<TODAY?" over":""));   // 예정일이 지났는데 완료 처리 안 됨
