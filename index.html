@@ -200,6 +200,10 @@ table.eg thead th.lenh,table.eg td.lenc{min-width:58px;background:#FBFBF9}
 table.spdsum tr{cursor:pointer} table.spdsum tr:hover td{background:#F7F8F5}
 table.spdsum tr.on td{background:var(--serial);font-weight:600}
 #langSw{margin-bottom:10px}
+#txSw{margin-bottom:10px;padding:3px 10px;font-size:12px}
+#txSw[aria-pressed="true"]{border-color:var(--ai);color:var(--ai);background:var(--ai-bg)}
+[data-tx].txd::after{content:attr(data-txl);margin-left:5px;font-size:9.5px;font-weight:700;color:var(--ai);background:var(--ai-bg);border-radius:3px;padding:0 4px;vertical-align:1px;white-space:nowrap;font-style:normal}
+.vev [data-tx].txd::after{display:none}
 #langSw button{padding:3px 10px;font-size:12px}
 .card.today{margin-bottom:14px;padding:12px 16px}
 .tdtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
@@ -353,6 +357,11 @@ table.tztab td.tzc.pick{box-shadow:inset 0 0 0 2px var(--launch);background:#F4F
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none}
 .dot.good{background:var(--good)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
 .wlist .add{width:100%;margin-top:6px}
+.wlist button.wi{cursor:grab}
+.wlist button.wi:active{cursor:grabbing}
+.wlist button.wi.dragging{opacity:.4}
+.wlist button.wi.drop-before{box-shadow:inset 0 3px 0 var(--launch)}
+.wlist button.wi.drop-after{box-shadow:inset 0 -3px 0 var(--launch)}
 
 .whead{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .wtitle{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -464,6 +473,8 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   .wlist{position:static;display:flex;overflow-x:auto;gap:4px}
   .wlist button.wi{width:auto;min-width:140px}
   .wlist .add{width:auto;margin:0}
+  .wlist button.wi.drop-before{box-shadow:inset 3px 0 0 var(--launch)}
+  .wlist button.wi.drop-after{box-shadow:inset -3px 0 0 var(--launch)}
   .fgrid{grid-template-columns:1fr}
   .fgrid .gl{padding-top:0}
   .cal .rl{min-width:150px;max-width:150px}
@@ -483,6 +494,7 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
     <button type="button" role="tab" data-tab="users" id="tabUsers" hidden>사용자 승인</button>
   </nav>
   <span class="seg sm" id="langSw" data-notr role="group" aria-label="Language"><button type="button" data-lang="ko">한국어</button><button type="button" data-lang="ja">日本語</button></span>
+  <button type="button" class="btn" id="txSw" data-notr></button>
   <span class="sync" id="sync">…</span>
   <span class="who" id="who" hidden></span>
 </div></header>
@@ -1424,8 +1436,9 @@ function setLang(l){ LANG=l; try{ localStorage.setItem("anime_lang",l); }catch(e
 
 /* ---------- 렌더 ---------- */
 const $=(id)=>document.getElementById(id);
-let DEFER=false;
+let DEFER=false, DRAGGING=null;
 function safeRender(){
+  if(DRAGGING){DEFER=true;return;}   // 드래그 중에는 다시 그리지 않음
   const a=document.activeElement;
   if(!$("pop").hidden || (a&&a.matches&&a.matches("input,select,textarea")&&a.closest("main"))){DEFER=true;return;}
   render();
@@ -1448,7 +1461,56 @@ function saveInfo(w){
 }
 const daysBetween=(a,b)=>Math.round((b-a)/86400000);
 const saveTxt=(w)=>{ const x=saveInfo(w); if(!x) return ""; return `세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 이어가기 가능":x.last>=x.N?`시즌 휴재 약 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}`; };
-function render(){ render0(); if(LANG==="ja") trNode(document.body); }
+/* ======================= 자동 번역 (사람이 직접 쓴 글) =======================
+   한국어 화면: 일본어로 쓴 글 → 한국어 · 日本語 화면: 한국어로 쓴 글 → 日本語
+   대상: data-tx 가 붙은 칸 (외주사 상세 상황·다음 액션·비고·단가·관심 작품·소개, 캘린더 일정, 제작 메모)
+   저장된 원문은 그대로 두고 화면에만 번역을 보여줌 · 마우스를 올리면 원문 · 결과는 이 브라우저에 캐시 */
+const TX_URL=(q,tl)=>`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q=${encodeURIComponent(q)}`;
+let TX_ON=(()=>{ try{ return localStorage.getItem("anime_autotx")!=="0"; }catch(e){ return true; } })();
+const TX_CACHE=(()=>{ try{ return JSON.parse(localStorage.getItem("anime_tx_v1")||"{}"); }catch(e){ return {}; } })();
+const TX_WAIT=new Set(), TX_BAD=new Set(), TX_Q=[]; let TX_RUN=0, TX_SAVE_T=null, TX_APPLY_T=null;
+const hasKana=(s)=>/[\u3040-\u30ff\uff66-\uff9f]/.test(s), hasHangul=(s)=>/[\uac00-\ud7a3]/.test(s), hanziN=(s)=>(s.match(/[\u4e00-\u9fff]/g)||[]).length;
+function txNeed(s,tl){ if(!s||!s.trim()) return false;
+  if(tl==="ko") return !hasHangul(s)&&(hasKana(s)||hanziN(s)>=4);   // 한자만 있는 짧은 이름(田中 등)은 그대로
+  return hasHangul(s); }
+function txSave(){ clearTimeout(TX_SAVE_T); TX_SAVE_T=setTimeout(()=>{ try{ const k=Object.keys(TX_CACHE);
+  if(k.length>3000) k.slice(0,k.length-3000).forEach(x=>delete TX_CACHE[x]); localStorage.setItem("anime_tx_v1",JSON.stringify(TX_CACHE)); }catch(e){} },800); }
+function txGet(s,tl){
+  const ck=tl+"|"+s; if(TX_CACHE[ck]!=null) return TX_CACHE[ck];
+  if(tl==="ja"){ const d=trText(s); if(!hasHangul(d)) return d; }   // 화면용 사전으로 다 바뀌면 그 번역을 씀
+  if(!TX_WAIT.has(ck)&&!TX_BAD.has(ck)){ TX_WAIT.add(ck); TX_Q.push([s,tl,ck]); txPump(); }
+  return null;
+}
+function txPump(){
+  while(TX_RUN<4&&TX_Q.length){ const [s,tl,ck]=TX_Q.shift(); TX_RUN++;
+    fetch(TX_URL(s,tl)).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(j=>{ const t=((j&&j[0])||[]).map(x=>(x&&x[0])||"").join(""); if(t){ TX_CACHE[ck]=t; txSave(); } else TX_BAD.add(ck); })
+      .catch(e=>{ TX_BAD.add(ck); console.warn("자동 번역 실패:",e); })
+      .finally(()=>{ TX_WAIT.delete(ck); TX_RUN--; txPump(); clearTimeout(TX_APPLY_T); TX_APPLY_T=setTimeout(txApply,120); });
+  }
+}
+function txApply(){
+  const b=$("txSw"); if(b){ b.setAttribute("aria-pressed",String(TX_ON));
+    b.textContent=LANG==="ja"?(TX_ON?"自動翻訳 ON":"自動翻訳 OFF"):(TX_ON?"자동 번역 켜짐":"자동 번역 꺼짐");
+    b.title=LANG==="ja"?"韓国語で書かれたメモを日本語で表示":"일본어로 쓴 메모를 한국어로 보여줌"; }
+  if(!TX_ON) return;
+  const tl=LANG==="ja"?"ja":"ko";
+  document.querySelectorAll("[data-tx]").forEach(el=>{
+    if(el.classList.contains("editing")||el.querySelector("textarea")) return;
+    const tw=document.createTreeWalker(el,NodeFilter.SHOW_TEXT), nodes=[]; while(tw.nextNode()) nodes.push(tw.currentNode);
+    let hit=false;
+    nodes.forEach(n=>{ if(n.parentElement.closest("a,.ph")) return;
+      const src=n.__txSrc!=null?n.__txSrc:n.nodeValue;
+      const m=src.match(/^(\s*)([\s\S]*?)(\s*)$/), core=m[2];   // 앞뒤 공백은 그대로 둠
+      if(!txNeed(core,tl)) return;
+      const t=txGet(core,tl); if(t==null) return;
+      n.__txSrc=src; const v=m[1]+t+m[3]; if(n.nodeValue!==v) n.nodeValue=v; hit=true; });
+    if(hit&&!el.classList.contains("txd")){
+      el.dataset.txt0=el.getAttribute("title")||""; el.classList.add("txd"); el.dataset.txl=tl==="ja"?"翻訳":"번역";
+      el.setAttribute("title",(tl==="ja"?"原文: ":"원문: ")+nodes.map(n=>n.__txSrc!=null?n.__txSrc:n.nodeValue).join("").trim()); }
+  });
+}
+function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]})`;
@@ -2110,6 +2172,47 @@ function openResume(w,k,anchor){
 function lenStatHtml(w){ const L=lenStats(w);
   return `<div class="stat"><div class="sl">평균 길이 (${L.n}/${L.N}화 입력)</div><div class="sv">${L.avg!=null?fmtLen(L.avg):"–"}${L.n?`<small style="color:var(--ink2)">최소 ${fmtLen(L.min)} · 최대 ${fmtLen(L.max)}</small>`:""}</div></div>
     <div class="stat"><div class="sl">총 러닝타임 (입력한 ${L.n}화)</div><div class="sv">${L.n?fmtLen(L.sum):"–"}${L.n?`<small style="color:var(--ink2)">${(L.sum/60).toFixed(2)}분 · 초 단위 합산${L.n<L.N?` · ${L.N}화 예상 ${fmtLen(L.est)} (평균 기준)`:""}</small>`:""}</div></div>`; }
+/* 제작 일정 작품 목록: 드래그로 순서 바꾸기 (pos 저장 → 모두에게 공유) */
+function reorderWorks(fromId,toId,after){
+  const from=WORKS.findIndex(w=>w.id===fromId); if(from<0||fromId===toId) return;
+  const [m]=WORKS.splice(from,1);
+  let to=WORKS.findIndex(w=>w.id===toId); if(to<0){ WORKS.splice(from,0,m); return; }
+  if(after) to++;
+  WORKS.splice(to,0,m);
+  let n=0;
+  WORKS.forEach((w,i)=>{ const p=i+1; if(w.pos===p) return; w.pos=p; n++;
+    if(SB.on){ (PENDING[w.id]=PENDING[w.id]||[]).push({p:["pos"],v:p});
+      clearTimeout(TIMERS[w.id]); TIMERS[w.id]=setTimeout(()=>pushWork(w.id),500); } });
+  if(n&&SB.on) setSync("busy","저장 대기…");
+  render();
+}
+function bindWorkDrag(){
+  const nav=document.querySelector("#v-prod .wlist"); if(!nav) return;
+  const items=[...nav.querySelectorAll(".wi")];
+  const clear=()=>items.forEach(b=>b.classList.remove("drop-before","drop-after"));
+  const horiz=()=>getComputedStyle(nav).display==="flex";   // 좁은 화면에선 가로 목록
+  const isAfter=(b,e)=>{ const r=b.getBoundingClientRect();
+    return horiz()?e.clientX>r.left+r.width/2:e.clientY>r.top+r.height/2; };
+  items.forEach(b=>{
+    b.draggable=true; b.title="드래그해서 순서 바꾸기 (Alt+↑↓)";
+    b.addEventListener("dragstart",e=>{ DRAGGING=b.dataset.w; b.classList.add("dragging");
+      e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain",DRAGGING); });
+    b.addEventListener("dragend",()=>{ DRAGGING=null; b.classList.remove("dragging"); clear();
+      if(DEFER){ DEFER=false; render(); } });
+    b.addEventListener("dragover",e=>{ if(!DRAGGING||b.dataset.w===DRAGGING) return;
+      e.preventDefault(); e.dataTransfer.dropEffect="move"; clear();
+      b.classList.add(isAfter(b,e)?"drop-after":"drop-before"); });
+    b.addEventListener("dragleave",()=>b.classList.remove("drop-before","drop-after"));
+    b.addEventListener("drop",e=>{ e.preventDefault(); const id=DRAGGING, after=isAfter(b,e);
+      clear(); DRAGGING=null; if(id) reorderWorks(id,b.dataset.w,after); });
+    b.addEventListener("keydown",e=>{   // 키보드: Alt+↑/↓
+      if(!e.altKey||!["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) return; e.preventDefault();
+      const up=e.key==="ArrowUp"||e.key==="ArrowLeft", i=WORKS.findIndex(w=>w.id===b.dataset.w), j=i+(up?-1:1);
+      if(j<0||j>=WORKS.length) return;
+      reorderWorks(b.dataset.w,WORKS[j].id,!up);
+      const nb=document.querySelector(`#v-prod .wi[data-w="${b.dataset.w}"]`); nb&&nb.focus(); });
+  });
+}
 function renderProd(){
   if(!WORKS.length){ $("v-prod").innerHTML=`<div class="card"><p>등록된 작품이 없습니다.</p><button type="button" class="btn pri" id="addW">+ 작품 추가</button></div>`; $("addW").onclick=(e)=>{e.stopPropagation();addWork(e);}; return; }
   if(!WORKS.some(w=>w.id===SEL)) SEL=WORKS[0].id;
@@ -2183,7 +2286,7 @@ function renderProd(){
         if(k!==1) return;
         const late=bc?bdDiff(bc.e,c.e):0;
         h+=`<td class="bt wk" rowspan="${lim}">${ckBtn(c,1,s)}<button type="button" class="cl ${c.kind}${stCls(c)}" data-ep="1" data-s="${s.k}" title="${esc(s.n)} · 작품 1회 · ${c.s?ymd(c.s)+" ~ ":""}${ymd(c.e)}${c.m?"\n"+esc(c.m):""}">
-          <span class="bl">${c.gate==="info"?`1화 확인 · 일정 영향 없음`:c.due?`제작 시작 ${c.base}영업일 전까지`:`작품 1회${c.gate==="open"?" · 런칭 전":""}${s.conc?" · 동시 진행":""}`}</span><span class="dt">${mdY(c.e)}</span><span class="du">${c.due?(c.kind==="ok"?"완료":(c.e<TODAY?`<b class="ovd">기한 지남</b>`:"완료 기한")):duTxt(c,late)}</span>${c.m?`<span class="wm">${esc(c.m)}</span>`:""}</button></td>`;
+          <span class="bl">${c.gate==="info"?`1화 확인 · 일정 영향 없음`:c.due?`제작 시작 ${c.base}영업일 전까지`:`작품 1회${c.gate==="open"?" · 런칭 전":""}${s.conc?" · 동시 진행":""}`}</span><span class="dt">${mdY(c.e)}</span><span class="du">${c.due?(c.kind==="ok"?"완료":(c.e<TODAY?`<b class="ovd">기한 지남</b>`:"완료 기한")):duTxt(c,late)}</span>${c.m?`<span class="wm" data-tx data-notr>${esc(c.m)}</span>`:""}</button></td>`;
         return;
       }
       if(c.batch){
@@ -2221,6 +2324,7 @@ function renderProd(){
   $("v-prod").innerHTML=h;
 
   document.querySelectorAll(".wi").forEach(b=>b.onclick=()=>{SEL=b.dataset.w;SHOWALL=false;render();});
+  bindWorkDrag();
   $("addW").onclick=(e)=>{e.stopPropagation();addWork(e);};
   $("delW").onclick=()=>{ if(confirm(`'${w.n}' 작품을 삭제합니다. 모든 사람 화면에서 사라집니다. 계속할까요?`)) delWork(w.id); };
   if($("more")) $("more").onclick=()=>{SHOWALL=!SHOWALL;render();};
@@ -2846,7 +2950,7 @@ function renderVCal(list){
     const hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
     h+=`<div class="vday${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}" data-day="${k}"><div class="vdn">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>
       ${its.slice(0,4).map(x=>{ const od=x.kind==="next"&&x.date<key(TODAY)&&!["signed","prod","no"].includes(x.v.stage);
-        return `<button type="button" class="vev t-${x.kind==="ev"?x.type:x.kind}${x.done?" done":""}${od?" od":""}" data-cv="${x.v.id}" data-ck="${x.kind}" data-ci="${x.i??""}" title="${esc(x.v.name)} · ${esc(x.text)}${x.approx?" (대략)":""}"><b>${esc(x.v.name)}</b> ${esc(x.text)}${x.approx?" ~":""}</button>`; }).join("")}
+        return `<button type="button" class="vev t-${x.kind==="ev"?x.type:x.kind}${x.done?" done":""}${od?" od":""}" data-cv="${x.v.id}" data-ck="${x.kind}" data-ci="${x.i??""}" title="${esc(x.v.name)} · ${esc(x.text)}${x.approx?" (대략)":""}"><b>${esc(x.v.name)}</b> <span data-tx data-notr>${esc(x.text)}</span>${x.approx?" ~":""}</button>`; }).join("")}
       ${its.length>4?`<button type="button" class="vmore" data-day="${k}">+${its.length-4}건</button>`:""}</div>`; }
   h+=`</div></div>`;
   return h;
@@ -2862,7 +2966,7 @@ function vPopAt(anchor,html){ const pop=$("pop"); pop.innerHTML=html; pop.hidden
   pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+cw-356))+"px"; pop.style.top=(r.bottom+window.scrollY+4)+"px"; return pop; }
 function vDayList(day,anchor,list){
   const its=vCalItems(list).filter(x=>x.date===day);
-  vPopAt(anchor,`<h4>${md(D(day))} 일정 ${its.length}건</h4><div class="vdl">${its.map(x=>`<div class="vev t-${x.kind==="ev"?x.type:x.kind}" style="display:block;margin:3px 0"><b>${esc(x.v.name)}</b> ${esc(x.text)}</div>`).join("")}</div>
+  vPopAt(anchor,`<h4>${md(D(day))} 일정 ${its.length}건</h4><div class="vdl">${its.map(x=>`<div class="vev t-${x.kind==="ev"?x.type:x.kind}" style="display:block;margin:3px 0"><b>${esc(x.v.name)}</b> <span data-tx data-notr>${esc(x.text)}</span></div>`).join("")}</div>
     <div class="acts"><button type="button" class="btn" id="dlX">닫기</button></div>`);
   $("dlX").onclick=closePop;
 }
@@ -2927,7 +3031,7 @@ function vNextBoard(all){
     <ul>${list.map(r=>`<li class="t-${r.tag}"><span class="vnbt">${lab[r.tag]}</span>
       <button type="button" class="vnbn" data-goto="${r.v.id}">${esc(r.v.name)}</button>
       <span class="hint">${vStep(r.v.stage)+1}. ${esc(vStage(r.v.stage))} · 계약 준비 ${r.ci.done}/${r.ci.total}</span>
-      ${r.what?`<span class="vnbw">→ ${esc(r.what)}${r.v.nextDue?` <span class="hint">(${esc(r.v.nextDue.slice(5).replace("-","/"))}까지)</span>`:""}</span>`:""}
+      ${r.what?`<span class="vnbw">→ <span data-tx data-notr>${esc(r.what)}</span>${r.v.nextDue?` <span class="hint">(${esc(r.v.nextDue.slice(5).replace("-","/"))}까지)</span>`:""}</span>`:""}
       ${r.idle!=null&&r.idle>=7?`<span class="vnbi">${r.idle}일째 진행 없음</span>`:""}
       ${!r.v.next&&r.ci.rest.length?`<span class="vnbr"><span class="hint">남은 ${r.ci.rest.length}개 · 끝난 것 체크</span>${r.ci.rest.slice(0,4).map(([k,l])=>`<button type="button" class="vnbok" data-vid="${r.v.id}" data-ck="${k}" title="끝났으면 눌러서 체크">${esc(l)}</button>`).join("")}${r.ci.rest.length>4?`<button type="button" class="vnbok more" data-chk="${r.v.id}">+${r.ci.rest.length-4}</button>`:""}</span>`:""}</li>`).join("")}</ul>
     ${rows.length>LIM?`<button type="button" class="btn vnbm" style="padding:2px 10px;font-size:12px">${VNB_MORE?"접기":`외 ${rows.length-LIM}곳 더 보기`}</button>`:""}</div>`;
@@ -2970,7 +3074,8 @@ function renderVendors(){
   `;
   // 칸 = 클릭해서 바로 고치는 글자 (빈 칸은 회색 '+')
   const linkify=(t)=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,(u)=>`<a href="${u}" target="_blank" rel="noopener" class="vml">${u.length>42?u.slice(0,40)+"…":u}</a>`);
-  const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}" data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
+  const TXK=new Set(["status","keyDate","next","interest","note","price","intro"]);   // 자동 번역 대상
+  const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}"${v[k]&&TXK.has(k)?" data-tx data-notr":""} data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
   if(VVIEW==="cal"){ h+=renderVCal(L); }
   else { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>일정 및 액션</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
   L.forEach(v=>{ const od=v.nextDue&&v.nextDue<key(TODAY)&&!["signed","prod","no"].includes(v.stage);
@@ -3089,6 +3194,7 @@ function setTab(t){
 document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>setTab(b.dataset.tab)));
 document.querySelectorAll("#langSw [data-lang]").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.lang!==LANG) setLang(b.dataset.lang); }));
 document.querySelectorAll("#langSw [data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===LANG)));
+$("txSw").addEventListener("click",()=>{ TX_ON=!TX_ON; try{ localStorage.setItem("anime_autotx",TX_ON?"1":"0"); }catch(e){} render(); });
 if(LANG==="ja"){ document.documentElement.lang="ja"; document.title="アニメ公開スケジュール"; }
 TR_OBS.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["title","placeholder","aria-label"]});
 (async function init(){
