@@ -395,6 +395,30 @@ table.simt tr.allrow .in::placeholder{color:var(--muted)}
 .vev.rg-e{border-radius:0 4px 4px 0;margin-right:0;width:calc(100% + 5px)}
 .vev.rg-m,.vev.rg-e{border-left:0!important}
 .rgd{font-size:9.5px;font-weight:600;opacity:.75}
+/* 시뮬레이션 표 v2: 제작 일정 표 스타일 · 작품 칸과 결과 칸 고정 · 넘치면 표 안에서 스크롤 */
+.simtw{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:76vh;padding:0}
+table.simt{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;max-width:none;font-size:12.5px}
+table.simt th,table.simt td{padding:6px 8px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);white-space:nowrap;background:var(--surface);vertical-align:middle}
+table.simt thead th{position:sticky;top:0;z-index:5;vertical-align:bottom;text-align:left;font-size:12px;font-weight:700;color:var(--ink);line-height:1.3;border-bottom:1px solid var(--line2);padding:8px 8px 6px}
+table.simt thead th small{display:block;font-weight:400;color:var(--muted);font-size:10.5px;margin-top:1px}
+table.simt .sc0{position:sticky;left:0;z-index:3;width:34px;min-width:34px;max-width:34px;text-align:center;border-left:0}
+table.simt .sc1{position:sticky;left:34px;z-index:3;min-width:190px;border-right:1px solid var(--line2);box-shadow:4px 0 6px -4px rgba(20,24,30,.12)}
+table.simt .rs1{position:sticky;right:66px;z-index:3;min-width:104px;width:104px;border-left:1px solid var(--line2);box-shadow:-4px 0 6px -4px rgba(20,24,30,.12)}
+table.simt .rs2{position:sticky;right:0;z-index:3;min-width:66px;width:66px}
+table.simt .rs12{position:sticky;right:0;z-index:3;border-left:1px solid var(--line2);box-shadow:-4px 0 6px -4px rgba(20,24,30,.12)}
+table.simt thead .sc0,table.simt thead .sc1,table.simt thead .rs1,table.simt thead .rs2{z-index:7}
+table.simt th.rs,table.simt td.rs{background:#F7F8F5}
+table.simt tr.allrow td{background:#EEF2FC;border-bottom:2px solid var(--launch)}
+table.simt tr.sgh td{background:var(--page);padding:6px 8px}
+.sghin{position:sticky;left:8px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:12.5px}
+table.simt .sadd{float:none;padding:2px 10px;font-size:12px;font-weight:600;margin-left:6px}
+table.simt tr.off td{opacity:1} table.simt tr.off td>*{opacity:.45}
+table.simt .in{min-height:28px;padding:2px 6px;font-size:12.5px}
+table.simt .in.n{width:58px;text-align:center}
+table.simt select.in{min-width:0}
+table.simt td.lcc{min-width:0} .lch .in.t{width:132px}
+table.simt td.snm{min-width:190px} .snin{width:150px}
+.lcs{font-size:10.5px}
 /* 외주사 구분: 영상 / 성우 */
 .vkseg{display:flex;gap:6px;margin:10px 0 2px;flex-wrap:wrap}
 .vkb{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink2)}
@@ -1896,10 +1920,12 @@ function renderSim(){
   const seasonCells=(id,r,all)=>{ const k=all?"data-sa":"data-sr", idA=all?"":` data-id="${id}"`, on=r.mode==="season";
     return `<td><select class="in" ${k}="mode"${idA}>${opt(keepIf(all,MODE),r.mode)}</select>${on||(all&&r.mode==="")?` <input class="in n" type="number" min="1" max="100" ${k}="seasonN"${idA} value="${r.seasonN}" placeholder="${all?"그대로":""}">화씩`:""}</td>
       <td>${on||(all&&r.mode==="")?`<select class="in" ${k}="rest"${idA}>${opt(keepIf(all,REST),r.rest)}</select>`:`<span class="hint">–</span>`}</td>`; };
-  h+=`<h2>작품별 운영</h2><div class="card simtw"><table class="std simt"><thead><tr><th></th><th>작품</th>
-    <th>① 런칭일 <span class="hint" style="font-weight:400">◀▶ 1주씩</span></th><th class="r">② 런칭<br>회차</th><th>③ 성우</th><th class="r">④ 시즌<br>회차</th><th>⑤ 공개 주기</th><th class="r">⑥ 회차당 제작<br><span class="hint" style="font-weight:400">영업일 · 목표 7</span></th><th>⑦ 회차 길이</th><th>⑧ 시즌제</th><th>⑨ 시즌 쉼</th><th>⑩ 프리뷰 후 쉼</th>
-    <th class="rs">완결</th><th class="rs r">휴재</th></tr></thead><tbody>
-    <tr class="allrow"><td></td><td><b>전체</b> <select class="in" data-sa="scope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],A.scope)}</select></td>
+  const TH=(t,sub,cls)=>`<th${cls?` class="${cls}"`:""}>${t}<small>${sub||"&nbsp;"}</small></th>`;
+  h+=`<h2>작품별 운영</h2><div class="simtw"><table class="simt"><thead><tr><th class="sc0"></th>${TH("작품","이름 클릭해서 수정","sc1")}
+    ${TH("런칭일","◀▶ 1주씩 · 날짜 직접 입력")}${TH("런칭 회차","런칭 때 오픈")}${TH("성우","인간 · AI")}${TH("시즌 회차","총 회차")}${TH("공개 주기","주간 · 10일 · 격주")}
+    ${TH("회차당 제작","영업일 · 목표 7일")}${TH("회차 길이","분:초")}${TH("시즌제","○화씩 나눠 공개")}${TH("시즌 쉼","시즌 사이")}${TH("프리뷰 후 쉼","런칭 회차 뒤")}
+    ${TH("완결","마지막 회차","rs rs1")}${TH("휴재","제작 지연","rs rs2")}</tr></thead><tbody>
+    <tr class="allrow"><td class="sc0"></td><td class="sc1"><b>전체</b> <select class="in" data-sa="scope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],A.scope)}</select></td>
       <td><select class="in" data-sa="launchMode">${opt(keepIf(true,LM),A.launchMode)}</select>${A.launchMode==="fixed"?` <input class="in t" type="date" data-sa="launch" value="${A.launch||""}">`:""}</td>
       <td class="r"><input class="in n" type="number" min="1" max="20" data-sa="openK" value="${A.openK}" placeholder="그대로"></td>
       <td><select class="in" data-sa="voice">${opt(keepIf(true,VOI),A.voice)}</select></td>
@@ -1909,12 +1935,12 @@ function renderSim(){
       <td><select class="in" data-sa="len">${opt([["","그대로"],["cur","현재 길이"]].concat(LEN),A.len)}</select></td>
       ${seasonCells("",A,true)}
       <td><select class="in" data-sa="pgap">${opt([["keep","그대로"]].concat(PG),A.pgap===""?"keep":A.pgap==="none"?"":A.pgap)}</select></td>
-      <td colspan="2"><button type="button" class="btn pri" id="simApply">일괄 적용</button></td></tr>`;
+      <td colspan="2" class="rs rs12"><button type="button" class="btn pri" id="simApply">일괄 적용</button></td></tr>`;
   GR.forEach(([gk,gl,rows])=>{
-    h+=`<tr class="sgh ${gk}"><td colspan="14"><span class="lnd ${gk}"></span>${gl} <span class="hint">${rows.length}</span><button type="button" class="btn sadd" data-sadd="${gk}">+ ${gl} 추가</button></td></tr>`;
+    h+=`<tr class="sgh ${gk}"><td colspan="14"><div class="sghin"><span class="lnd ${gk}"></span>${gl} <span class="hint">${rows.length}</span><button type="button" class="btn sadd" data-sadd="${gk}">+ ${gl} 추가</button></div></td></tr>`;
     rows.forEach(z=>{ const {w,r,P}=z, id=w.id, hold=holdOf(w), d=P&&z.real?weeks(z.real,P.L):null, fx=r.launchMode==="fixed";
-      h+=`<tr class="${r.inc?"":"off"}"><td><input type="checkbox" data-sr="inc" data-id="${id}"${r.inc?" checked":""} aria-label="포함"></td>
-        <td class="snm"><input class="snin" data-sr="name" data-id="${id}" value="${esc(nm(w))}" aria-label="작품 이름">${w.simOnly?`<button type="button" class="vdel" data-sdel="${id}" title="시뮬레이션에서 추가한 작품 삭제">✕</button>
+      h+=`<tr class="${r.inc?"":"off"}"><td class="sc0"><input type="checkbox" data-sr="inc" data-id="${id}"${r.inc?" checked":""} aria-label="포함"></td>
+        <td class="snm sc1"><input class="snin" data-sr="name" data-id="${id}" value="${esc(nm(w))}" aria-label="작품 이름">${w.simOnly?`<button type="button" class="vdel" data-sdel="${id}" title="시뮬레이션에서 추가한 작품 삭제">✕</button>
           <div class="hint" style="white-space:nowrap">가상 작품 · 착수 <input class="in t" style="width:120px;min-height:22px;padding:0 4px" type="date" data-sr="xstart" data-id="${id}" value="${esc(w.start)}"></div>`:lineOf(w)==="int"?ageBadge(w):""}${hold?` <span class="tag ${isHire(hold)?"tbd":"pzt"}" style="font-size:10px">${isHire(hold)?"착수 대기":"중단"}</span>`:""}</td>`;
       if(!P){ h+=`<td colspan="12" class="hint">${!r.inc?"제외":"제작 일정 탭에서 착수·재개일을 정하면 계산돼요"}</td></tr>`; return; }
       h+=`<td class="lcc"><div class="lch ${fx?"fx":"au"}"><button type="button" class="lnb" data-lw="-1" data-id="${id}" data-base="${key(P.L)}" title="1주 앞당기기" aria-label="1주 앞당기기">◀</button><input class="in t" type="date" data-sr="launchDate" data-id="${id}" value="${key(P.L)}" aria-label="런칭일"><button type="button" class="lnb" data-lw="1" data-id="${id}" data-base="${key(P.L)}" title="1주 늦추기" aria-label="1주 늦추기">▶</button></div>
@@ -1929,7 +1955,7 @@ function renderSim(){
         <td>${(()=>{ const avg=simAvgLen(w); return `<select class="in" data-sr="len" data-id="${id}">${opt([["",`현재${avg?` (${fmtLen(avg)})`:""}`]].concat(LEN),r.len)}</select>${r.len&&!avg?`<div class="hint">길이 데이터가 없어 영향 없음</div>`:""}`; })()}</td>
         ${seasonCells(id,r,false)}
         <td><select class="in" data-sr="pgap" data-id="${id}">${opt(PG,r.pgap)}</select>${r.pgap!==""&&P.K<z.S.N?`<div class="pgr">${P.pw?`${P.pw}주 쉬고`:"쉬지 않고"} ${md(P.opens[P.K+1])}부터 연재</div>`:""}</td>
-        <td class="rs hint">${ymd(P.end)}${r.mode==="season"?`<div>시즌마다 ${P.rest}주 쉼</div>`:""}</td><td class="rs r">${P.hiatus?`<b style="color:var(--hia)">${P.hiatus}주</b>`:"–"}</td></tr>`; }); });
+        <td class="rs rs1 hint">${ymd(P.end)}${r.mode==="season"?`<div>시즌마다 ${P.rest}주 쉼</div>`:""}</td><td class="rs rs2 r">${P.hiatus?`<b style="color:var(--hia)">${P.hiatus}주</b>`:"–"}</td></tr>`; }); });
   h+=`</tbody></table></div>`;
   // 월간표
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1})), nowM=mi(TODAY), yb=(i)=>months[i].m===1?" y1":"";
