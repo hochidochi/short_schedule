@@ -648,11 +648,11 @@ const DEFAULT_CONF={
     {k:"contract",n:"계약 체결",         s:"계약 체결",   team:"사업 담당",        v:{ih:10,ia:10,eh:10,ea:10}, sc:"work",  gate:"none"},   // 제작 시작 2주(10영업일) 전까지
     {k:"prod1",   n:"영상 1차 제작",     s:"영상 1차",    team:"내부 제작팀",      v:{ih:7, ia:7, eh:5, ea:5},  sc:"ep",    seq:true},    // 기본값 — 작품별 '회차당 1차 제작'이 우선
     {k:"imgcut",  n:"1화 이미지 컷 확인", s:"이미지 컷",   team:"제작사 공유 · 당사 피드백 1일", v:{ih:0,ia:0,eh:2,ea:2}, sc:"work", gate:"info", anchor:{stage:"prod1",offset:0}},   // 외부: 1화 1일째 주요 컷 3~5장 공유 → 1일 내 피드백 (일정 영향 없음)
+    {k:"fb3",     n:"1~3화 통합 피드백", s:"통합 피드백", team:"작가·내부관계자",  v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3},   // 내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)
+    {k:"fix3",    n:"1~3화 통합 수정",   s:"통합 수정",   team:"내부 제작팀",      v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3, tx:"외부 제작사"},   // 내부·외부: 피드백 반영해 1~3화 한 번에 수정
     {k:"author",  n:"작가 승인",         s:"작가 승인",   team:"작가",             v:{ih:5, ia:5, eh:10,ea:10}, sc:"ep",    upto:3},      // 내부: 작가+내부 = 10
     {k:"intAppr", n:"내부 승인",         s:"내부 승인",   team:"내부관계자",       v:{ih:5, ia:5, eh:2, ea:2},  sc:"ep",    upto:{i:3,e:0}, conc:"ext"},   // 내부: 작가+내부 = 10 (1~3화) · 외부: 1~3화 병렬, 4화부터 2일   // 내부: 1~3화만 · 외부: 전 회차 (1~3화는 작가 승인과 병렬)
     {k:"ratingFb",n:"등급 분류 피드백",   s:"등급 피드백", team:"내부관계자",       v:{ih:2, ia:2, eh:2, ea:2},  sc:"ep",    upto:3, conc:"author"},   // 1~3화만 · 승인과 병렬 (추가 기간 없음)
-    {k:"fb3",     n:"1~3화 통합 피드백", s:"통합 피드백", team:"작가·내부관계자",  v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3},   // 내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)
-    {k:"fix3",    n:"1~3화 통합 수정",   s:"통합 수정",   team:"내부 제작팀",      v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3, tx:"외부 제작사"},   // 내부·외부: 피드백 반영해 1~3화 한 번에 수정
     {k:"prodF",   n:"영상 최종 수정",     s:"영상 최종",   team:"내부 제작팀",      v:{ih:5, ia:5, eh:5, ea:5},  sc:"ep",    upto:{i:3,e:0}},   // 내부: 1~3화만 · 외부: 전 회차
     {k:"trans",   n:"대사 번역",         s:"대사 번역",   team:"GW content",       v:{ih:5, ia:5, eh:0, ea:0},  sc:"batch"},  // 5회차씩 · 외부: 제작사가 대사·녹음 대본 준비 → 없음
     {k:"vtrans",  n:"영상 번역 (번인)",   s:"영상 번역",   team:"미정 (업체 선정 중)", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", conc:true, par:true, tbdDur:true},   // 대사 번역과 동시 시작 · 기간 미정 (업체 정해지면 공정 기준에서 일수 입력)
@@ -1072,8 +1072,10 @@ const VAR_LABEL={ih:"내부·인간 성우",ia:"내부·AI 성우",eh:"외부·�
 const defRate=(w)=>{const s=CONF.stages.find(x=>x.k==="prod1");return +(s.v[VARIANT(w)]||s.v.ih);};
 const FB3_OLD=["author","intAppr","ratingFb","prodF"];   // 통합 방식에서 빠지는 회차별 단계 (내부 제작 1~3화)
 const fb3On=(w)=>!!w&&!w.fbLegacy;
-/* 통합 방식: 내부·외부 똑같이 1~3화 통합 피드백·수정만 (외부 4화부터 회차별 승인은 공정 기준에서 켤 때만) */
-const durOf=(s,w)=>s.sc==="grp"&&!fb3On(w)?0:fb3On(w)&&FB3_OLD.includes(s.k)&&!(lineOf(w)==="ext"&&CONF.ext4&&!(uptoOf(s,w)>0&&uptoOf(s,w)<=3))?0:s.k==="prod1"?Math.max(1,+w.rate||defRate(w)):+((s.v||{})[VARIANT(w)]??s.h);
+/* 통합 방식: 1~3화는 통합 피드백·수정으로 대신
+   외부 제작은 4화부터 내부 승인을 회차별로 계속 (작가 승인은 없음) · 영상 최종 수정은 공정 기준에서 켤 때만 */
+const ext4Keep=(s,w)=>lineOf(w)==="ext"&&(s.k==="intAppr"||(s.k==="prodF"&&CONF.ext4));
+const durOf=(s,w)=>s.sc==="grp"&&!fb3On(w)?0:fb3On(w)&&FB3_OLD.includes(s.k)&&!ext4Keep(s,w)?0:s.k==="prod1"?Math.max(1,+w.rate||defRate(w)):+((s.v||{})[VARIANT(w)]??s.h);
 const uptoOf=(s,w)=>typeof s.upto==="object"&&s.upto?+(s.upto[lineOf(w)==="ext"?"e":"i"]||0):+(s.upto||0);
 /* conc "ext": 외부 제작에서, 같은 회차에 작가 승인이 있을 때만(1~3화) 작가 승인과 동시에 */
 const LN=(w)=>lineOf(w)==="ext"?"e":"i";
@@ -2190,7 +2192,7 @@ function renderProd(){
       <span style="background:#F4F3EC;padding:0 6px;border-radius:4px">음영 열 = ${BATCH}화 묶음 · 작품 1회 단계</span>
     </div></div>
     <div class="gridwrap"><table class="eg"><thead><tr><th class="ep">회차</th><th class="lenh">길이<small>분:초</small></th>`;
-  S.ST.forEach(s=>h+=`<th class="${s.sc!=="ep"&&s.k!=="prod1"?"dubh":""}" title="${esc(s.n)} · ${SC_LABEL[s.k==="prod1"?"ep":s.sc]}${s.sc==="ep"&&uptoOf(s,w)>0?` · 1~${uptoOf(s,w)}화만`:""}${s.sc==="work"?(s.gate==="open"?" · 런칭 전까지 완료":" · 다음 단계가 기다림"):""}">${esc(labelOf(s,w))}${s.sc==="ep"&&uptoOf(s,w)>0?` <span class="upto">1~${uptoOf(s,w)}화</span>`:""}${s.tbdDur&&!(durOf(s,w)>0)?` <span class="upto" style="background:var(--warn-bg);color:var(--warn)" title="업체·기간 미정 — 작업 챙기기용 (일정에는 영향 없음)">기간 미정</span>`:""}${!fb3On(w)&&concOf(s,w)&&(s.conc==="ext"||s.conc==="author")?` <span class="upto" title="1~3화는 작가 승인과 동시에 진행(추가 기간 없음) · 4화부터 ${durOf(s,w)}일 따로">1~3화 병렬</span>`:""}${s.sc==="grp"?` <span class="upto" title="1~${s.grp||3}화 영상 1차가 모두 끝나면 한 번에 진행">1~${s.grp||3}화 한번에</span>`:""}${s.par?` <span class="upto" title="다음 단계와 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병행</span>`:""}<small>${esc(teamOf(s,w))}</small></th>`);
+  S.ST.forEach(s=>h+=`<th class="${s.sc!=="ep"&&s.k!=="prod1"?"dubh":""}" title="${esc(s.n)} · ${SC_LABEL[s.k==="prod1"?"ep":s.sc]}${s.sc==="ep"&&uptoOf(s,w)>0?` · 1~${uptoOf(s,w)}화만`:""}${s.sc==="work"?(s.gate==="open"?" · 런칭 전까지 완료":" · 다음 단계가 기다림"):""}">${esc(labelOf(s,w))}${s.sc==="ep"&&uptoOf(s,w)>0?` <span class="upto">1~${uptoOf(s,w)}화</span>`:""}${s.tbdDur&&!(durOf(s,w)>0)?` <span class="upto" style="background:var(--warn-bg);color:var(--warn)" title="업체·기간 미정 — 작업 챙기기용 (일정에는 영향 없음)">기간 미정</span>`:""}${fb3On(w)&&ext4Keep(s,w)?` <span class="upto" title="1~3화는 통합 피드백으로 대신">4화부터</span>`:""}${!fb3On(w)&&concOf(s,w)&&(s.conc==="ext"||s.conc==="author")?` <span class="upto" title="1~3화는 작가 승인과 동시에 진행(추가 기간 없음) · 4화부터 ${durOf(s,w)}일 따로">1~3화 병렬</span>`:""}${s.sc==="grp"?` <span class="upto" title="1~${s.grp||3}화 영상 1차가 모두 끝나면 한 번에 진행">1~${s.grp||3}화 한번에</span>`:""}${s.par?` <span class="upto" title="다음 단계와 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병행</span>`:""}<small>${esc(teamOf(s,w))}</small></th>`);
   h+=`<th class="rd">최종본 완료<small>오픈 ${CONF.lockBD}영업일 전까지</small></th><th class="op">오픈일<small>${S.held?"런칭 미정":`매주 ${WD[S.L.getUTCDay()]}요일`}</small></th></tr></thead><tbody>`;
   const NR=S.held?(S.N0||0):S.N;   // 실제 계산된 회차 수
   const lim=SHOWALL?NR:Math.min(NR,Math.max(20,(S.crit||0)+2));
@@ -2363,7 +2365,7 @@ function renderStd(){
   <table class="std"><thead><tr><th>단계</th><th>담당 부서</th>${VK.map(k=>`<th class="r">${VAR_LABEL[k]}</th>`).join("")}<th>진행 단위</th><th title="비우면 전 회차">적용 회차</th><th title="다음 단계를 막지 않고 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병렬</th><th title="앞 단계와 같은 날 시작">동시 시작</th></tr></thead><tbody>`;
   st.forEach((s,i)=>{
     const num=(k)=>`<input class="in n" style="width:58px" type="number" min="0" max="120" data-i="${i}" data-c="v" data-var="${k}" value="${s.v[k]}">`;
-    h+=`<tr><td>${esc(s.n)}${s.k==="prod1"?`<div class="hint">작품별 설정이 우선 · 새 작품 기본값</div>`:s.k==="contract"?`<div class="hint">제작 시작 N영업일 전까지 (일정 영향 없음)</div>`:s.k==="casting"?`<div class="hint">내부: 첫 묶음만 +2일 · 외부: 제작 시작과 함께 3일 (일정 영향 없음)</div>`:s.k==="dub"?`<div class="hint">외부: '더빙·믹싱' 통으로 · 한 번에 한 묶음씩 · 5화 미만 묶음은 비례 단축</div>`:s.k==="imgcut"?`<div class="hint">외부 1화만 · 1일째 공유 + 1일 피드백 (영상 1차와 동시)</div>`:s.k==="dubchk"?`<div class="hint">외부 1화만 · 첫 묶음 사운드 6일차 공유 + 3일 피드백</div>`:s.k==="burn"?`<div class="hint">외부: 사운드 납품 후 당사가 회차당 1일씩 (자막 번역·입히기)</div>`:s.k==="trans"?`<div class="hint">외부: 제작사가 대사·녹음 대본 준비 (0일)</div>`:s.k==="fb3"?`<div class="hint">내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)</div>`:s.k==="fix3"?`<div class="hint">내부·외부 (외부는 제작사): 피드백 반영해 1~3화 한 번에 수정</div>`:FB3_OLD.includes(s.k)?`<div class="hint">1~3화는 '회차별'로 둔 작품만 적용${["intAppr","prodF"].includes(s.k)?" · 외부는 4화부터 회차별로 계속":""}</div>`:s.k==="vtrans"?`<div class="hint">대사 번역과 동시 시작 · 영상 속 글자 번역·번인 · <b>기간 미정</b>(0이면 일정 영향 없음, 업체 정해지면 일수 입력)</div>`:""}</td>
+    h+=`<tr><td>${esc(s.n)}${s.k==="prod1"?`<div class="hint">작품별 설정이 우선 · 새 작품 기본값</div>`:s.k==="contract"?`<div class="hint">제작 시작 N영업일 전까지 (일정 영향 없음)</div>`:s.k==="casting"?`<div class="hint">내부: 첫 묶음만 +2일 · 외부: 제작 시작과 함께 3일 (일정 영향 없음)</div>`:s.k==="dub"?`<div class="hint">외부: '더빙·믹싱' 통으로 · 한 번에 한 묶음씩 · 5화 미만 묶음은 비례 단축</div>`:s.k==="imgcut"?`<div class="hint">외부 1화만 · 1일째 공유 + 1일 피드백 (영상 1차와 동시)</div>`:s.k==="dubchk"?`<div class="hint">외부 1화만 · 첫 묶음 사운드 6일차 공유 + 3일 피드백</div>`:s.k==="burn"?`<div class="hint">외부: 사운드 납품 후 당사가 회차당 1일씩 (자막 번역·입히기)</div>`:s.k==="trans"?`<div class="hint">외부: 제작사가 대사·녹음 대본 준비 (0일)</div>`:s.k==="fb3"?`<div class="hint">내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)</div>`:s.k==="fix3"?`<div class="hint">내부·외부 (외부는 제작사): 피드백 반영해 1~3화 한 번에 수정</div>`:FB3_OLD.includes(s.k)?`<div class="hint">1~3화는 '회차별'로 둔 작품만 적용${s.k==="intAppr"?" · 외부는 4화부터 회차별로 계속":s.k==="prodF"?" · 외부 4화부터는 아래 체크를 켤 때만":""}</div>`:s.k==="vtrans"?`<div class="hint">대사 번역과 동시 시작 · 영상 속 글자 번역·번인 · <b>기간 미정</b>(0이면 일정 영향 없음, 업체 정해지면 일수 입력)</div>`:""}</td>
       <td><input class="in" style="width:130px" data-i="${i}" data-c="team" value="${esc(s.team)}" aria-label="${esc(s.n)} 담당 부서"></td>
       ${VK.map(k=>`<td class="r">${num(k)}${s.vf&&s.vf[k]!=null?`<div class="hint" style="white-space:nowrap">첫 묶음 <input class="in n" style="width:46px;min-height:24px;padding:1px 4px" type="number" min="0" max="120" data-i="${i}" data-c="vf" data-var="${k}" value="${s.vf[k]}"></div>`:""}</td>`).join("")}
       <td>${s.sc==="grp"?`<span class="hint">1~${s.grp||3}화 한번에</span>`:s.k==="contract"?`<span class="hint">작품 1회 · 기한</span>`:s.k==="prod1"?`<span class="hint">회차별 · 순차</span>`:`<select class="in" data-i="${i}" data-c="sc">${Object.entries(SC_LABEL).map(([v,t])=>`<option value="${v}"${s.sc===v?" selected":""}>${t}</option>`).join("")}</select>`}</td>
@@ -2381,7 +2383,7 @@ function renderStd(){
   ${(()=>{ const lg=WORKS.filter(w=>!fb3On(w)); return `<div class="card fb3all" style="margin-top:10px"><b>1~3화 피드백 방식</b>
     <span class="hint">한 번에(통합 피드백 → 통합 수정) ${WORKS.length-lg.length}작품 · 회차별(예전 방식) ${lg.length}작품${lg.length?`: ${lg.map(w=>esc(w.n)).join(", ")}`:""}</span>
     ${lg.length?`<button type="button" class="btn pri" id="fb3All" style="padding:3px 10px">모든 작품 한 번에로 바꾸기</button>`:""}
-    <label style="display:flex;gap:6px;align-items:center;width:100%;font-size:12.5px;color:var(--ink2)"><input type="checkbox" id="ext4"${CONF.ext4?" checked":""}> 외부 제작은 4화부터 회차마다 내부 승인(2일) · 영상 최종 수정(5일)도 진행 <span class="hint">(끄면 내부 제작과 똑같이 1~3화 통합 피드백·수정만)</span></label></div>`; })()}
+    <label style="display:flex;gap:6px;align-items:center;width:100%;font-size:12.5px;color:var(--ink2)"><input type="checkbox" id="ext4"${CONF.ext4?" checked":""}> 외부 제작은 4화부터 영상 최종 수정(5일)도 회차마다 진행 <span class="hint">(외부 4화부터 내부 승인은 항상 회차별로 진행 · 작가 승인은 1~3화 통합 피드백에만)</span></label></div>`; })()}
   <h2>오픈 규칙</h2>
   <div class="card"><div class="rules">
     <span>런칭 시 <b>${OPEN_K}화</b> 동시 오픈</span><span>이후 <b>주 1회</b></span><span><b>휴재 없음</b> — 완결까지 끊기지 않는 가장 이른 날로 런칭일 자동 결정</span>
