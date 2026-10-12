@@ -329,6 +329,10 @@ table.vt tr:hover .ve.empty .ph{opacity:1}
 .vnbok.more::before{content:""} .vnbok.more{border-style:solid}
 .vnbm{margin-top:6px;background:transparent;color:#C9CED8;border-color:#45526A}
 table.vt tr.vflash td{background:#FFF6D6!important}
+.plsum{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+.pls{display:inline-flex;align-items:baseline;gap:5px;border-radius:8px;padding:4px 10px;font-size:12px;background:var(--surface);border:1px solid var(--line)} .pls b{font-size:16px}
+.pls.lv0 b,.plb.lv0{color:var(--good)} .pls.lv1 b,.plb.lv1{color:var(--launch)} .pls.lv2 b,.plb.lv2{color:#8C5A06} .pls.lv3 b,.plb.lv3{color:#6A3D9A} .pls.no b,.plb.lvn{color:var(--bad)}
+.plb{font-size:12px;font-weight:700;white-space:nowrap} table.pltab tr.off2 td{background:#FFF7F5}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1362,7 +1366,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","런칭 플랜":"ローンチプラン","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -1642,7 +1646,8 @@ function covLine(){
 let SIM=null;
 const AVG_LEN=()=>{ const v=[]; WORKS.forEach(w=>{ const L=w.len||{}; Object.values(L).forEach(x=>{ if(+x>0) v.push(+x); }); }); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; };   // 전체 작품 회차 길이 평균(초)
 const simName=(w)=>w&&lineOf(w)==="ext"?"미정":(w&&w.n||"");   // 시뮬레이션에서는 외부 작품 이름을 '미정'으로
-const SIM_DEF=()=>({mode:"season",seasonN:SEASON_N,restW:4,restAuto:true,cad:1,openK:3,launchMode:"auto",launch:"2026-12-21",
+const SIM_DEF=()=>({plan:"auto",planDate:"2026-12-21",pilotK:2,pilotGapW:4,allowPilot:true,allowBi:true,allowSeason:true,planSeasonN:10,
+  mode:"season",seasonN:SEASON_N,restW:4,restAuto:true,cad:1,openK:3,launchMode:"auto",launch:"2026-12-21",
   buf:0,rating:false,batch:5,total:SEASON_N,ai:"keep",
   spdI:0,spdE:0,           // ① 1차 제작 속도 (%) 내부/외부 — 음수면 빨라짐
   prodPar:1,              // ② 외주 영상 1차 동시 진행 회차 수
@@ -1688,8 +1693,9 @@ function simWork(w){
 }
 /* 공개 계획: 정기 연재 / 시즌제 (시즌당 N화 → R주 시즌 휴재 후 다음 시즌) */
 function simOpens(S,o,fixedT,rest){
-  const N=S.N, K=Math.min(OPEN_K,N), cad=CAD_D, sn=Math.max(1,+o.seasonN||10), season=o.mode==="season";
-  const gap=(k)=>cad+(season&&k-1>=1&&(k-1)%sn===0?7*rest:0);
+  const pk=+o.pilotK||0, N=S.N, K=Math.min(pk||OPEN_K,N), cad=7*(+o.cad||1), pg=7*Math.max(1,+o.pilotGapW||4), sn=Math.max(1,+o.seasonN||10), season=o.mode==="season";
+  // 프리뷰(pilotK>0): 1~pk화를 먼저 오픈하고 pg 뒤부터 정규 연재
+  const gap=(k)=>(pk&&k===K+1?pg:cad)+(season&&k-1>=1&&(k-1)%sn===0?7*rest:0);
   const off=[null]; for(let k=1;k<=N;k++) off.push(k<=K?0:off[k-1]+gap(k));
   const need=(k)=>S.eps[k].need;
   let L, ok=true;
@@ -1720,6 +1726,33 @@ function simAutoRest(S,o,fixedT){
   for(let r=0;r<=52;r++){ const P=simOpens(S,o,L,r); if(P.hiatus<best.h){ best={rest:r,h:P.hiatus}; if(P.hiatus===0) break; } }
   return {rest:best.rest,L};
 }
+/* 런칭 플랜 (우선순위 자동): ① 목표일(연말) 오픈 → ② 프리뷰 1~2화 후 N주 뒤 연재 → ③ 격주 → ④ 시즌제
+   가벼운 조정부터 차례로 시도해서 '목표일에 열고 휴재 없음'이 되는 첫 방법을 고름 */
+function simPlanCands(o){
+  const pk=+o.pilotK||2, gw=+o.pilotGapW||4, sn=+o.planSeasonN||10, base={...o,mode:"regular",pilotK:0,cad:1,restAuto:true};
+  const c=[{lv:0,lab:"주 1회 · 3화 동시 오픈",o:base}];
+  const pv=o.allowPilot?{pilotK:pk,pilotGapW:gw}:{};
+  const pl=o.allowPilot?`프리뷰 ${pk}화 → ${gw}주 뒤 `:"";
+  if(o.allowPilot) c.push({lv:1,lab:`${pl}주 1회 연재`,o:{...base,...pv}});
+  if(o.allowBi) c.push({lv:2,lab:`${pl}격주 연재`,o:{...base,...pv,cad:2}});
+  if(o.allowSeason){ c.push({lv:3,lab:`${pl}주 1회 · 시즌제 (${sn}화씩)`,o:{...base,...pv,mode:"season",seasonN:sn}});
+    if(o.allowBi) c.push({lv:3,lab:`${pl}격주 · 시즌제 (${sn}화씩)`,o:{...base,...pv,cad:2,mode:"season",seasonN:sn}}); }
+  return c;
+}
+function simPlan(S,o){
+  const T=monOnOrAfter(D(o.planDate||"2026-12-21")), cs=simPlanCands(o);
+  const tryAt=(t)=>{ for(const c of cs){ let rest=0; if(c.o.mode==="season") rest=simAutoRest(S,c.o,t).rest;
+      const P=simOpens(S,c.o,t,rest); if(P.ok&&P.hiatus===0&&key(P.L)===key(t)) return {...c,P,rest,T:t}; } return null; };
+  const hit=tryAt(T); if(hit) return {...hit,fit:true};
+  // 목표일 상태 (첫 회차 준비 여부 · 휴재) 기록
+  const c0=cs[cs.length-1]; let r0=0; if(c0.o.mode==="season") r0=simAutoRest(S,c0.o,T).rest;
+  const atT=simOpens(S,c0.o,T,r0);
+  // 목표일 이후 주마다: 우선순위 순서대로 휴재 없이 되는 첫 (날짜, 방식)
+  let t=T; if(!atT.ok) t=atT.L;   // 첫 회차가 준비되는 주부터
+  for(let i=0;i<156;i++,t=addDays(t,7)){ const h=tryAt(t); if(h) return {...h,fit:false,atT,T};
+  }
+  return {...c0,P:atT,rest:r0,fit:false,atT,T};
+}
 /* 한 작품을 시뮬레이션 조건으로 계산 (mod: 작품 사본을 더 고치는 함수) */
 function simOne(w,mod){
   const o=SIM.o, x=simWork(w); if(mod) mod(x);
@@ -1737,19 +1770,21 @@ function simCompute(){
       const r=SIM.rows[w.id]; if(!r||!r.inc||(SIM.o.noAuto&&w.auto)) return;
       const x=simWork(w), S=schedule(x);
       if(S.held){ out.push({w,x,S,held:true}); return; }
+      const real=isHeld(w)?null:schedule(w).L;
+      if(o.plan==="auto"){ const pl=simPlan(S,o);
+        out.push({w,x,S,P:pl.P,rest:pl.rest,real,po:pl.o,plan:pl}); return; }
       const T=o.launchMode==="fixed"?D(o.launch):null;
       let rest=+o.restW||0, P;
       if(o.mode==="season"&&o.restAuto){ const a=simAutoRest(S,o,T); rest=a.rest; P=simOpens(S,o,a.L||T,rest); }
       else P=simOpens(S,o,T,rest);
-      const real=isHeld(w)?null:schedule(w).L;
-      out.push({w,x,S,P,rest,real});
+      out.push({w,x,S,P,rest,real,po:o});
     });
     // ⑤ 월별 신규 런칭 상한: 넘치는 작품은 다음 달 첫 월요일로 (늦게 열면 여유만 늘어남)
     if(+o.cap>0){
       const cnt={}; out.filter(r=>r.P).sort((a,b)=>a.P.L-b.P.L).forEach(r=>{
         let L=r.P.L, moved=false;
         while((cnt[mi(L)]||0)>=+o.cap){ const y=L.getUTCFullYear(), m=L.getUTCMonth(); L=monOnOrAfter(D(`${m===11?y+1:y}-${String(m===11?1:m+2).padStart(2,"0")}-01`)); moved=true; }
-        if(moved){ const was=r.P.L; r.P=simOpens(r.S,o,L,r.rest); r.capShift=weeks(was,r.P.L); }
+        if(moved){ const was=r.P.L; r.P=simOpens(r.S,r.po||o,L,r.rest); r.capShift=weeks(was,r.P.L); }
         cnt[mi(r.P.L)]=(cnt[mi(r.P.L)]||0)+1; });
     }
     // ⑥ 최소 공개 작품 수 목표: 모자라는 주마다 외부 프로젝트를 역산해 추가
@@ -1798,7 +1833,15 @@ function renderSim(){
       <div><p class="lead">시뮬레이션</p><p class="lead-sub">확정된 공정 기준과 작품 일정을 바탕으로 조건만 바꿔 봐요. <b>여기서 바꾼 값은 저장되지 않고 실제 일정에도 영향이 없어요.</b></p></div>
       <button type="button" class="btn" id="simReset">현재 확정 일정으로 되돌리기</button></div>
     <div class="card simopt">
-      <span class="sog">연재·런칭</span>
+      <span class="sog">런칭 플랜</span>
+      <label class="hl">방식${sel("plan",[["auto","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)"],["manual","직접 설정 (아래 연재·런칭)"]],o.plan)}</label>
+      ${o.plan==="auto"?`<label>① 목표 오픈일<input class="in t" type="date" data-so="planDate" value="${o.planDate}"></label>
+      <label class="cb"><span><input type="checkbox" data-so="allowPilot"${o.allowPilot?" checked":""}> ② 프리뷰 먼저 오픈</span></label>
+      ${o.allowPilot?`<label>프리뷰 회차${sel("pilotK",[[1,"1화"],[2,"2화"]],o.pilotK)}</label><label>본 연재 시작<span style="display:flex;gap:4px;align-items:center"><input class="in n" type="number" min="1" max="12" data-so="pilotGapW" value="${o.pilotGapW}"> 주 뒤</span></label>`:""}
+      <label class="cb"><span><input type="checkbox" data-so="allowBi"${o.allowBi?" checked":""}> ③ 격주 허용</span></label>
+      <label class="cb"><span><input type="checkbox" data-so="allowSeason"${o.allowSeason?" checked":""}> ④ 시즌제 허용</span></label>
+      ${o.allowSeason?`<label>시즌당 화수 (시즌제 쓸 때)<input class="in n" type="number" min="3" max="60" data-so="planSeasonN" value="${o.planSeasonN}"></label>`:""}`:""}
+      <span class="sog">연재·런칭${o.plan==="auto"?` <span class="hint" style="font-weight:400">— 우선순위 자동일 때는 작품마다 위 순서대로 정해져요</span>`:""}</span>
       <label>연재 방식${sel("mode",[["regular","정기 연재 (계속)"],["season","시즌제"]],o.mode)}</label>
       ${o.mode==="season"?`<label>시즌당 화수<input class="in n" type="number" min="1" max="100" data-so="seasonN" value="${o.seasonN}"></label>
       <label>시즌 사이 휴재<span style="display:flex;gap:6px;align-items:center">${sel("restAuto",[["1","자동 (제작 지연 휴재가 가장 적은 최소 기간)"],["0","직접 입력"]],o.restAuto?"1":"0")}
@@ -1841,6 +1884,22 @@ function renderSim(){
       <table class="std"><thead><tr><th>외부 작품</th><th>늦어도 착수</th><th>런칭</th><th>마지막 회차</th></tr></thead><tbody>${N_.add.map(a=>`<tr><td><b>${a.n}</b></td><td><b>${ymd(a.start)}</b></td><td>${ymd(a.L)}</td><td>${ymd(a.end)}</td></tr>`).join("")}</tbody></table>`
       :`<p style="margin:0">지금 조건으로 <b>매주 ${N_.M}작품 이상</b> 공개돼요. 추가 프로젝트가 필요 없어요.</p>`}
       ${N_.hard.length?`<p class="hint" style="margin:8px 0 0">지금 착수해도 맞출 수 없는 주가 ${N_.hard.length}주 있어요 (첫 주: ${ymd(N_.hard[0])}). 기존 작품의 런칭 조정이나 제작 속도 옵션으로만 메울 수 있어요.</p>`:""}</div>`; }
+  // 런칭 플랜 결과
+  if(o.plan==="auto"){ const PR=R.filter(r=>r.plan), yeD=D("2026-12-31");
+    const LV=["주 1회 그대로","프리뷰 후 주 1회","격주","시즌제"], cntLv=(lv)=>PR.filter(r=>r.plan.fit&&r.plan.lv===lv).length;
+    const ye=PR.filter(r=>r.P.L<=yeD).length, nofit=PR.filter(r=>!r.plan.fit);
+    h+=`<h2>런칭 플랜 <span class="hint" style="font-weight:400">목표 ${ymd(D(o.planDate))} · 가벼운 조정부터 차례로 적용 · 휴재 없음 기준</span></h2>
+    <div class="plsum">${LV.map((l,i)=>`<span class="pls lv${i}"><b>${cntLv(i)}</b>${l}</span>`).join("")}<span class="pls no"><b>${nofit.length}</b>목표일 불가</span>
+      <span class="hint">→ ${ymd(D(o.planDate))}에 휴재 없이 여는 작품 <b>${PR.length-nofit.length}개</b> · <b>${D(o.planDate).getUTCFullYear()}년 안에 오픈 ${PR.filter(r=>r.P.L.getUTCFullYear()===D(o.planDate).getUTCFullYear()).length}개</b></span></div>
+    <div class="card" style="overflow-x:auto;padding:0"><table class="std simt pltab"><thead><tr><th>작품</th><th>적용 방식</th><th>첫 오픈</th><th>본 연재 시작</th><th>마지막 회차</th><th class="r">휴재</th><th>메모</th></tr></thead><tbody>
+    ${PR.sort((a,b)=>(a.plan.fit?0:1)-(b.plan.fit?0:1)||a.plan.lv-b.plan.lv||a.P.L-b.P.L).map(r=>{ const pl=r.plan, P=r.P, pk=+(pl.o.pilotK||0);
+      const reg=pk?P.opens[Math.min(pk+1,r.S.N)]:P.L;
+      const memo=pl.fit?(pl.o.mode==="season"?`시즌마다 ${r.rest}주 시즌 휴재`:""):
+        `${ymd(pl.T)}엔 ${pl.atT&&!pl.atT.ok?`첫 회차 준비 안 됨`:`휴재 ${pl.atT?pl.atT.hiatus:"?"}주 생김`} → <b>${ymd(P.L)}</b>에 위 방식으로${pl.o.mode==="season"?` · 시즌마다 ${r.rest}주 시즌 휴재`:""}`;
+      return `<tr class="${pl.fit?"":"off2"}"><td><span class="lnd ${lineOf(r.x)}"></span><b>${esc(simName(r.x))}</b></td>
+        <td><span class="plb lv${pl.fit?pl.lv:"n"}">${esc(pl.lab)}</span></td><td><b>${ymd(P.L)}</b>${pk?` <span class="hint">${pk}화</span>`:""}</td>
+        <td>${pk?ymd(reg):`<span class="hint">같은 날</span>`}</td><td class="hint">${ymd(P.end)}</td>
+        <td class="r">${P.hiatus?`<b style="color:var(--hia)">${P.hiatus}주</b>`:"–"}</td><td class="hint vwrap">${memo}</td></tr>`; }).join("")}</tbody></table></div>`; }
   // 월간표
   h+=`<h2>월간 오픈 일정 (시뮬레이션)</h2><div class="calwrap fit"><table class="cal fit"><colgroup><col class="rlc">${months.map(()=>`<col>`).join("")}</colgroup>
     <thead><tr><th class="rl yr" rowspan="2" style="vertical-align:bottom;padding-bottom:6px">작품</th>${[...Array(NY)].map((_,i)=>`<th class="yr y1" colspan="12">${Y0+i}년</th>`).join("")}</tr><tr>`
@@ -1851,9 +1910,11 @@ function renderSim(){
     for(let i=pf;i<Math.min(lm,NM);i++) c[i].st="prod";
     for(let k=1;k<=r.S.N;k++){ const i=mi(P.opens[k]); if(i>=0&&i<NM) c[i].n++; }
     const restM=new Set();   // 계획된 시즌 휴재가 있는 달
-    if(o.mode==="season") for(let k=2;k<=r.S.N;k++) if((k-1)%o.seasonN===0) for(let j=0;j<r.rest;j++){ const t=addDays(P.opens[k-1],CAD_D+7*j); restM.add(mi(t)); }
+    const po=r.po||o, pcad=7*(+po.cad||1), ppk=+po.pilotK||0;
+    if(po.mode==="season") for(let k=2;k<=r.S.N;k++) if((k-1)%po.seasonN===0) for(let j=0;j<r.rest;j++){ const t=addDays(P.opens[k-1],pcad+7*j); restM.add(mi(t)); }
+    if(ppk) for(let j=1;j<(+po.pilotGapW||4);j++){ restM.add(mi(addDays(P.L,7*j))); }   // 프리뷰 뒤 대기 기간
     for(let i=Math.max(0,lm);i<=Math.min(em,NM-1);i++){ c[i].st=i===lm?"launch":i===em?"end":(c[i].n?"serial":(restM.has(i)?"rest":"gaponly")); on[i]+=c[i].n?1:0; }
-    if(P.hiatus){ for(let k=2;k<=r.S.N;k++){ const exp=addDays(P.opens[k-1],(o.mode==="season"&&(k-1)%o.seasonN===0?7*r.rest:0)+CAD_D*1);
+    if(P.hiatus){ for(let k=2;k<=r.S.N;k++){ const exp=addDays(P.opens[k-1],(po.mode==="season"&&(k-1)%po.seasonN===0?7*r.rest:0)+(ppk&&k===ppk+1?7*(+po.pilotGapW||4):pcad));
       for(let t=exp;t<P.opens[k];t=addDays(t,7)){ const j=mi(t); if(j>=0&&j<NM) c[j].g++; } } }
     if(lm>=0&&lm<NM) lb[lm]++;
     return c; });
@@ -1909,7 +1970,8 @@ function renderSim(){
   document.querySelectorAll("#v-sim [data-so]").forEach(el=>el.onchange=()=>{ const k=el.dataset.so; let v=el.value;
     if(["seasonN","restW","openK","batch"].includes(k)) v=parseInt(v,10)||SIM_DEF()[k];
     if(k==="restAuto"||k==="rating") v=v==="1";
-    if(k==="noAuto") v=el.checked;
+    if(["noAuto","allowPilot","allowBi","allowSeason"].includes(k)) v=el.checked;
+    if(["pilotK","pilotGapW","planSeasonN"].includes(k)) v=parseInt(v,10)||SIM_DEF()[k];
     if(["spdI","spdE","lenCut","prodPar","sndPar","cap","target","delayW"].includes(k)) v=+v;
     if(k==="author"||k==="intAppr") v=v===""?"":clamp(parseInt(v,10)||0,0,60);
     if(k==="total") v=v?parseInt(v,10):"";
