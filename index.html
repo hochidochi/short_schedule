@@ -375,6 +375,16 @@ table.simt td.lcc{min-width:200px}
 .simpre{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;border-left:4px solid var(--launch);font-size:13px}
 .simpre .in{min-height:28px;padding:2px 6px;font-size:12.5px}
 .pgr{margin-top:3px;font-size:11px;font-weight:600;color:var(--launch);white-space:nowrap}
+/* 시뮬레이션 표: 화면 폭 전체 사용 · 입력칸 넉넉하게 */
+table.simt{width:100%;max-width:none}
+table.simt th,table.simt td{padding:8px 10px}
+table.simt .in{min-height:32px;font-size:13px}
+table.simt .in.n{width:76px;text-align:center}
+table.simt select.in{min-width:92px}
+table.simt td.lcc{min-width:250px} .lch .in.t{width:150px}
+table.simt .sins,table.simt td{white-space:nowrap}
+table.simt td.snm{min-width:200px} .snin{width:170px}
+table.simt tr.allrow .in::placeholder{color:var(--muted)}
 /* 외주사 구분: 영상 / 성우 */
 .vkseg{display:flex;gap:6px;margin:10px 0 2px;flex-wrap:wrap}
 .vkb{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink2)}
