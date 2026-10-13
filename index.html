@@ -2232,7 +2232,7 @@ function renderProcCal(){
   const pool=WORKS.filter(w=>lineOf(w)==="int"||PCX), col={}; WORKS.forEach((w,i)=>col[w.id]=PC_COL[i%PC_COL.length]);
   const on=pool.filter(w=>!PC_OFF.has(w.id));
   const items=pcItems(on), {y,m}=PCAL, first=D(`${y}-${String(m+1).padStart(2,"0")}-01`);
-  let start=first; while(start.getUTCDay()!==1) start=addDays(start,-1);
+  let start=first; while(start.getUTCDay()!==0) start=addDays(start,-1);
   let h=`<div class="card pcbar">
       <div class="pcrow"><b>작품</b>${pool.map(w=>`<button type="button" class="pcw${PC_OFF.has(w.id)?"":" on"}" data-pcw="${w.id}" style="--c:${col[w.id]}"><i></i>${esc(w.n)}</button>`).join("")}
         <span class="vsp"></span><button type="button" class="btn sm" data-pcall="1">모두 켜기</button><button type="button" class="btn sm" data-pcall="0">모두 끄기</button>
@@ -2242,12 +2242,12 @@ function renderProcCal(){
     <div class="vcalbar"><button type="button" class="btn" data-pcm="-1" aria-label="이전 달">‹</button><b class="vcalt">${y}년 ${m+1}월</b><button type="button" class="btn" data-pcm="1" aria-label="다음 달">›</button>
       <button type="button" class="btn" data-pcm="0" style="padding:3px 10px;font-size:12px">이번 달</button>
       <span class="hint">${on.length}작품 · 이번 달 공정 ${items.filter(x=>x.to>=key(start)&&x.from<=key(addDays(start,41))).length}건</span></div>
-    <div class="vcal pcal"><div class="vcalh">${["월","화","수","목","금","토","일"].map(d=>`<div>${d}</div>`).join("")}</div><div class="vcalg">`;
+    <div class="vcal pcal"><div class="vcalh">${["일","월","화","수","목","금","토"].map(d=>`<div>${d}</div>`).join("")}</div><div class="vcalg">`;
   for(let i=0;i<42;i++){ const d=addDays(start,i), k=key(d), inM=d.getUTCMonth()===m;
-    if(i>=35&&!inM&&d.getUTCDay()===1) break;
+    if(i>=35&&!inM&&d.getUTCDay()===0) break;
     const its=items.filter(x=>x.from<=k&&k<=x.to), hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
     h+=`<div class="vday pday${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}"><div class="vdn">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>
-      ${its.slice(0,6).map(x=>{ const pos=x.from===x.to?"one":k===x.from?"s":k===x.to?"e":"m", lab=pos==="one"||pos==="s"||d.getUTCDay()===1||d.getUTCDate()===1;
+      ${its.slice(0,6).map(x=>{ const pos=x.from===x.to?"one":k===x.from?"s":k===x.to?"e":"m", lab=pos==="one"||pos==="s"||d.getUTCDay()===0||d.getUTCDate()===1;
         return `<button type="button" class="pcb rg-${pos}${x.ok?" ok":""}${x.late?" late":""}" style="--c:${col[x.w.id]}" data-pgo="${x.w.id}" data-pk="${x.k}" data-ps="${x.st.k}"
           title="${esc(x.w.n)} · ${x.ep?x.ep+" · ":""}${esc(labelOf(x.st,x.w))} · ${x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`}${x.ok?" · 완료":x.late?" · 예정일 지남":""}">${lab?`<b>${esc(x.w.n)}</b> ${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))}`:"&nbsp;"}</button>`; }).join("")}
       ${its.length>6?`<span class="pcmore" title="${esc(its.slice(6).map(x=>`${x.w.n} ${x.ep} ${labelOf(x.st,x.w)}`).join("\n"))}">+${its.length-6}건</span>`:""}</div>`; }
@@ -3009,10 +3009,10 @@ function vCalItems(list){
   list.forEach(v=>{
     (v.events||[]).forEach((e,i)=>{ if(!e.date) return;
       const base={v,kind:"ev",i,text:e.text||"",type:e.type||"etc",done:!!e.done};
-      if(e.to&&e.to>e.date){   // 기간 일정: 시작~종료 날마다 표시 (첫날·월요일에만 이름)
+      if(e.to&&e.to>e.date){   // 기간 일정: 시작~종료 날마다 표시 (첫날·일요일에만 이름)
         const a=D(e.date), b=D(e.to), rng=`${md(a)}~${md(b)}`;
         for(let d=a,n=0;d<=b&&n<370;d=addDays(d,1),n++){ const k=key(d);
-          out.push({...base,date:k,rng,from:e.date,to:e.to,pos:k===e.date?"s":k===e.to?"e":"m",lab:k===e.date||d.getUTCDay()===1}); }
+          out.push({...base,date:k,rng,from:e.date,to:e.to,pos:k===e.date?"s":k===e.to?"e":"m",lab:k===e.date||d.getUTCDay()===0}); }
       } else out.push({...base,date:e.date}); });
     if(v.nextDue) out.push({v,kind:"next",date:v.nextDue,text:v.next||"다음 액션",done:false});
     const p=vParseKey(v.keyDate); if(p) out.push({v,kind:"key",date:key(p.d),text:v.keyDate,approx:p.approx});
@@ -3022,16 +3022,16 @@ function vCalItems(list){
 function renderVCal(list){
   if(!VCAL) VCAL={y:TODAY.getUTCFullYear(),m:TODAY.getUTCMonth()};
   const {y,m}=VCAL, first=D(`${y}-${String(m+1).padStart(2,"0")}-01`);
-  let start=first; while(start.getUTCDay()!==1) start=addDays(start,-1);   // 월요일 시작
+  let start=first; while(start.getUTCDay()!==0) start=addDays(start,-1);   // 일요일 시작
   const items=vCalItems(list), byDay={}; items.forEach(x=>(byDay[x.date]=byDay[x.date]||[]).push(x));
   const monthItems=items.filter(x=>x.date.slice(0,7)===key(first).slice(0,7));
   let h=`<div class="vcalbar"><button type="button" class="btn" data-cm="-1">‹</button><b class="vcalt">${y}년 ${m+1}월</b><button type="button" class="btn" data-cm="1">›</button>
     <button type="button" class="btn" data-cm="0" style="padding:3px 10px;font-size:12px">오늘</button>
     <span class="hint">이번 달 ${monthItems.length}건 · 날짜 칸을 누르면 일정을 추가해요</span><span class="vsp"></span>
     <span class="vleg">${VF.kind?"":V_KINDS.map(([k,l])=>`<span class="vkt k-${k}">${l}</span>`).join("")}${V_EVT.map(([k,l])=>`<span class="vev t-${k}">${l}</span>`).join("")}<span class="vev t-next">다음 액션</span><span class="vev t-key">주요 일정</span></span></div>
-  <div class="vcal"><div class="vcalh">${["월","화","수","목","금","토","일"].map(d=>`<div>${d}</div>`).join("")}</div><div class="vcalg">`;
+  <div class="vcal"><div class="vcalh">${["일","월","화","수","목","금","토"].map(d=>`<div>${d}</div>`).join("")}</div><div class="vcalg">`;
   for(let i=0;i<42;i++){ const d=addDays(start,i), k=key(d), inM=d.getUTCMonth()===m, its=(byDay[k]||[]).sort((a,b)=>(a.kind==="ev"?0:1)-(b.kind==="ev"?0:1));
-    if(i>=35&&!inM&&d.getUTCDay()===1) break;
+    if(i>=35&&!inM&&d.getUTCDay()===0) break;
     const hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
     h+=`<div class="vday${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}" data-day="${k}"><div class="vdn">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>
       ${its.sort((a,b)=>(b.rng?1:0)-(a.rng?1:0)||(a.from||"").localeCompare(b.from||"")).slice(0,4).map(x=>{ const od=x.kind==="next"&&x.date<key(TODAY)&&!["signed","prod","no"].includes(x.v.stage);
