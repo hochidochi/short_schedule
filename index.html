@@ -428,7 +428,7 @@ table.simt td.snm{min-width:190px} .snin{width:150px}
 .pcw.on{color:var(--ink);border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)} .pcw.on i{opacity:1}
 .pcg.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .pcx{display:flex;gap:5px;align-items:center;font-size:12px;color:var(--ink2)}
-.pcal .vday.pday{min-height:118px;gap:1px;overflow:hidden}
+.pcal .vday.pday{min-height:132px;gap:1px;overflow:hidden}
 .pcb{display:block;width:calc(100% + 10px);margin:0 -5px;text-align:left;border:0;border-radius:0;padding:2px 6px;font:inherit;font-size:10.5px;line-height:1.3;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   background:color-mix(in srgb,var(--c) 18%,#fff);color:color-mix(in srgb,var(--c) 75%,#000);box-shadow:inset 0 2px 0 var(--c)}
 .pcb b{font-weight:800}
@@ -436,7 +436,10 @@ table.simt td.snm{min-width:190px} .snin{width:150px}
 .pcb.rg-one{border-radius:4px;margin:0;width:100%}
 .pcb.ok{opacity:.45} .pcb.late{box-shadow:inset 0 0 0 1.5px var(--bad);color:var(--bad)}
 .pcb:hover{filter:brightness(.95)}
-.pcmore{font-size:10.5px;color:var(--launch);padding:0 4px;cursor:default}
+.pcmore{border:0;background:none;font:inherit;font-size:10.5px;font-weight:700;color:var(--launch);padding:1px 4px;cursor:pointer;text-align:left}
+.pcmore:hover{text-decoration:underline}
+.pcl{display:flex;flex-direction:column;gap:3px;max-height:360px;overflow:auto;margin:8px 0}
+.pcl .pcb{white-space:normal;font-size:11.5px;padding:4px 8px}
 /* 외주사 구분: 영상 / 성우 */
 .vkseg{display:flex;gap:6px;margin:10px 0 2px;flex-wrap:wrap}
 .vkb{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink2)}
@@ -2211,7 +2214,7 @@ let PVIEW=(()=>{ try{ return localStorage.getItem("anime_pview")||"table"; }catc
 let PCAL=null, PCX=false;
 const pcLs=(k)=>{ try{ return JSON.parse(localStorage.getItem(k)||"[]")||[]; }catch(e){ return []; } };
 const PC_OFF=new Set(pcLs("anime_pc_off")), PC_GOFF=new Set(pcLs("anime_pc_goff"));
-const PC_GROUPS=[["video","영상",["prod1","fb3","fix3","prodF","imgcut"]],["appr","승인·피드백",["author","intAppr","ratingFb","dubchk","contract"]],
+const PC_GROUPS=[["video","영상",["prod1","fix3","prodF","imgcut"]],["appr","승인·피드백",["fb3","author","intAppr","ratingFb","dubchk","contract"]],
   ["trans","번역",["trans","vtrans","subtr"]],["sound","사운드",["script","casting","dub","mix"]],["final","자막·등급",["burn","rating"]]];
 const pcGroup=(k)=>(PC_GROUPS.find(g=>g[2].includes(k))||["etc"])[0];
 const PC_COL=["#2B6FD0","#D9622B","#2E9B6A","#8E44C9","#C9384F","#1C9BAA","#B8860B","#5A6B7D","#D14E9A","#4C7A1E","#7A4E2B","#3C4FB5"];
@@ -2223,9 +2226,10 @@ function pcItems(works){
         const kk=ovKey(c,st,k); if(seen.has(kk)) return; seen.add(kk);
         const from=c.due||c.gate==="info"&&!c.s?c.e:(c.s||c.e);
         out.push({w,st,k:c.work?1:c.batch?c.batch[0]:k,from:key(from<=c.e?from:c.e),to:key(c.e),
-          ep:c.work?"":c.batch?`${c.batch[0]}~${c.batch[1]}화`:`${k}화`,ok:isOk(c),late:!isOk(c)&&c.e<TODAY,pin:!!(c.kind==="fix"||((w.ov||{})[kk]||{}).s)}); }); }
+          ep:c.work?"":c.batch?`${c.batch[0]}~${c.batch[1]}화`:`${k}화`,ok:isOk(c),late:!isOk(c)&&c.e<TODAY,m:c.m||"",pin:!!(c.kind==="fix"||((w.ov||{})[kk]||{}).s)}); }); }
   });
-  return out.sort((a,b)=>a.from.localeCompare(b.from)||(a.w.pos||0)-(b.w.pos||0));
+  const PRI={fb3:0,author:0,intAppr:0,ratingFb:0,fix3:1,prodF:1};   // 승인·피드백 → 수정 → 나머지 순으로 위에
+  return out.sort((a,b)=>((PRI[a.st.k]??2)-(PRI[b.st.k]??2))||a.from.localeCompare(b.from)||(a.w.pos||0)-(b.w.pos||0));
 }
 function renderProcCal(){
   if(!PCAL) PCAL={y:TODAY.getUTCFullYear(),m:TODAY.getUTCMonth()};
@@ -2247,15 +2251,22 @@ function renderProcCal(){
     if(i>=35&&!inM&&d.getUTCDay()===0) break;
     const its=items.filter(x=>x.from<=k&&k<=x.to), hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
     h+=`<div class="vday pday${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}"><div class="vdn">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>
-      ${its.slice(0,6).map(x=>{ const pos=x.from===x.to?"one":k===x.from?"s":k===x.to?"e":"m", lab=pos==="one"||pos==="s"||d.getUTCDay()===0||d.getUTCDate()===1;
+      ${its.slice(0,PC_MAX).map(x=>{ const pos=x.from===x.to?"one":k===x.from?"s":k===x.to?"e":"m", lab=pos==="one"||pos==="s"||d.getUTCDay()===0||d.getUTCDate()===1;
         return `<button type="button" class="pcb rg-${pos}${x.ok?" ok":""}${x.late?" late":""}" style="--c:${col[x.w.id]}" data-pgo="${x.w.id}" data-pk="${x.k}" data-ps="${x.st.k}"
-          title="${esc(x.w.n)} · ${x.ep?x.ep+" · ":""}${esc(labelOf(x.st,x.w))} · ${x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`}${x.ok?" · 완료":x.late?" · 예정일 지남":""}">${lab?`<b>${esc(x.w.n)}</b> ${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))}`:"&nbsp;"}</button>`; }).join("")}
-      ${its.length>6?`<span class="pcmore" title="${esc(its.slice(6).map(x=>`${x.w.n} ${x.ep} ${labelOf(x.st,x.w)}`).join("\n"))}">+${its.length-6}건</span>`:""}</div>`; }
+          title="${esc(x.w.n)} · ${x.ep?x.ep+" · ":""}${esc(labelOf(x.st,x.w))} · ${x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`}${x.ok?" · 완료":x.late?" · 예정일 지남":""}${x.m?`\n${esc(x.m)}`:""}">${lab?`<b>${esc(x.w.n)}</b> ${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))}`:"&nbsp;"}</button>`; }).join("")}
+      ${its.length>PC_MAX?`<button type="button" class="pcmore" data-pday="${k}">+${its.length-PC_MAX}건 더 보기</button>`:""}</div>`; }
   h+=`</div></div>
     <div class="legend"><span><i style="background:#2B6FD0"></i>작품별 색</span><span><i style="background:#2B6FD0;opacity:.4"></i>완료</span><span><i style="background:#fff;box-shadow:inset 0 0 0 2px var(--bad)"></i>예정일 지남 · 완료 확인 필요</span></div>`;
   return h;
 }
+const PC_MAX=7;
 function bindProcCal(){
+  document.querySelectorAll("#v-prod [data-pday]").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); const k=b.dataset.pday;
+    const on=WORKS.filter(w=>(lineOf(w)==="int"||PCX)&&!PC_OFF.has(w.id)), its=pcItems(on).filter(x=>x.from<=k&&k<=x.to);
+    const pop=vPopAt(b,`<h4>${md(D(k))} 공정 ${its.length}건</h4><div class="pcl">${its.map(x=>`<button type="button" class="pcb rg-one${x.ok?" ok":""}${x.late?" late":""}" style="--c:${PC_COL[WORKS.indexOf(x.w)%PC_COL.length]}" data-pgo="${x.w.id}" data-pk="${x.k}" data-ps="${x.st.k}"><b>${esc(x.w.n)}</b> ${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))} <span class="hint">${x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`}</span></button>`).join("")}</div>
+      <div class="acts"><button type="button" class="btn" id="pcX2">닫기</button></div>`);
+    $("pcX2").onclick=closePop;
+    pop.querySelectorAll("[data-pgo]").forEach(x=>x.onclick=()=>{ $("pop").hidden=true; SEL=x.dataset.pgo; FOCUS={k:+x.dataset.pk,s:x.dataset.ps}; SHOWALL=+x.dataset.pk>20?true:SHOWALL; PVIEW="table"; try{ localStorage.setItem("anime_pview","table"); }catch(err){} render(); }); });
   const saveOff=()=>{ lsSet("anime_pc_off",[...PC_OFF]); lsSet("anime_pc_goff",[...PC_GOFF]); };
   document.querySelectorAll("#v-prod [data-pcw]").forEach(b=>b.onclick=()=>{ const id=b.dataset.pcw; PC_OFF.has(id)?PC_OFF.delete(id):PC_OFF.add(id); saveOff(); render(); });
   document.querySelectorAll("#v-prod [data-pcall]").forEach(b=>b.onclick=()=>{ WORKS.forEach(w=>{ if(lineOf(w)==="int"||PCX){ b.dataset.pcall==="1"?PC_OFF.delete(w.id):PC_OFF.add(w.id); } }); saveOff(); render(); });
