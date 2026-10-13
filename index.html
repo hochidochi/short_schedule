@@ -443,6 +443,22 @@ table.simt td.snm{min-width:190px} .snin{width:150px}
 .pcmore:hover{text-decoration:underline}
 .pcl{display:flex;flex-direction:column;gap:3px;max-height:360px;overflow:auto;margin:8px 0}
 .pcl .pcb{white-space:normal;font-size:11.5px;padding:4px 8px}
+/* 공정 캘린더: 주 단위 막대 */
+.pweeks{display:flex;flex-direction:column}
+.pwk{position:relative;border-top:1px solid var(--line);min-height:132px}
+.pwbg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,1fr)}
+.pwd{border-right:1px solid var(--line);cursor:copy} .pwd:hover{background:#F6F8FE}
+.pwd.out{background:#FAFAF8} .pwd.today{box-shadow:inset 0 0 0 2px var(--now)}
+.pwfg{position:relative;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:20px;grid-template-rows:24px;row-gap:2px;padding-bottom:6px;pointer-events:none}
+.pwn{font-size:12px;font-weight:700;color:var(--ink2);padding:4px 6px;display:flex;gap:4px;align-items:center}
+.pwn.out{color:#C3C6BF} .pwn.off{color:var(--bad)}
+.pslot{padding:0 3px;min-width:0;pointer-events:auto}
+.pslot .pcb{width:100%;margin:0;height:20px;border-radius:5px}
+.pslot .pcb.cont-l{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:-3px;width:calc(100% + 3px)}
+.pslot .pcb.cont-r{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:-3px;width:calc(100% + 3px)}
+.pslot .pcb.cont-l.cont-r{width:calc(100% + 6px)}
+.pcc{font-weight:500;opacity:.7;font-size:10px}
+.pwfg .pcmore{pointer-events:auto;justify-self:start}
 /* 외주사 구분: 영상 / 성우 */
 .vkseg{display:flex;gap:6px;margin:10px 0 2px;flex-wrap:wrap}
 .vkb{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink2)}
@@ -2251,17 +2267,32 @@ function renderProcCal(){
     <div class="vcalbar"><button type="button" class="btn" data-pcm="-1" aria-label="이전 달">‹</button><b class="vcalt">${y}년 ${m+1}월</b><button type="button" class="btn" data-pcm="1" aria-label="다음 달">›</button>
       <button type="button" class="btn" data-pcm="0" style="padding:3px 10px;font-size:12px">이번 달</button>
       <span class="hint">${on.length}작품 · 이번 달 공정 ${items.filter(x=>x.to>=key(start)&&x.from<=key(addDays(start,41))).length}건</span></div>
-    <div class="vcal pcal"><div class="vcalh">${["일","월","화","수","목","금","토"].map(d=>`<div>${d}</div>`).join("")}</div><div class="vcalg">`;
-  for(let i=0;i<42;i++){ const d=addDays(start,i), k=key(d), inM=d.getUTCMonth()===m;
-    if(i>=35&&!inM&&d.getUTCDay()===0) break;
-    const its=items.filter(x=>x.from<=k&&k<=x.to), hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
-    h+=`<div class="vday pday${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}" data-pnew="${k}"><div class="vdn">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>
-      ${its.slice(0,PC_MAX).map(x=>{ const pos=x.from===x.to?"one":k===x.from?"s":k===x.to?"e":"m", lab=pos==="one"||pos==="s"||d.getUTCDay()===0||d.getUTCDate()===1;
-        if(x.memo) return `<button type="button" class="pcb pcm rg-${pos}${x.ok?" ok":""}" style="--c:${col[x.w.id]}" data-pmemo="${x.w.id}" data-pmi="${x.i}"
-          title="${esc(x.w.n)} · ${esc(x.text)} · ${x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`} (메모 일정 · 공정에는 반영 안 됨)">${lab?`<b>${esc(x.w.n)}</b> <span data-tx data-notr>${esc(x.text)}</span>`:"&nbsp;"}</button>`;
-        return `<button type="button" class="pcb rg-${pos}${x.ok?" ok":""}${x.late?" late":""}" style="--c:${col[x.w.id]}" data-pgo="${x.w.id}" data-pk="${x.k}" data-ps="${x.st.k}"
-          title="${esc(x.w.n)} · ${x.ep?x.ep+" · ":""}${esc(labelOf(x.st,x.w))} · ${x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`}${x.ok?" · 완료":x.late?" · 예정일 지남":""}${x.m?`\n${esc(x.m)}`:""}">${lab?`<b>${esc(x.w.n)}</b> ${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))}`:"&nbsp;"}</button>`; }).join("")}
-      ${its.length>PC_MAX?`<button type="button" class="pcmore" data-pday="${k}">+${its.length-PC_MAX}건 더 보기</button>`:""}</div>`; }
+    <div class="vcal pcal"><div class="vcalh">${["일","월","화","수","목","금","토"].map(d=>`<div>${d}</div>`).join("")}</div><div class="pweeks">`;
+  /* 주 단위로 그리기: 한 일정은 그 주 안에서 한 줄 막대로 이어짐 (주가 바뀌면 다음 줄에서 이어서) */
+  const bar=(x,cls,lab)=>{ const rng=x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`;
+    if(x.memo) return `<button type="button" class="pcb pcm${cls}${x.ok?" ok":""}" style="--c:${col[x.w.id]}" data-pmemo="${x.w.id}" data-pmi="${x.i}"
+      title="${esc(x.w.n)} · ${esc(x.text)} · ${rng} (메모 일정 · 공정에는 반영 안 됨)"><b>${esc(x.w.n)}</b> <span data-tx data-notr>${esc(x.text)}</span>${lab}</button>`;
+    return `<button type="button" class="pcb${cls}${x.ok?" ok":""}${x.late?" late":""}" style="--c:${col[x.w.id]}" data-pgo="${x.w.id}" data-pk="${x.k}" data-ps="${x.st.k}"
+      title="${esc(x.w.n)} · ${x.ep?x.ep+" · ":""}${esc(labelOf(x.st,x.w))} · ${rng}${x.ok?" · 완료":x.late?" · 예정일 지남":""}${x.m?`\n${esc(x.m)}`:""}"><b>${esc(x.w.n)}</b> ${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))}${lab}</button>`; };
+  for(let wkI=0;wkI<6;wkI++){
+    const w0=addDays(start,wkI*7), days=[...Array(7)].map((_,i)=>addDays(w0,i)), k0=key(days[0]), k6=key(days[6]);
+    if(wkI>=5&&days[0].getUTCMonth()!==m) break;
+    const segs=items.filter(x=>x.from<=k6&&x.to>=k0).map(x=>{ const a=Math.max(0,daysBetween(days[0],D(x.from))), b=Math.min(6,daysBetween(days[0],D(x.to))); return {x,a,b}; });
+    const lanes=[], placed=[], hidden=[0,0,0,0,0,0,0];
+    segs.forEach(sg=>{ let L=0; while(L<lanes.length&&lanes[L].some(([p,q])=>!(sg.b<p||sg.a>q))) L++;
+      if(L>=PC_MAX){ for(let i=sg.a;i<=sg.b;i++) hidden[i]++; return; }
+      (lanes[L]=lanes[L]||[]).push([sg.a,sg.b]); placed.push({...sg,L}); });
+    const nL=Math.max(lanes.length,1);
+    h+=`<div class="pwk" style="--lanes:${nL}"><div class="pwbg">${days.map((d,i)=>{ const k=key(d), inM=d.getUTCMonth()===m, hol=HOL.has(k), wk=d.getUTCDay()===0||d.getUTCDay()===6;
+        return `<div class="pwd${inM?"":" out"}${k===key(TODAY)?" today":""}${hol||wk?" off":""}" data-pnew="${k}" title="눌러서 메모 일정 추가"></div>`; }).join("")}</div>
+      <div class="pwfg">${days.map((d,i)=>{ const k=key(d), hol=HOL.has(k);
+        return `<div class="pwn${d.getUTCMonth()===m?"":" out"}${hol||d.getUTCDay()===0||d.getUTCDay()===6?" off":""}" style="grid-column:${i+1};grid-row:1">${d.getUTCDate()}${hol?`<span class="vhol">휴일</span>`:""}</div>`; }).join("")}
+        ${placed.map(({x,a,b,L})=>{ const sOpen=x.from<k0, eOpen=x.to>k6;
+          const cls=` pspan${sOpen?" cont-l":""}${eOpen?" cont-r":""}`, lab=(sOpen?` <span class="pcc">(${md(D(x.from))}~)</span>`:"")+(b>a||x.from!==x.to?` <span class="pcc">${x.from===x.to?"":`~${md(D(x.to))}`}</span>`:"");
+          return `<div class="pslot" style="grid-column:${a+1} / ${b+2};grid-row:${L+2}">${bar(x,cls,x.from===x.to?"":` <span class="pcc">${sOpen?md(D(x.from)):""}~${md(D(x.to))}</span>`)}</div>`; }).join("")}
+        ${hidden.map((n,i)=>n?`<button type="button" class="pcmore" data-pday="${key(days[i])}" style="grid-column:${i+1};grid-row:${nL+2}">+${n}건 더 보기</button>`:"").join("")}
+      </div></div>`;
+  }
   h+=`</div></div>
     <div class="legend"><span><i style="background:#fff;box-shadow:inset 0 0 0 1.5px #2B6FD0;border-style:dashed"></i>메모 일정 (공정에는 반영 안 됨)</span><span><i style="background:#2B6FD0"></i>작품별 색</span><span><i style="background:#2B6FD0;opacity:.4"></i>완료</span><span><i style="background:#fff;box-shadow:inset 0 0 0 2px var(--bad)"></i>예정일 지남 · 완료 확인 필요</span></div>`;
   return h;
