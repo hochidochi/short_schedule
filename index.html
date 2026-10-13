@@ -419,6 +419,7 @@ table.simt select.in{min-width:0}
 table.simt td.lcc{min-width:0} .lch .in.t{width:132px}
 table.simt td.snm{min-width:190px} .snin{width:150px}
 .lcs{font-size:10.5px}
+.cpbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:14px 0 -6px} .cpbar .btn{padding:4px 12px;font-size:12.5px}
 /* 공정 캘린더 */
 .pvseg{margin:0 0 10px} .pvseg .seg button{padding:6px 14px}
 .pcbar{padding:10px 14px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
@@ -2227,6 +2228,44 @@ function bindWorkDrag(){
       const nb=document.querySelector(`#v-prod .wi[data-w="${b.dataset.w}"]`); nb&&nb.focus(); });
   });
 }
+/* ======================= 일정 복사 · 붙여넣기 =======================
+   원본 작품의 '단계 ~ 단계' × '회차 ~ 회차' 실제 일정(시작일·완료일)을 대상 작품 같은 칸에 고정 날짜로 넣음.
+   묶음 단계는 대상 묶음의 첫 회차에 해당하는 원본 칸의 날짜를 씀 (묶음 크기가 달라도 붙음)                  */
+let CLIP=null;
+function cpOpen(w,S,anchor){
+  const st=S.ST.filter(s=>s.k!=="contract"), N=S.held?(S.N0||0):S.N;
+  const opt=(v)=>st.map(s=>`<option value="${s.k}"${s.k===v?" selected":""}>${esc(labelOf(s,w))}</option>`).join("");
+  const has=(k)=>st.some(s=>s.k===k);
+  const pop=vPopAt(anchor,`<h4>${esc(w.n)} 일정 복사</h4><p class="ps">고른 범위의 실제 날짜를 복사해요 · 다른 작품을 열고 [붙여넣기]</p>
+    <div class="row"><span>단계</span><select class="in" id="cpA">${opt(has("script")?"script":st[0].k)}</select> ~ <select class="in" id="cpB">${opt(has("mix")?"mix":st[st.length-1].k)}</select></div>
+    <div class="row"><span>회차</span><input class="in n" type="number" id="cpE1" min="1" max="${N}" value="1"> ~ <input class="in n" type="number" id="cpE2" min="1" max="${N}" value="${N}"> 화</div>
+    <div class="row"><span>빠른 선택</span><button type="button" class="q" data-cpq="script,mix">대사집~믹싱</button><button type="button" class="q" data-cpq="trans,burn">번역~자막 최종</button><button type="button" class="q" data-cpq="all">전체 단계</button></div>
+    <div class="acts"><button type="button" class="btn" id="cpX">닫기</button><button type="button" class="btn pri" id="cpOk">복사</button></div>`);
+  pop.querySelectorAll("[data-cpq]").forEach(b=>b.onclick=()=>{ const q=b.dataset.cpq;
+    if(q==="all"){ $("cpA").value=st[0].k; $("cpB").value=st[st.length-1].k; return; }
+    const [a,z]=q.split(","); if(has(a)) $("cpA").value=a; if(has(z)) $("cpB").value=z; });
+  $("cpX").onclick=closePop;
+  $("cpOk").onclick=()=>{ let i=st.findIndex(s=>s.k===$("cpA").value), j=st.findIndex(s=>s.k===$("cpB").value); if(i>j) [i,j]=[j,i];
+    const e1=clamp(parseInt($("cpE1").value,10)||1,1,N), e2=clamp(parseInt($("cpE2").value,10)||N,e1,N), ks=st.slice(i,j+1).map(s=>s.k);
+    CLIP={id:w.id,ks,e1,e2,lab:`${labelOf(st[i],w)}${i!==j?`~${labelOf(st[j],w)}`:""} · ${e1}~${e2}화`};
+    $("pop").hidden=true; toast(`복사했어요: ${esc(w.n)} ${esc(CLIP.lab)} — 붙여넣을 작품을 왼쪽에서 고르세요`); render(); };
+}
+function cpPaste(T){
+  const src=WORKS.find(x=>x.id===CLIP.id); if(!src){ CLIP=null; render(); return; }
+  const SS=schedule(src), ST=schedule(T), N=Math.min(CLIP.e2,ST.held?(ST.N0||0):ST.N), ps=[], seen=new Set(), skip=[];
+  CLIP.ks.forEach(k=>{ const stg=CONF.stages.find(x=>x.k===k); if(!stg||!ST.ST.some(x=>x.k===k)){ skip.push(k); return; }
+    for(let e=CLIP.e1;e<=N;e++){ const E=ST.eps[e]; if(!E) continue; const c=E.cells[k]; if(!c||c.skip) continue;
+      const kk=ovKey(c,stg,e); if(seen.has(kk)) continue; seen.add(kk);
+      const se=c.work?1:c.batch?c.batch[0]:e, sc=SS.eps[se]&&SS.eps[se].cells[k]; if(!sc||sc.skip||!sc.e) continue;
+      const o={...((T.ov||{})[kk]||{})}; delete o.d; delete o.ok; delete o.follow;
+      o.f=key(sc.e); if(sc.s&&sc.s<=sc.e) o.s=key(sc.s); else delete o.s; o.lock=true;
+      ps.push({p:["ov",kk],v:o}); } });
+  if(!ps.length){ toast("붙여넣을 칸이 없어요 (대상 작품에 없는 단계·회차일 수 있어요)"); return; }
+  if(!confirm(`${src.n}의 ${CLIP.lab} 일정을 ${T.n}에 똑같이 넣을까요?\n${ps.length}칸에 시작일·완료일이 고정 날짜로 들어가요. (완료 체크·메모는 그대로)`)) return;
+  edit(T.id,ps);
+  if(skip.length) toast(`${T.n}에 없는 단계는 건너뛰었어요: ${skip.map(k=>(CONF.stages.find(x=>x.k===k)||{}).s||k).join(", ")}`);
+}
+
 /* ======================= 공정 캘린더 =======================
    작품별 공정을 달력에 기간 막대로 · 작품·공정 묶음별로 켜고 끔 · 막대를 누르면 표의 그 칸으로 이동 */
 let PVIEW=(()=>{ try{ return localStorage.getItem("anime_pview")||"table"; }catch(e){ return "table"; } })();
@@ -2401,6 +2440,9 @@ function renderProd(){
     h+=`<div class="pzbar fb3bar">이 작품은 1~3화를 <b>회차별(예전 방식)</b>으로 계산하고 있어요${tk?` — 1~3화 승인·수정 칸에 직접 넣은 값(${tk}칸)이 있어서 그대로 뒀어요`:""}.
       <button type="button" class="btn pri" id="fb3Go" style="padding:3px 10px;margin-left:8px">1~3화 한 번에로 바꾸기</button></div>`; }
   if(pauseOf(w)) h+=`<div class="pzbar">⏸ <b>제작 중단</b> — ${esc(pauseTxt(w))}. ${pauseOf(w).resume?`${pauseOf(w).ep}화 영상 1차 제작부터 재개일 기준으로 계산됩니다.`:"재개일을 정하면(▶ 활성화) 이어서 계산됩니다. 그 전까지 런칭은 '미정'입니다."}</div>`;
+  h+=`<div class="cpbar"><button type="button" class="btn" id="cpCopy" title="이 작품의 단계·회차 일정을 복사해서 다른 작품에 똑같이 붙여넣기">📋 일정 복사</button>
+    ${CLIP&&CLIP.id!==w.id?`<button type="button" class="btn pri" id="cpPaste">붙여넣기 · ${esc((WORKS.find(x=>x.id===CLIP.id)||{}).n||"")} ${esc(CLIP.lab)}</button><button type="button" class="btn" id="cpClear" title="복사한 내용 지우기" aria-label="복사한 내용 지우기">✕</button>`
+      :CLIP?`<span class="hint">복사함: ${esc(CLIP.lab)} — 붙여넣을 작품을 왼쪽 목록에서 고르세요</span><button type="button" class="btn" id="cpClear" aria-label="복사한 내용 지우기">✕</button>`:""}</div>`;
   h+=`<div class="gtools"><div class="legend">
       <span>칸을 누르면 소요일 · 완료일을 고칠 수 있습니다 (영업일 · 한국 공휴일 제외)</span>
       <span><b style="color:var(--warn)">▢</b> 소요일 변경</span><span><b style="color:var(--good)">●</b> 칸 오른쪽 동그라미 = 완료 처리</span><span><b style="color:var(--bad)">▎</b> 예정일 지남 · 완료 확인 필요</span><span><b>◆</b> 완료일 지정</span><span><i class="mm" style="white-space:nowrap;font-style:normal;font-size:10px;font-weight:700;background:var(--page);padding:0 4px;border-radius:3px">메모</i> 마우스를 올리거나 눌러서 확인</span>
@@ -2498,6 +2540,9 @@ function renderProd(){
     tmp.line=el.value; ps.push({p:["rate"],v:defRate(tmp)});   // 라인 기본 1차 제작 일수로
     edit(w.id,ps);
   });
+  $("cpCopy").onclick=(e)=>{ e.stopPropagation(); cpOpen(w,S,e.currentTarget); };
+  if($("cpPaste")) $("cpPaste").onclick=()=>cpPaste(w);
+  if($("cpClear")) $("cpClear").onclick=()=>{ CLIP=null; render(); };
   if($("fb3Go")) $("fb3Go").onclick=()=>{ edit(w.id,[{p:["fbLegacy"],del:true}]); };
   document.querySelectorAll("#v-prod [data-pause]").forEach(b=>b.onclick=(e)=>{e.stopPropagation();
     const k=+b.dataset.pause, c=S.eps[k]&&S.eps[k].cells.prod1, from=c&&c.s&&c.s>TODAY?c.s:TODAY;
