@@ -367,6 +367,23 @@ table.lpt.grid td.sum{font-weight:700;background:#F2F4F8} table.lpt.grid td.okc{
 table.lpt.wk td{padding:3px 5px} .lpw{border:1px solid transparent;background:#FFFBEA;border-radius:4px;font:inherit;font-size:12px;padding:2px 4px;color:var(--ink)} .lpw:hover{border-color:var(--line2)} .lpw:focus{border-color:var(--launch);outline:0;background:#fff}
 .lpw.n{width:44px;text-align:center} .lpw.nm{width:130px;font-weight:700} .lpw.memo{width:200px;color:var(--ink2)}
 table.lpt.wk .calc{color:var(--ink2);font-weight:600} table.lpt.wk tr.viol td{background:#FFF1EF} table.lpt.wk tr.fx .lpw.nm{background:var(--good-bg)}
+.pggoal{display:flex;align-items:center;gap:14px;background:#FCEDE8;border:1px solid #F0B9A6;border-radius:12px;padding:12px 18px;margin:4px 0 12px}
+.pggoal b{font-size:16px;color:#7A2E14} .pggoal .hint{color:#A0522D} .pgf{font-size:26px;color:var(--c);line-height:1} .pgd{margin-left:auto;font-size:30px;font-weight:800;color:#7A2E14;letter-spacing:-.02em}
+.pgwrap{background:var(--surface);border:1px solid var(--line2);border-radius:10px;overflow-x:auto}
+.pg{display:grid;grid-auto-rows:minmax(34px,auto);min-width:760px;font-size:12.5px}
+.pgh{background:#F2F3EF;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--ink2);font-weight:700}
+.pgh.lab{justify-content:flex-start;padding:0 12px;font-size:13px;color:var(--ink);border-right:1px solid var(--line2)}
+.pgh.wk{font-size:12px;border-left:1px solid var(--line2);border-bottom:1px solid var(--line)} .pgh.dy{flex-direction:column;font-size:12px;line-height:1.15;padding:3px 0;border-left:1px solid var(--line)}
+.pgh.dy small{font-size:10.5px;font-weight:500;color:var(--muted)} .pgh.dy.td{box-shadow:inset 0 0 0 2px var(--now);color:#8a5a00} .pgh.dy.hol{color:var(--bad)} .pgh.dy.gl{box-shadow:inset -2px 0 0 #D8532F}
+.pgg{background:#FAFAF7;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--muted);border-top:1px solid var(--line2);letter-spacing:.02em}
+.pgl{padding:5px 12px;border-right:1px solid var(--line2);border-top:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;min-width:0;background:var(--surface);position:sticky;left:0;z-index:2}
+.pgl b{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .pgl small{font-size:11px;color:var(--muted)}
+.pgw{font-size:10.5px;font-weight:700;color:var(--c);line-height:1.1}
+.pgc{border-left:1px solid var(--line);border-top:1px solid var(--line)} .pgc.wk{border-left:1px solid var(--line2)} .pgc.hol{background:#FBF1F0} .pgc.td{background:#FFF6DA} .pgc.gl{box-shadow:inset -2px 0 0 #D8532F}
+.pgb{margin:7px 1px;border:0;border-radius:5px;background:var(--c);cursor:pointer;z-index:1;min-height:18px}
+.pgb:hover{filter:brightness(1.08);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--c)} .pgb.ok{opacity:.38} .pgb.late{background:var(--c)!important;box-shadow:inset 0 0 0 2px var(--bad),0 0 0 1px var(--bad)}
+.pgb.memo{background:repeating-linear-gradient(135deg,var(--c) 0 6px,#8E98A4 6px 9px)} .pgb.pgcl{border-top-left-radius:0;border-bottom-left-radius:0} .pgb.pgcr{border-top-right-radius:0;border-bottom-right-radius:0}
+.pgflag{margin:3px 1px;border:0;border-radius:4px;background:var(--c);color:#fff;font-size:15px;cursor:pointer;z-index:1}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1574,7 +1591,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","런칭 플랜":"ローンチプラン","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","공정별 (간트)":"工程別 (ガント)","월간 달력":"月間カレンダー","주부터":"週から","주 보기":"週表示","이번 주":"今週","+ 메모·목표 추가":"+ メモ・目標追加","최종 목표":"最終目標","최종 목표로 표시 (간트 맨 위에 D-day로 보여요)":"最終目標として表示 (ガント上部にD-dayで表示)","주말 제외 · 평일만 표시 · 막대를 누르면 표의 그 칸으로 이동":"週末除外・平日のみ表示・バーをクリックすると表のセルへ移動","이 기간에는 표시할 공정이 없어요. 작품이나 공정 칩을 켜 보세요.":"この期間に表示する工程はありません。作品や工程チップをオンにしてください。","런칭 플랜":"ローンチプラン","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -2304,6 +2321,56 @@ function cpPaste(T){
    작품별 공정을 달력에 기간 막대로 · 작품·공정 묶음별로 켜고 끔 · 막대를 누르면 표의 그 칸으로 이동 */
 let PVIEW=(()=>{ try{ return localStorage.getItem("anime_pview")||"table"; }catch(e){ return "table"; } })();
 let PCAL=null, PCX=false;
+let PCMODE=(()=>{ try{ return localStorage.getItem("anime_pcmode")||"gantt"; }catch(e){ return "gantt"; } })();   // gantt(공정별 가로 막대) | month(달력)
+let PGT=null, PGW=(()=>{ try{ return +localStorage.getItem("anime_pgw")||5; }catch(e){ return 5; } })();
+const PG_COL={memo:"#6B7785",video:"#2E9B6A",appr:"#C98A1B",trans:"#7F77DD",sound:"#D9622B",final:"#1C9BAA",etc:"#8A8F98",goal:"#D8532F"};
+const WDK=["일","월","화","수","목","금","토"];
+function renderGantt(itemsAll,on){
+  if(!PGT){ let t=TODAY; while(t.getUTCDay()!==1) t=addDays(t,-1); PGT=t; }
+  const days=[]; for(let d=PGT;days.length<PGW*5;d=addDays(d,1)){ const w=d.getUTCDay(); if(w>0&&w<6) days.push(d); }
+  const K=days.map(key), k0=K[0], kN=K[K.length-1], multi=on.length>1;
+  const sIdx=(k)=>{ const i=K.findIndex(x=>x>=k); return i<0?K.length-1:i; }, eIdx=(k)=>{ let i=-1; K.forEach((x,j)=>{ if(x<=k) i=j; }); return i<0?0:i; };
+  const items=itemsAll.filter(x=>x.from<=kN&&x.to>=k0);
+  const goals=itemsAll.filter(x=>x.memo&&x.goal&&!x.ok).sort((a,b)=>a.to.localeCompare(b.to));
+  const g1=goals.find(x=>x.to>=key(TODAY))||null;
+  const groups=[...PC_GROUPS.filter(g=>g[0]!=="memo").map(g=>[g[0],g[1]]),["memo","메모 일정"]];
+  const nC=K.length, tIdx=K.indexOf(key(TODAY)), cols=`grid-template-columns:minmax(180px,220px) repeat(${nC},minmax(26px,1fr))`;
+  const goalIdx=new Set(goals.filter(x=>x.to>=k0&&x.to<=kN).map(x=>K.indexOf(x.to)).filter(i=>i>=0));
+  const bg=(r)=>K.map((k,i)=>`<div class="pgc${HOL.has(k)?" hol":""}${i===tIdx?" td":""}${goalIdx.has(i)?" gl":""}${i%5===0?" wk":""}" style="grid-row:${r};grid-column:${i+2}"></div>`).join("");
+  let h="";
+  if(g1){ const dd=Math.round((D(g1.to)-TODAY)/86400000);
+    h+=`<div class="pggoal" style="--c:${PG_COL.goal}"><span class="pgf">⚑</span><div><b>최종 목표 · ${md(D(g1.to))}(${WDK[D(g1.to).getUTCDay()]}) ${esc(g1.text)}</b>
+      <div class="hint">${esc(g1.w.n)} · 오늘 ${md(TODAY)} 기준</div></div><span class="pgd">${dd===0?"D-DAY":`D-${dd}`}</span>
+      <button type="button" class="btn" data-pmemo="${g1.w.id}" data-pmi="${g1.i}" style="padding:2px 9px;font-size:12px">수정</button></div>`; }
+  h+=`<div class="pgwrap"><div class="pg" style="${cols}">`;
+  // 머리: 주 · 날짜
+  let r=1; h+=`<div class="pgh lab" style="grid-row:1 / 3;grid-column:1">${on.length===1?esc(on[0].n):`${on.length}작품`}</div>`;
+  for(let i=0;i<nC;i+=5){ h+=`<div class="pgh wk" style="grid-row:1;grid-column:${i+2} / ${Math.min(i+5,nC)+2}">${md(days[i])} 주</div>`; }
+  K.forEach((k,i)=>{ const d=days[i]; h+=`<div class="pgh dy${i===tIdx?" td":""}${HOL.has(k)?" hol":""}${goalIdx.has(i)?" gl":""}" style="grid-row:2;grid-column:${i+2}">${d.getUTCDate()}<small>${WDK[d.getUTCDay()]}</small></div>`; });
+  r=3;
+  const lane=(x)=>{ const a=sIdx(x.from), b=eIdx(x.to); return [a,Math.max(a,b)]; };
+  let any=false;
+  groups.forEach(([gk,gl])=>{
+    const its=items.filter(x=>(x.memo?"memo":pcGroup(x.st.k))===gk&&!(x.memo&&x.goal));
+    if(!its.length) return; any=true;
+    h+=`<div class="pgg" style="grid-row:${r};grid-column:1 / ${nC+2}">${gl}</div>`; r++;
+    its.forEach(x=>{ const [a,b]=lane(x), col=PG_COL[gk]||PG_COL.etc, rng=x.from===x.to?md(D(x.to)):`${md(D(x.from))} – ${md(D(x.to))}`;
+      const name=x.memo?esc(x.text):`${x.ep?x.ep+" ":""}${esc(labelOf(x.st,x.w))}`;
+      h+=`<div class="pgl" style="grid-row:${r};grid-column:1" title="${esc(x.w.n)} · ${name.replace(/"/g,"")} · ${rng}">${multi?`<span class="pgw" style="--c:${PC_COL[WORKS.indexOf(x.w)%PC_COL.length]}">${esc(x.w.n)}</span>`:""}<b>${name}</b><small>${rng}${x.ok?" · 완료":x.late?" · 지남":""}</small></div>${bg(r)}`;
+      const attr=x.memo?`data-pmemo="${x.w.id}" data-pmi="${x.i}"`:`data-pgo="${x.w.id}" data-pk="${x.k}" data-ps="${x.st.k}"`;
+      h+=`<button type="button" class="pgb${x.ok?" ok":""}${x.late?" late":""}${x.memo?" memo":""}${x.from<k0?" pgcl":""}${x.to>kN?" pgcr":""}" style="grid-row:${r};grid-column:${a+2} / ${b+3};--c:${col}" ${attr} title="${esc(x.w.n)} · ${name.replace(/"/g,"")} · ${rng}"></button>`;
+      r++; }); });
+  const gin=goals.filter(x=>x.to>=k0&&x.to<=kN);
+  if(gin.length){ h+=`<div class="pgg" style="grid-row:${r};grid-column:1 / ${nC+2}">최종 목표</div>`; r++;
+    gin.forEach(x=>{ const i=K.indexOf(x.to);
+      h+=`<div class="pgl" style="grid-row:${r};grid-column:1">${multi?`<span class="pgw" style="--c:${PC_COL[WORKS.indexOf(x.w)%PC_COL.length]}">${esc(x.w.n)}</span>`:""}<b>${esc(x.text)}</b><small>${md(D(x.to))}</small></div>${bg(r)}
+        <button type="button" class="pgflag" style="grid-row:${r};grid-column:${i+2};--c:${PG_COL.goal}" data-pmemo="${x.w.id}" data-pmi="${x.i}" title="${esc(x.text)} · ${md(D(x.to))}">⚑</button>`; r++; }); any=true; }
+  if(!any) h+=`<div class="pgl" style="grid-row:3;grid-column:1 / ${nC+2};color:var(--muted)">이 기간에는 표시할 공정이 없어요. 작품이나 공정 칩을 켜 보세요.</div>`;
+  h+=`</div></div>
+    <div class="legend">${[["trans","번역"],["video","영상"],["appr","승인·피드백"],["sound","사운드"],["final","자막·등급"],["memo","메모 일정"]].map(([k,l])=>`<span><i style="background:${PG_COL[k]}"></i>${l}</span>`).join("")}
+      <span><i style="background:${PG_COL.goal}"></i>최종 목표</span><span><i style="background:#fff;box-shadow:inset 0 0 0 2px var(--now)"></i>오늘</span><span>주말 제외 · 평일만 표시 · 막대를 누르면 표의 그 칸으로 이동</span></div>`;
+  return h;
+}
 const pcLs=(k)=>{ try{ return JSON.parse(localStorage.getItem(k)||"[]")||[]; }catch(e){ return []; } };
 const PC_OFF=new Set(pcLs("anime_pc_off")), PC_GOFF=new Set(pcLs("anime_pc_goff"));
 const PC_GROUPS=[["memo","메모 일정",["memo"]],["video","영상",["prod1","fix3","prodF","imgcut"]],["appr","승인·피드백",["fb3","author","intAppr","ratingFb","dubchk","contract"]],
@@ -2321,7 +2388,7 @@ function pcItems(works){
           ep:c.work?"":c.batch?`${c.batch[0]}~${c.batch[1]}화`:`${k}화`,ok:isOk(c),late:!isOk(c)&&c.e<TODAY,m:c.m||"",pin:!!(c.kind==="fix"||((w.ov||{})[kk]||{}).s)}); }); }
   });
   if(!PC_GOFF.has("memo")) works.forEach(w=>(w.cev||[]).forEach((e,i)=>{ if(!e.date) return;
-    out.push({w,memo:true,i,st:{k:"memo"},k:0,from:e.date,to:e.to&&e.to>e.date?e.to:e.date,ep:"",text:e.text||"",ok:!!e.done,late:false,m:""}); }));
+    out.push({w,memo:true,goal:!!e.goal,i,st:{k:"memo"},k:0,from:e.goal?(e.to&&e.to>e.date?e.to:e.date):e.date,to:e.to&&e.to>e.date?e.to:e.date,ep:"",text:e.text||"",ok:!!e.done,late:false,m:""}); }));
   const PRI={memo:-1,fb3:0,author:0,intAppr:0,ratingFb:0,fix3:1,prodF:1};   // 승인·피드백 → 수정 → 나머지 순으로 위에
   return out.sort((a,b)=>((PRI[a.st.k]??2)-(PRI[b.st.k]??2))||a.from.localeCompare(b.from)||(a.w.pos||0)-(b.w.pos||0));
 }
@@ -2337,9 +2404,16 @@ function renderProcCal(){
         <label class="pcx"><input type="checkbox" id="pcX"${PCX?" checked":""}> 외부 제작도</label></div>
       <div class="pcrow"><b>공정</b>${PC_GROUPS.map(([k,l])=>`<button type="button" class="pcg${PC_GOFF.has(k)?"":" on"}" data-pcg="${k}">${l}</button>`).join("")}
         <span class="hint">막대를 누르면 표의 그 칸으로 이동 · 날짜 빈 곳을 누르면 메모 일정 추가 (공정에는 반영 안 됨)</span></div></div>
-    <div class="vcalbar"><button type="button" class="btn" data-pcm="-1" aria-label="이전 달">‹</button><b class="vcalt">${y}년 ${m+1}월</b><button type="button" class="btn" data-pcm="1" aria-label="다음 달">›</button>
+    <div class="vcalbar"><span class="seg sm" role="group" aria-label="캘린더 보기"><button type="button" data-pcmode="gantt" aria-pressed="${PCMODE==="gantt"}">공정별 (간트)</button><button type="button" data-pcmode="month" aria-pressed="${PCMODE==="month"}">월간 달력</button></span>
+      ${PCMODE==="gantt"?(()=>{ if(!PGT){ let t=TODAY; while(t.getUTCDay()!==1) t=addDays(t,-1); PGT=t; } return `<button type="button" class="btn" data-pgm="-1" aria-label="이전 주">‹</button><b class="vcalt">${md(PGT)} 주부터</b><button type="button" class="btn" data-pgm="1" aria-label="다음 주">›</button>
+      <button type="button" class="btn" data-pgm="0" style="padding:3px 10px;font-size:12px">이번 주</button>
+      <select class="in" id="pgW" style="min-height:28px;padding:2px 6px;font-size:12.5px">${[4,5,6,8,12].map(n=>`<option value="${n}"${PGW===n?" selected":""}>${n}주 보기</option>`).join("")}</select>
+      <button type="button" class="btn" data-pnewb="${key(TODAY)}" style="padding:3px 10px;font-size:12px">+ 메모·목표 추가</button>`; })()
+      :`<button type="button" class="btn" data-pcm="-1" aria-label="이전 달">‹</button><b class="vcalt">${y}년 ${m+1}월</b><button type="button" class="btn" data-pcm="1" aria-label="다음 달">›</button>
       <button type="button" class="btn" data-pcm="0" style="padding:3px 10px;font-size:12px">이번 달</button>
-      <span class="hint">${on.length}작품 · 이번 달 공정 ${items.filter(x=>x.to>=key(start)&&x.from<=key(addDays(start,41))).length}건</span></div>
+      <span class="hint">${on.length}작품 · 이번 달 공정 ${items.filter(x=>x.to>=key(start)&&x.from<=key(addDays(start,41))).length}건</span>`}</div>`;
+  if(PCMODE==="gantt"){ h+=renderGantt(items,on); return h; }
+  h+=`
     <div class="vcal pcal"><div class="vcalh">${["일","월","화","수","목","금","토"].map(d=>`<div>${d}</div>`).join("")}</div><div class="pweeks">`;
   /* 주 단위로 그리기: 한 일정은 그 주 안에서 한 줄 막대로 이어짐 (주가 바뀌면 다음 줄에서 이어서) */
   const bar=(x,cls,lab)=>{ const rng=x.from===x.to?md(D(x.to)):`${md(D(x.from))}~${md(D(x.to))}`;
@@ -2379,13 +2453,14 @@ function pcMemoEditor(anchor,day,wid,idx){
     <div class="row"><span>시작일</span><input class="in" type="date" id="cmD" value="${esc(ev.date||day||key(TODAY))}"></div>
     <div class="row"><span>종료일</span><input class="in" type="date" id="cmT" value="${esc(ev.to||"")}"><span class="hint" style="width:auto">하루짜리면 비워 두세요</span></div>
     <div class="row"><span>내용</span><input class="in" id="cmX" style="flex:1" value="${esc(ev.text||"")}" placeholder="예: 작가님 피드백 미팅"></div>
+    <div class="row"><span></span><label style="display:flex;gap:6px;align-items:center;font-size:12.5px;width:auto"><input type="checkbox" id="cmG"${ev.goal?" checked":""}> ⚑ 최종 목표로 표시 (간트 맨 위에 D-day로 보여요)</label></div>
     <div class="acts">${wid?`<button type="button" class="btn danger" id="cmDel">삭제</button><button type="button" class="btn" id="cmDone">${ev.done?"완료 취소":"✓ 완료"}</button><span style="flex:1"></span>`:""}<button type="button" class="btn" id="cmClose">닫기</button><button type="button" class="btn pri" id="cmOk">${wid?"저장":"추가"}</button></div>`);
   $("cmX").focus();
   $("cmClose").onclick=closePop;
   const del=(w,i)=>{ const l=clone(w.cev||[]); l.splice(i,1); edit(w.id,[{p:["cev"],v:l}],true); };
   $("cmOk").onclick=()=>{ const t=WORKS.find(w=>w.id===$("cmW").value), date=$("cmD").value, to=$("cmT").value, text=$("cmX").value.trim();
     if(!t||!date){ toast("작품과 시작일을 넣어 주세요"); return; } if(to&&to<date){ toast("종료일이 시작일보다 빨라요"); return; }
-    const item={date,text:text||"메모",done:!!ev.done}; if(to&&to>date) item.to=to;
+    const item={date,text:text||"메모",done:!!ev.done}; if(to&&to>date) item.to=to; if($("cmG").checked) item.goal=true;
     if(wid&&t.id!==wid){ del(w0,idx); edit(t.id,[{p:["cev"],v:[...(t.cev||[]),item]}],true); }
     else { const l=clone(t.cev||[]); if(wid) l[idx]=item; else l.push(item); edit(t.id,[{p:["cev"],v:l}],true); }
     $("pop").hidden=true; render(); };
@@ -2408,6 +2483,10 @@ function bindProcCal(){
   document.querySelectorAll("#v-prod [data-pcall]").forEach(b=>b.onclick=()=>{ WORKS.forEach(w=>{ if(lineOf(w)==="int"||PCX){ b.dataset.pcall==="1"?PC_OFF.delete(w.id):PC_OFF.add(w.id); } }); saveOff(); render(); });
   document.querySelectorAll("#v-prod [data-pcg]").forEach(b=>b.onclick=()=>{ const g=b.dataset.pcg; PC_GOFF.has(g)?PC_GOFF.delete(g):PC_GOFF.add(g); saveOff(); render(); });
   if($("pcX")) $("pcX").onchange=(e)=>{ PCX=e.target.checked; render(); };
+  document.querySelectorAll("#v-prod [data-pcmode]").forEach(b=>b.onclick=()=>{ PCMODE=b.dataset.pcmode; try{ localStorage.setItem("anime_pcmode",PCMODE); }catch(e){} render(); });
+  document.querySelectorAll("#v-prod [data-pgm]").forEach(b=>b.onclick=()=>{ const n=+b.dataset.pgm; if(n===0){ let t=TODAY; while(t.getUTCDay()!==1) t=addDays(t,-1); PGT=t; } else PGT=addDays(PGT,7*n); render(); });
+  if($("pgW")) $("pgW").onchange=(e)=>{ PGW=+e.target.value; try{ localStorage.setItem("anime_pgw",PGW); }catch(err){} render(); };
+  document.querySelectorAll("#v-prod [data-pnewb]").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); pcMemoEditor(b,b.dataset.pnewb); });
   document.querySelectorAll("#v-prod [data-pcm]").forEach(b=>b.onclick=()=>{ const n=+b.dataset.pcm;
     if(n===0) PCAL={y:TODAY.getUTCFullYear(),m:TODAY.getUTCMonth()}; else { let mm=PCAL.m+n, yy=PCAL.y; if(mm<0){mm=11;yy--;} if(mm>11){mm=0;yy++;} PCAL={y:yy,m:mm}; } render(); });
   document.querySelectorAll("#v-prod [data-pgo]").forEach(b=>b.onclick=()=>{ SEL=b.dataset.pgo; FOCUS={k:+b.dataset.pk,s:b.dataset.ps}; SHOWALL=+b.dataset.pk>20?true:SHOWALL; PVIEW="table"; try{ localStorage.setItem("anime_pview","table"); }catch(e){} render(); });
