@@ -342,6 +342,31 @@ table.tztab td.tzc{position:relative;min-width:120px} table.tztab td.tzc.ok b{co
 table.tztab td.tzc.pick{box-shadow:inset 0 0 0 2px var(--launch);background:#F4F7FE}
 .tzp{position:absolute;top:4px;right:6px;font-size:10px;font-weight:800;color:#fff;background:var(--launch);border-radius:4px;padding:0 5px}
 .lnseg button .lnd{margin-right:4px} .lnseg button .hint{font-size:11px;margin-left:2px}
+.lphead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.lpst{font-size:12px;color:var(--ink2);margin-top:3px} .lpst .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--good);margin-right:5px;vertical-align:1px}
+.lpbtns{display:flex;gap:6px;flex-wrap:wrap}
+.lphist{padding:6px 12px;margin-bottom:10px} .lphr{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap} .lphr:last-child{border:0} .lphr.on{background:#FFF8E6}
+.lpkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.lpk{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;border-left:4px solid var(--good)} .lpk.bad{border-left-color:var(--bad)}
+.lpkl{font-size:11.5px;color:var(--ink2)} .lpkv{font-size:22px;font-weight:700} .lpkv span{font-size:12px;font-weight:600;margin-left:6px;color:var(--good)} .lpk.bad .lpkv span{color:var(--bad)}
+.lpwarn{color:var(--bad);font-size:12.5px;margin:-4px 0 10px;font-weight:600}
+.lpcard{padding:12px 14px} .lpsec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;font-weight:700;margin-bottom:8px}
+table.lpt{border-collapse:collapse;width:100%;font-size:12.5px} table.lpt th{background:#EEF0EB;color:var(--ink2);font-size:11.5px;font-weight:700;padding:5px 6px;text-align:left;border-bottom:1px solid var(--line2);white-space:nowrap;position:sticky;top:0;z-index:1}
+table.lpt td{padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap} table.lpt tr.all td{background:#F7F8F5}
+table.lpt .in{min-height:26px;padding:1px 5px;font-size:12px} table.lpt input[type=month],table.lpt input[type=date]{width:auto}
+.lpops{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;margin-top:10px} .lpops label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted)} .lpops .in{min-height:26px;padding:1px 5px;font-size:12.5px}
+.lpops label span{display:flex;gap:4px;align-items:center}
+.lpyn{flex-direction:row!important;align-items:center;gap:5px!important;font-size:12.5px!important;color:var(--ink)!important}
+.lpadv{margin-top:10px;border-top:1px dashed var(--line2);padding-top:6px} .lpadv summary{cursor:pointer;font-size:12.5px;color:var(--ink2);font-weight:600}
+table.lpt.grid{min-width:860px} table.lpt.grid th,table.lpt.grid td{text-align:center;border-right:1px solid var(--line)} table.lpt.grid td.tl,table.lpt.grid th:first-child{text-align:left;min-width:110px;background:#F7F8F5;position:sticky;left:0}
+table.lpt.grid td.lpc.ai{background:#CECBF6;color:#3C3489;font-weight:700} table.lpt.grid td.lpc.mx{background:#EEEDFE;color:#3C3489;font-weight:700} table.lpt.grid td.z{color:#C3C6BF}
+table.lpt.grid td.over{background:var(--bad-bg);color:var(--bad);font-weight:700} table.lpt.grid tr.tot td{font-weight:700;background:#F2F4F8} table.lpt.grid tr.sub td{font-size:11.5px;color:var(--ink2)} table.lpt.grid tr.sub.ai td{color:#534AB7}
+table.lpt.grid td.sum{font-weight:700;background:#F2F4F8} table.lpt.grid td.okc{background:var(--good-bg);color:var(--good);font-weight:700} table.lpt.grid td.badc{background:var(--bad-bg);color:var(--bad);font-weight:700}
+.lpcp{width:34px;border:1px solid transparent;background:#FFFBEA;border-radius:4px;text-align:center;font:inherit;font-size:12px;color:var(--launch);font-weight:700;padding:1px} .lpcp:focus{border-color:var(--launch);outline:0}
+.lgd{display:inline-block;width:11px;height:11px;border-radius:2px;border:1px solid var(--line2);vertical-align:-1px;margin:0 3px 0 8px} .lgd.ai{background:#CECBF6} .lgd.mx{background:#EEEDFE}
+table.lpt.wk td{padding:3px 5px} .lpw{border:1px solid transparent;background:#FFFBEA;border-radius:4px;font:inherit;font-size:12px;padding:2px 4px;color:var(--ink)} .lpw:hover{border-color:var(--line2)} .lpw:focus{border-color:var(--launch);outline:0;background:#fff}
+.lpw.n{width:44px;text-align:center} .lpw.nm{width:130px;font-weight:700} .lpw.memo{width:200px;color:var(--ink2)}
+table.lpt.wk .calc{color:var(--ink2);font-weight:600} table.lpt.wk tr.viol td{background:#FFF1EF} table.lpt.wk tr.fx .lpw.nm{background:var(--good-bg)}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -619,6 +644,7 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
     <button type="button" role="tab" data-tab="open">오픈 일정</button>
     <button type="button" role="tab" data-tab="prod">제작 일정</button>
     <button type="button" role="tab" data-tab="std">공정 기준</button>
+    <button type="button" role="tab" data-tab="lp">런칭 플랜</button>
     <button type="button" role="tab" data-tab="sim">시뮬레이션</button>
     <button type="button" role="tab" data-tab="vendors">외주사 관리</button>
     <button type="button" role="tab" data-tab="users" id="tabUsers" hidden>사용자 승인</button>
@@ -634,6 +660,7 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   <section id="v-open"></section>
   <section id="v-prod" hidden></section>
   <section id="v-std" hidden></section>
+  <section id="v-lp" hidden></section>
   <section id="v-sim" hidden></section>
   <section id="v-vendors" hidden></section>
   <section id="v-users" hidden></section>
@@ -1547,7 +1574,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","런칭 플랜":"ローンチプラン","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -1680,9 +1707,9 @@ function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]})`;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===TAB)));
-  ["open","prod","std","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
+  ["open","prod","std","lp","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
   try{
-    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors") renderVendors(); else renderStd();
+    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors") renderVendors(); else if(TAB==="lp") renderLP(); else renderStd();
   }catch(e){
     console.error(e);
     $("v-"+TAB).innerHTML=`<div class="card"><b>화면을 그리지 못했습니다.</b><p class="hint">${esc(e.message)} — 공정 기준 탭에서 JSON을 내보내 확인하거나, 새로고침해 주세요.</p></div>`;
@@ -3030,6 +3057,7 @@ async function pullAll(force){
   WORKS.sort((a,b)=>(a.pos||0)-(b.pos||0));
   if(cf&&cf.length&&(force||cf[0].updated_at!==CONF_SEEN)){ CONF=normConf(cf[0].data); setHol(CONF.hol); CONF_SEEN=cf[0].updated_at; changed=true; }
   try{ if(await vPull(force)) changed=true; }catch(e){ console.warn("외주사 목록을 불러오지 못했어요",e); }
+  try{ if(await lpPull(force)) changed=true; }catch(e){ console.warn("외주사 목록을 불러오지 못했어요",e); }
   return {changed,empty:!rows.length&&!(cf&&cf.length)};
 }
 
@@ -3404,6 +3432,236 @@ function vEditor(v,anchor){
   if($("veDel")) $("veDel").onclick=()=>{ if(confirm(`'${v.name}'을(를) 목록에서 삭제할까요? 모든 사람 화면에서 사라집니다.`)){ vEdit({op:"del",id:v.id}); close(); } };
 }
 
+/* ======================= 런칭 플랜 (레버 시뮬레이터) =======================
+   엑셀 '2027–28 런칭 시뮬레이터'를 옮긴 화면. 현재 버전은 자동 저장(공유), [기록 남기기]로 시점별 기록.
+   착수→런칭 주수는 기본 '공정 기준 자동'(공정 기준 탭이 바뀌면 같이 바뀜) · 필요하면 엑셀 표 값으로 전환 */
+const LP_TEAMS0=[
+  {id:"내부1",line:"int",start:"2026-11-01",cap:3,bd:7,bd2:"",bd2From:"",ai:0.5,aiFrom:"2027-01-01"},
+  {id:"내부2",line:"int",start:"2027-04-01",cap:2,bd:7,bd2:"",bd2From:"",ai:0.5,aiFrom:"2027-01-01"},
+  {id:"내부3",line:"int",start:"2027-04-01",cap:2,bd:7,bd2:"",bd2From:"",ai:0.5,aiFrom:"2027-01-01"},
+  {id:"외부 일본",line:"ext",start:"2026-12-01",cap:2,bd:7,bd2:"",bd2From:"",ai:0.5,aiFrom:"2027-02-01"},
+  {id:"외부 일본 외",line:"ext",start:"2026-12-01",cap:3,bd:7,bd2:"",bd2From:"",ai:0.5,aiFrom:"2027-02-01"}];
+const LP_WORKS0=[{"id": "내부1-01", "team": "내부1", "basis": "launch", "start": "2026-07-06", "launch": "2027-02-15", "bd": 7, "voice": "human", "fixed": true, "note": "확정 · 기제작 중"}, {"id": "내부1-02", "team": "내부1", "basis": "launch", "start": "2026-07-27", "launch": "2027-03-08", "bd": 7, "voice": "human", "fixed": true, "note": "확정 · 기제작 중"}, {"id": "내부1-03", "team": "내부1", "basis": "launch", "start": "2026-08-10", "launch": "2027-03-22", "bd": 7, "voice": "human", "fixed": true, "note": "확정 · 기제작 중"}, {"id": "외부(일본)-01", "team": "외부 일본", "basis": "start", "start": "2026-12-01", "launch": "2027-04-13", "bd": 5, "voice": "human", "fixed": false, "note": "2분기 외부 · 5영업일 (4월 런칭)"}, {"id": "내부1-04", "team": "내부1", "basis": "launch", "start": "2026-09-03", "launch": "2027-04-15", "bd": 7, "voice": "human", "fixed": true, "note": "확정 · 기제작 중"}, {"id": "외부(일본외)-01", "team": "외부 일본 외", "basis": "start", "start": "2026-12-08", "launch": "2027-04-20", "bd": 5, "voice": "human", "fixed": false, "note": "2분기 외부 · 5영업일 (4월 런칭)"}, {"id": "내부1-05", "team": "내부1", "basis": "launch", "start": "2026-10-03", "launch": "2027-05-15", "bd": 7, "voice": "human", "fixed": true, "note": "확정 · 기제작 중"}, {"id": "외부(일본외)-02", "team": "외부 일본 외", "basis": "start", "start": "2027-01-04", "launch": "2027-05-17", "bd": 5, "voice": "human", "fixed": false, "note": "2분기 외부 · 5영업일 (5월 런칭)"}, {"id": "외부(일본)-02", "team": "외부 일본", "basis": "start", "start": "2027-01-11", "launch": "2027-05-24", "bd": 5, "voice": "human", "fixed": false, "note": "2분기 외부 · 5영업일 (5월 런칭)"}, {"id": "내부1-06", "team": "내부1", "basis": "start", "start": "2026-11-02", "launch": "2027-06-14", "bd": "", "voice": "human", "fixed": false, "note": "11월 착수 인원"}, {"id": "외부(일본외)-03", "team": "외부 일본 외", "basis": "start", "start": "2027-02-01", "launch": "2027-06-14", "bd": 5, "voice": "human", "fixed": false, "note": "2분기 외부 · 5영업일 (6월 런칭)"}, {"id": "외부(일본외)-04", "team": "외부 일본 외", "basis": "start", "start": "2027-02-08", "launch": "2027-06-21", "bd": 5, "voice": "human", "fixed": false, "note": "2분기 외부 · 5영업일 (6월 런칭)"}, {"id": "내부1-07", "team": "내부1", "basis": "start", "start": "2026-11-30", "launch": "2027-07-12", "bd": "", "voice": "human", "fixed": false, "note": "11월 착수 인원"}, {"id": "외부(일본)-03", "team": "외부 일본", "basis": "start", "start": "2026-12-01", "launch": "2027-07-13", "bd": "", "voice": "human", "fixed": false, "note": "2월 이전 착수 → 인간성우"}, {"id": "외부(일본외)-05", "team": "외부 일본 외", "basis": "start", "start": "2026-12-08", "launch": "2027-07-20", "bd": "", "voice": "human", "fixed": false, "note": "2월 이전 착수 → 인간성우"}, {"id": "외부(일본외)-06", "team": "외부 일본 외", "basis": "start", "start": "2026-12-15", "launch": "2027-07-27", "bd": "", "voice": "human", "fixed": false, "note": "2월 이전 착수 → 인간성우"}, {"id": "내부1-08", "team": "내부1", "basis": "start", "start": "2027-01-04", "launch": "2027-08-16", "bd": "", "voice": "human", "fixed": false, "note": "1월~ 투입 인원 · 반반 대상"}, {"id": "외부(일본)-04", "team": "외부 일본", "basis": "start", "start": "2027-01-04", "launch": "2027-08-16", "bd": "", "voice": "human", "fixed": false, "note": "2월 이전 착수 → 인간성우"}, {"id": "외부(일본외)-07", "team": "외부 일본 외", "basis": "start", "start": "2027-01-11", "launch": "2027-08-23", "bd": "", "voice": "human", "fixed": false, "note": "2월 이전 착수 → 인간성우"}, {"id": "외부(일본외)-08", "team": "외부 일본 외", "basis": "start", "start": "2027-01-18", "launch": "2027-08-30", "bd": "", "voice": "human", "fixed": false, "note": "2월 이전 착수 → 인간성우"}, {"id": "내부1-09", "team": "내부1", "basis": "start", "start": "2027-03-08", "launch": "2027-09-06", "bd": "", "voice": "ai", "fixed": false, "note": "1월~ 투입 인원 · 반반 대상"}, {"id": "외부(일본외)-09", "team": "외부 일본 외", "basis": "start", "start": "2027-03-08", "launch": "2027-09-06", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상"}, {"id": "외부(일본)-05", "team": "외부 일본", "basis": "start", "start": "2027-02-01", "launch": "2027-09-13", "bd": "", "voice": "human", "fixed": false, "note": "반반 대상"}, {"id": "외부(일본외)-10", "team": "외부 일본 외", "basis": "start", "start": "2027-03-15", "launch": "2027-09-13", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상"}, {"id": "내부2-01", "team": "내부2", "basis": "start", "start": "2027-04-05", "launch": "2027-10-04", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상 · 10월은 AI만 가능"}, {"id": "내부1-10", "team": "내부1", "basis": "start", "start": "2027-03-01", "launch": "2027-10-11", "bd": "", "voice": "human", "fixed": false, "note": "1월~ 투입 인원 · 반반 대상"}, {"id": "내부3-01", "team": "내부3", "basis": "start", "start": "2027-04-12", "launch": "2027-10-11", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상 · 10월은 AI만 가능"}, {"id": "외부(일본)-06", "team": "외부 일본", "basis": "start", "start": "2027-03-01", "launch": "2027-10-11", "bd": "", "voice": "human", "fixed": false, "note": "반반 대상"}, {"id": "외부(일본외)-11", "team": "외부 일본 외", "basis": "start", "start": "2027-05-03", "launch": "2027-11-01", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상"}, {"id": "내부2-02", "team": "내부2", "basis": "start", "start": "2027-04-05", "launch": "2027-11-15", "bd": "", "voice": "human", "fixed": false, "note": "반반 대상"}, {"id": "외부(일본외)-12", "team": "외부 일본 외", "basis": "start", "start": "2027-04-05", "launch": "2027-11-15", "bd": "", "voice": "human", "fixed": false, "note": "반반 대상"}, {"id": "내부3-02", "team": "내부3", "basis": "start", "start": "2027-04-12", "launch": "2027-11-22", "bd": "", "voice": "human", "fixed": false, "note": "반반 대상"}, {"id": "내부2-03", "team": "내부2", "basis": "start", "start": "2027-06-07", "launch": "2027-12-06", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상"}, {"id": "외부(일본)-07", "team": "외부 일본", "basis": "start", "start": "2027-06-07", "launch": "2027-12-06", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상"}, {"id": "내부3-03", "team": "내부3", "basis": "start", "start": "2027-05-03", "launch": "2027-12-13", "bd": "", "voice": "human", "fixed": false, "note": "반반 대상"}, {"id": "외부(일본외)-13", "team": "외부 일본 외", "basis": "start", "start": "2027-06-14", "launch": "2027-12-13", "bd": "", "voice": "ai", "fixed": false, "note": "반반 대상"}, {"id": "내부1-11", "team": "내부1", "basis": "launch", "start": "2027-06-19", "launch": "2028-01-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-14", "team": "외부 일본 외", "basis": "launch", "start": "2027-06-23", "launch": "2028-01-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-04", "team": "내부2", "basis": "launch", "start": "2027-06-26", "launch": "2028-01-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-04", "team": "내부3", "basis": "launch", "start": "2027-07-03", "launch": "2028-01-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-08", "team": "외부 일본", "basis": "launch", "start": "2027-07-07", "launch": "2028-01-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-12", "team": "내부1", "basis": "launch", "start": "2027-07-20", "launch": "2028-02-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-15", "team": "외부 일본 외", "basis": "launch", "start": "2027-07-24", "launch": "2028-02-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-05", "team": "내부2", "basis": "launch", "start": "2027-07-27", "launch": "2028-02-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-05", "team": "내부3", "basis": "launch", "start": "2027-08-03", "launch": "2028-02-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-16", "team": "외부 일본 외", "basis": "launch", "start": "2027-08-07", "launch": "2028-02-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-13", "team": "내부1", "basis": "launch", "start": "2027-08-18", "launch": "2028-03-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-09", "team": "외부 일본", "basis": "launch", "start": "2027-08-22", "launch": "2028-03-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-06", "team": "내부2", "basis": "launch", "start": "2027-08-25", "launch": "2028-03-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-06", "team": "내부3", "basis": "launch", "start": "2027-09-01", "launch": "2028-03-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-17", "team": "외부 일본 외", "basis": "launch", "start": "2027-09-05", "launch": "2028-03-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-14", "team": "내부1", "basis": "launch", "start": "2027-09-18", "launch": "2028-04-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-18", "team": "외부 일본 외", "basis": "launch", "start": "2027-09-22", "launch": "2028-04-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-07", "team": "내부2", "basis": "launch", "start": "2027-09-25", "launch": "2028-04-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-07", "team": "내부3", "basis": "launch", "start": "2027-10-02", "launch": "2028-04-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-10", "team": "외부 일본", "basis": "launch", "start": "2027-10-06", "launch": "2028-04-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-15", "team": "내부1", "basis": "launch", "start": "2027-10-18", "launch": "2028-05-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-19", "team": "외부 일본 외", "basis": "launch", "start": "2027-10-22", "launch": "2028-05-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-08", "team": "내부2", "basis": "launch", "start": "2027-10-25", "launch": "2028-05-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-11", "team": "외부 일본", "basis": "launch", "start": "2027-10-29", "launch": "2028-05-19", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-08", "team": "내부3", "basis": "launch", "start": "2027-11-01", "launch": "2028-05-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-20", "team": "외부 일본 외", "basis": "launch", "start": "2027-11-05", "launch": "2028-05-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-16", "team": "내부1", "basis": "launch", "start": "2027-11-18", "launch": "2028-06-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-21", "team": "외부 일본 외", "basis": "launch", "start": "2027-11-22", "launch": "2028-06-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-09", "team": "내부2", "basis": "launch", "start": "2027-11-25", "launch": "2028-06-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-09", "team": "내부3", "basis": "launch", "start": "2027-12-02", "launch": "2028-06-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-22", "team": "외부 일본 외", "basis": "launch", "start": "2027-12-06", "launch": "2028-06-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-17", "team": "내부1", "basis": "launch", "start": "2027-12-18", "launch": "2028-07-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-12", "team": "외부 일본", "basis": "launch", "start": "2027-12-22", "launch": "2028-07-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-10", "team": "내부2", "basis": "launch", "start": "2027-12-25", "launch": "2028-07-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-23", "team": "외부 일본 외", "basis": "launch", "start": "2027-12-29", "launch": "2028-07-19", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-10", "team": "내부3", "basis": "launch", "start": "2028-01-01", "launch": "2028-07-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-24", "team": "외부 일본 외", "basis": "launch", "start": "2028-01-05", "launch": "2028-07-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-18", "team": "내부1", "basis": "launch", "start": "2028-01-18", "launch": "2028-08-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-13", "team": "외부 일본", "basis": "launch", "start": "2028-01-22", "launch": "2028-08-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-11", "team": "내부2", "basis": "launch", "start": "2028-01-25", "launch": "2028-08-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-11", "team": "내부3", "basis": "launch", "start": "2028-02-01", "launch": "2028-08-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-25", "team": "외부 일본 외", "basis": "launch", "start": "2028-02-05", "launch": "2028-08-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-19", "team": "내부1", "basis": "launch", "start": "2028-02-18", "launch": "2028-09-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-26", "team": "외부 일본 외", "basis": "launch", "start": "2028-02-22", "launch": "2028-09-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-12", "team": "내부2", "basis": "launch", "start": "2028-02-25", "launch": "2028-09-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-27", "team": "외부 일본 외", "basis": "launch", "start": "2028-02-29", "launch": "2028-09-19", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-12", "team": "내부3", "basis": "launch", "start": "2028-03-03", "launch": "2028-09-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-14", "team": "외부 일본", "basis": "launch", "start": "2028-03-07", "launch": "2028-09-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-20", "team": "내부1", "basis": "launch", "start": "2028-03-19", "launch": "2028-10-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-28", "team": "외부 일본 외", "basis": "launch", "start": "2028-03-23", "launch": "2028-10-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-13", "team": "내부2", "basis": "launch", "start": "2028-03-26", "launch": "2028-10-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-13", "team": "내부3", "basis": "launch", "start": "2028-04-02", "launch": "2028-10-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-15", "team": "외부 일본", "basis": "launch", "start": "2028-04-06", "launch": "2028-10-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-21", "team": "내부1", "basis": "launch", "start": "2028-04-19", "launch": "2028-11-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-29", "team": "외부 일본 외", "basis": "launch", "start": "2028-04-23", "launch": "2028-11-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-14", "team": "내부2", "basis": "launch", "start": "2028-04-26", "launch": "2028-11-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본)-16", "team": "외부 일본", "basis": "launch", "start": "2028-04-30", "launch": "2028-11-19", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-14", "team": "내부3", "basis": "launch", "start": "2028-05-03", "launch": "2028-11-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-30", "team": "외부 일본 외", "basis": "launch", "start": "2028-05-07", "launch": "2028-11-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부1-22", "team": "내부1", "basis": "launch", "start": "2028-05-19", "launch": "2028-12-08", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-31", "team": "외부 일본 외", "basis": "launch", "start": "2028-05-23", "launch": "2028-12-12", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부2-15", "team": "내부2", "basis": "launch", "start": "2028-05-26", "launch": "2028-12-15", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "내부3-15", "team": "내부3", "basis": "launch", "start": "2028-06-02", "launch": "2028-12-22", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}, {"id": "외부(일본외)-32", "team": "외부 일본 외", "basis": "launch", "start": "2028-06-06", "launch": "2028-12-26", "bd": "", "voice": "", "fixed": false, "note": "2028 신규 · 레버 자동"}];
+const LP_SEED=()=>({g:{season:30,restW:2,cad:1,openK:1,follow:"slot",maxSeasons:5,basisAll:"launch",countRest:false,countFollow:false,noAI5:true,
+    ignoreBd:false,ignoreVoice:false,leadSrc:"auto",lead:{5:{ai:13,hu:19},7:{ai:26,hu:32}},aiDelayW:0,maxOnAir:0},
+  teams:clone(LP_TEAMS0), works:clone(LP_WORKS0),
+  targets:{launch:{"2027-03":5,"2027-06":10,"2027-09":20,"2027-12":35},onair:{"2027-12":40,"2028-12":100}}, cp:{}});
+let LP=null, LP_SEEN=null, LP_OPS=[], LP_TIMER=null, LPV={year:2027,view:"launch",team:"",showHist:false,peek:null};
+const lpPlan=()=>LPV.peek?LPV.peek.plan:LP.cur;
+/* 착수→런칭 주수 */
+const LP_LEAD_CACHE=new Map();
+function lpLead(line,voice,bd,g){
+  bd=Math.max(3,Math.min(15,+bd||7));
+  if(g.leadSrc==="excel"){ const t=g.lead, a=t[5]||{ai:13,hu:19}, b=t[7]||{ai:26,hu:32}, k=voice==="ai"?"ai":"hu";
+    return Math.ceil(+a[k]+(+b[k]-+a[k])*(bd-5)/2); }
+  const ck=[line,voice,bd,g.season,g.openK,JSON.stringify(CONF.stages).length,CONF.lockBD,HOL.size].join("|");
+  if(LP_LEAD_CACHE.has(ck)) return LP_LEAD_CACHE.get(ck);
+  let wk=30;
+  try{ const w=normW({id:"lp",n:"lp",line,voice,team:line==="ext"?{prod1:"외부 제작사",prodF:"외부 제작사"}:{},start:"2027-03-02",done:0,rate:bd,total:+g.season||30,b1:5,launchAuto:true});
+    const S=scheduleCore(w); wk=Math.ceil((S.L-S.start0)/86400000/7); }catch(e){}
+  LP_LEAD_CACHE.set(ck,wk); return wk;
+}
+const lpD=(s)=>s?D(s):null, lpAdd=(d,w)=>addDays(d,7*w), lpMK=(d)=>key(d).slice(0,7);
+const LP_MONTHS=[...Array(24)].map((_,i)=>`${2027+Math.floor(i/12)}-${String(i%12+1).padStart(2,"0")}`);
+/* 계산 */
+function lpCompute(P){
+  const g=P.g, TM=Object.fromEntries(P.teams.map(t=>[t.id,t])), res=[];
+  const aiCnt={};
+  const rows=P.works.map((w,i)=>({w,i})).sort((a,b)=>(a.w.launch||a.w.start||"").localeCompare(b.w.launch||b.w.start||""));
+  rows.forEach(({w,i})=>{
+    const T=TM[w.team]||P.teams[0], line=T.line;
+    const basis=w.fixed?"launch":(g.basisAll==="each"?w.basis:g.basisAll);
+    const bdOf=(start)=>{ if(w.bd&&!(g.ignoreBd&&!w.fixed)) return +w.bd; return (T.bd2&&T.bd2From&&start&&key(start)>=T.bd2From)?+T.bd2:+T.bd; };
+    // 성우 정하기 (착수일 기준 AI 가능 여부 → 팀별 비율만큼 고르게)
+    const roughStart=basis==="start"?lpD(w.start):lpAdd(lpD(w.launch),-lpLead(line,"human",bdOf(lpD(w.launch)),g));
+    let bd=bdOf(roughStart), voice=w.voice&&!(g.ignoreVoice&&!w.fixed)?w.voice:"";
+    if(!voice){ const ok=roughStart&&key(roughStart)>=T.aiFrom&&!(g.noAI5&&bd<=5);
+      if(ok){ aiCnt[T.id]=(aiCnt[T.id]||0)+1; const n=aiCnt[T.id]; voice=Math.floor(n*(+T.ai||0)+1e-9)>Math.floor((n-1)*(+T.ai||0)+1e-9)?"ai":"human"; }
+      else voice="human"; }
+    let lead=lpLead(line,voice,bd,g)+(voice==="ai"?+g.aiDelayW||0:0);
+    let start, launch;
+    if(basis==="start"){ start=lpD(w.start); launch=lpAdd(start,lead); }
+    else { launch=lpD(w.launch); start=lpAdd(launch,-lead); const bd2=bdOf(start); if(bd2!==bd){ bd=bd2; lead=lpLead(line,voice,bd,g)+(voice==="ai"?+g.aiDelayW||0:0); start=lpAdd(launch,-lead); } }
+    const runW=Math.ceil((+g.season-Math.min(+g.openK,+g.season))*(+g.cad||1));
+    const seasons=[]; let L=launch, S0=start;
+    for(let s=1;s<=Math.max(1,+g.maxSeasons||1);s++){
+      const last=lpAdd(L,runW); seasons.push({s,start:S0,launch:L,last});
+      if(g.follow==="slot"){ L=lpAdd(last,(+g.restW||0)+1); S0=lpAdd(L,-lead); }
+      else { S0=lpAdd(last,+g.restW||0); L=lpAdd(S0,lead); }
+      if(key(S0)>"2029-06-30") break;   // 2028년 말 집계에 필요한 만큼만 (마지막 시즌 뒤 휴방까지)
+    }
+    const viol=!w.fixed&&T.start&&key(start)<T.start;
+    res[i]={w,T,basis,bd,voice,lead,start,launch,seasons,viol};
+  });
+  // 월별 집계
+  const z=()=>Object.fromEntries(LP_MONTHS.map(m=>[m,0]));
+  const agg={launch:{},ai:{},start:{},onair:{}}, teams=P.teams.map(t=>t.id);
+  teams.forEach(t=>{ agg.launch[t]=z(); agg.ai[t]=z(); agg.start[t]=z(); agg.onair[t]=z(); });
+  const mEnd=(m)=>{ const [y,mm]=m.split("-").map(Number); return key(addDays(D(`${mm===12?y+1:y}-${String(mm===12?1:mm+1).padStart(2,"0")}-01`),-1)); };
+  res.forEach(r=>{ if(!r) return; const t=r.T.id;
+    r.seasons.forEach((s,si)=>{ if(si>0&&!g.countFollow){} else {
+        const lm=lpMK(s.launch), sm=lpMK(s.start);
+        if(agg.launch[t][lm]!=null){ agg.launch[t][lm]++; if(r.voice==="ai") agg.ai[t][lm]++; }
+        if(agg.start[t][sm]!=null) agg.start[t][sm]++; } });
+    LP_MONTHS.forEach(m=>{ const e=mEnd(m);
+      const on=r.seasons.some((s,si)=>{ const nx=r.seasons[si+1]; const endTo=g.countRest&&nx?addDays(nx.launch,-1):s.last; return key(s.launch)<=e&&key(endTo)>=e; });
+      if(on) agg.onair[t][m]++; }); });
+  const cp=P.cp||{}, cpOn=z(); Object.entries(cp).forEach(([m,n])=>{ const i=LP_MONTHS.indexOf(m); if(i<0) return; const span=Math.ceil(((+g.season-(+g.openK))*(+g.cad||1)+1)/4.3);
+    for(let j=i;j<Math.min(24,i+span);j++) cpOn[LP_MONTHS[j]]+=+n||0; });
+  const tot=(k)=>Object.fromEntries(LP_MONTHS.map(m=>[m,teams.reduce((a,t)=>a+agg[k][t][m],0)+(k==="launch"?(+cp[m]||0):k==="onair"?cpOn[m]:0)]));
+  const T={launch:tot("launch"),ai:tot("ai"),start:tot("start"),onair:tot("onair")};
+  let c=0; const cum=Object.fromEntries(LP_MONTHS.map(m=>[m,c+=T.launch[m]]));
+  return {res,agg,T,cum,cpOn,teams};
+}
+/* 저장: 현재 버전은 자동 저장 · 기록은 따로 쌓임 */
+const lpWho=()=>(ME&&(ME.name||ME.email))||"";
+function lpOp(op){ LP=lpApply(LP,op); if(SB.on){ LP_OPS.push(op); clearTimeout(LP_TIMER); LP_TIMER=setTimeout(lpPush,700); } else lsSet("anime_lp_local",LP); }
+function lpApply(L,op){ L={...L,hist:[...(L.hist||[])]};
+  if(op.op==="cur"){ L.cur=op.v; L.at=new Date().toISOString(); L.by=lpWho(); }
+  else if(op.op==="hadd"){ if(!L.hist.some(h=>h.id===op.v.id)) L.hist.unshift(op.v); }
+  else if(op.op==="hdel"){ L.hist=L.hist.filter(h=>h.id!==op.id); }
+  return L; }
+async function lpPush(){ const ops=LP_OPS; if(!ops.length) return; LP_OPS=[];
+  try{ const r=await sb("GET",T_CONF,"?id=eq.leverplan&select=data"); let base=r&&r.length&&r[0].data?r[0].data:LP;
+    ops.forEach(o=>{ base=lpApply(base,o); }); const now=new Date().toISOString();
+    await sb("POST",T_CONF,"",[{id:"leverplan",data:base,updated_at:now}],"resolution=merge-duplicates");
+    LP_SEEN=now; LP=base; LP_OPS.forEach(o=>{ LP=lpApply(LP,o); }); if(TAB==="lp") lpStatus(); }
+  catch(e){ LP_OPS=ops.concat(LP_OPS); clearTimeout(LP_TIMER); LP_TIMER=setTimeout(lpPush,5000); } }
+async function lpPull(force){ if(!SB.on) return false;
+  const r=await sb("GET",T_CONF,"?id=eq.leverplan&select=data,updated_at");
+  if(!r||!r.length){ if(!LP){ lpInit(); const now=new Date().toISOString();
+      await sb("POST",T_CONF,"",[{id:"leverplan",data:LP,updated_at:now}],"resolution=merge-duplicates"); LP_SEEN=now; return true; } return false; }
+  if(LP_OPS.length||(!force&&r[0].updated_at===LP_SEEN)) return false;
+  LP_SEEN=r[0].updated_at; LP=r[0].data; return true; }
+function lpInit(){ const seed=LP_SEED();
+  LP={cur:seed,at:new Date().toISOString(),by:"",hist:[{id:"h-s7",name:"S7 반반 (엑셀 원본)",by:"엑셀",at:"2026-10-15T00:00:00Z",plan:clone(seed)}]}; }
+function lpEnsure(){ if(!LP){ const loc=!SB.on&&lsGet("anime_lp_local"); if(loc&&loc.cur) LP=loc; else lpInit(); } }
+function lpSet(fn){ if(LPV.peek){ toast("기록을 보는 중이에요. [현재 버전으로]를 누른 뒤 고쳐 주세요"); return; } const P=clone(LP.cur); fn(P); lpOp({op:"cur",v:P}); render(); }
+function lpStatus(){ const el=$("lpSt"); if(el) el.innerHTML=lpStatTxt(); }
+const lpStatTxt=()=>`<i class="dot"></i>현재 버전 자동 저장${LP&&LP.at?` · ${esc(new Date(LP.at).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}))}${LP.by?` · ${esc(LP.by)}`:""}`:""}${LP_OPS.length?" · 저장 중…":""}`;
+/* 화면 */
+function renderLP(){
+  lpEnsure(); const P=lpPlan(), g=P.g, C=lpCompute(P), yr=LPV.year, MS=LP_MONTHS.filter(m=>m.startsWith(String(yr)));
+  const num=(k,v,attr="",w=52)=>`<input class="in n lpi" style="width:${w}px" type="number" data-g="${k}" value="${esc(v)}" ${attr}>`;
+  const sel=(k,opts,v)=>`<select class="in lpi" data-g="${k}">${opts.map(([a,b])=>`<option value="${a}"${String(v)===String(a)?" selected":""}>${b}</option>`).join("")}</select>`;
+  const yn=(k,label)=>`<label class="lpyn"><input type="checkbox" data-gc="${k}"${g[k]?" checked":""}> ${label}</label>`;
+  // 목표 카드
+  const card=(lab,act,tg)=>{ const d=act-tg; return `<div class="lpk ${d>=0?"ok":"bad"}"><div class="lpkl">${lab}</div><div class="lpkv">${act}<span>목표 ${tg} · ${d>=0?"+":""}${d}</span></div></div>`; };
+  const cards=[...Object.entries(P.targets.launch||{}).map(([m,t])=>card(`${+m.slice(5)}월 누적 런칭${m.startsWith("2028")?" (28)":""}`,C.cum[m]||0,+t)),
+    ...Object.entries(P.targets.onair||{}).map(([m,t])=>card(`${m.slice(2,4)}.${+m.slice(5)} 연재 중`,C.T.onair[m]||0,+t))].join("");
+  const viol=C.res.filter(r=>r&&r.viol).length;
+  let h=`<div class="lphead"><div><p class="lead" style="margin:0">런칭 플랜 <span class="hint" style="font-size:13px;font-weight:400">레버를 바꾸면 아래가 바로 다시 계산돼요</span></p>
+      <div class="lpst" id="lpSt">${LPV.peek?`<b style="color:var(--warn)">기록 보는 중: ${esc(LPV.peek.name)}</b> (읽기 전용)`:lpStatTxt()}</div></div>
+    <div class="lpbtns">${LPV.peek?`<button type="button" class="btn pri" id="lpBack">현재 버전으로</button><button type="button" class="btn" id="lpRestore">이 기록으로 되돌리기</button>`:`<button type="button" class="btn pri" id="lpSnap">기록 남기기</button>`}
+      <button type="button" class="btn" id="lpHist">기록 ${(LP.hist||[]).length}개 ${LPV.showHist?"▴":"▾"}</button></div></div>`;
+  if(LPV.showHist) h+=`<div class="card lphist">${(LP.hist||[]).map(x=>{ const c2=lpCompute(x.plan); return `<div class="lphr${LPV.peek&&LPV.peek.id===x.id?" on":""}"><b>${esc(x.name)}</b><span class="hint">${esc((x.at||"").slice(0,10))} · ${esc(x.by||"")}</span>
+      <span class="hint">27.12 누적 ${c2.cum["2027-12"]} · 28.12 연재 ${c2.T.onair["2028-12"]}</span><span class="vsp"></span>
+      <button type="button" class="btn" data-hpeek="${x.id}" style="padding:2px 9px;font-size:12px">보기</button><button type="button" class="vdel" data-hdel="${x.id}" title="기록 삭제">✕</button></div>`; }).join("")||`<p class="hint" style="margin:0">아직 기록이 없어요.</p>`}</div>`;
+  h+=`<div class="lpkgrid">${cards}</div>`;
+  if(viol) h+=`<p class="lpwarn">착수 가능일보다 먼저 착수하는 작품이 ${viol}개 있어요. 작품 플랜에서 빨간 줄을 확인해 주세요.</p>`;
+  // ① 핵심 레버
+  const leadTxt=(t)=>`인간 ${lpLead(t.line,"human",t.bd,g)}주 · AI ${lpLead(t.line,"ai",t.bd,g)}주`;
+  h+=`<div class="card lpcard"><div class="lpsec">① 핵심 레버</div>
+    <table class="lpt"><thead><tr><th>팀</th><th>착수 가능일</th><th>월 착수 상한</th><th>제작 영업일</th><th>생산성 개선</th><th>AI 성우 비율</th><th>AI 가능일</th><th>착수→런칭</th></tr></thead><tbody>
+    <tr class="all"><td>전체 기본값</td><td class="hint">–</td><td class="hint">–</td><td>${`<input class="in n lpa" style="width:52px" type="number" min="3" max="15" data-all="bd" placeholder="일괄">`}</td>
+      <td><input class="in n lpa" style="width:44px" type="number" data-all="bd2" placeholder="일"> <input class="in t lpa" type="month" data-all="bd2From"></td>
+      <td><input class="in n lpa" style="width:60px" type="number" min="0" max="100" step="10" data-all="ai" placeholder="%"></td><td><input class="in t lpa" type="month" data-all="aiFrom"></td><td class="hint">일괄 적용</td></tr>
+    ${P.teams.map((t,i)=>`<tr><td><b>${esc(t.id)}</b> <span class="ln ${t.line}" style="font-size:10px;padding:0 5px">${t.line==="ext"?"외부":"내부"}</span></td>
+      <td><input class="in t lpi" type="date" data-tm="${i}:start" value="${esc(t.start)}"></td>
+      <td><input class="in n lpi" style="width:52px" type="number" min="0" max="20" data-tm="${i}:cap" value="${esc(t.cap)}"> 편</td>
+      <td><input class="in n lpi" style="width:52px" type="number" min="3" max="15" data-tm="${i}:bd" value="${esc(t.bd)}"> 일</td>
+      <td><input class="in n lpi" style="width:44px" type="number" min="3" max="15" data-tm="${i}:bd2" value="${esc(t.bd2)}" placeholder="–"> 일 · <input class="in t lpi" type="month" data-tm="${i}:bd2From" value="${esc((t.bd2From||"").slice(0,7))}">부터</td>
+      <td><input class="in n lpi" style="width:60px" type="number" min="0" max="100" step="10" data-tm="${i}:ai" value="${Math.round((+t.ai||0)*100)}"> %</td>
+      <td><input class="in t lpi" type="month" data-tm="${i}:aiFrom" value="${esc((t.aiFrom||"").slice(0,7))}"></td>
+      <td class="hint">${leadTxt(t)}</td></tr>`).join("")}</tbody></table>
+    <div class="lpops">
+      <label>공개 주기${sel("cad",[[1,"주 1회"],[2,"격주"]],g.cad)}</label>
+      <label>런칭 오픈 회차${num("openK",g.openK,'min="1" max="10"')}</label>
+      <label>시즌 화수${num("season",g.season,'min="5" max="100"')}</label>
+      <label>시즌 사이 휴식${num("restW",g.restW,'min="0" max="26"')}주</label>
+      <label>후속 시즌 운영${sel("follow",[["slot","연재 슬롯 유지 (미리 착수)"],["rotate","제작팀 순환 (끝나고 착수)"]],g.follow)}</label>
+      <label>일정 기준${sel("basisAll",[["each","작품마다"],["start","모두 착수 고정"],["launch","모두 런칭 고정"]],g.basisAll)}</label>
+      <label>착수→런칭 주수${sel("leadSrc",[["auto","공정 기준 탭 자동"],["excel","엑셀 표 값"]],g.leadSrc)}</label>
+    </div>
+    <details class="lpadv"${LPV.adv?" open":""}><summary>고급 설정</summary><div class="lpops">
+      ${yn("countRest","시즌 사이 쉬는 기간도 '연재 중'으로 세기")}${yn("countFollow","후속 시즌 런칭·착수도 집계에 넣기")}${yn("noAI5","5영업일 이하 작품은 AI 성우 자동 배정에서 빼기")}
+      ${yn("ignoreBd","작품별 영업일 입력 무시 (팀 기본값 적용)")}${yn("ignoreVoice","작품별 성우 입력 무시 (AI 비율로 자동)")}
+      <label>슬롯당 최대 시즌${num("maxSeasons",g.maxSeasons,'min="1" max="10"')}</label>
+      <label>AI 성우 지연 리스크${num("aiDelayW",g.aiDelayW,'min="0" max="26"')}주</label>
+      <label>서비스 최대 연재 수${num("maxOnAir",g.maxOnAir||"",'min="0" max="500" placeholder="없음"',64)}</label>
+      ${g.leadSrc==="excel"?`<label>엑셀 표 (5일)<span>AI ${num("lead.5.ai",g.lead[5].ai,"",44)} 인간 ${num("lead.5.hu",g.lead[5].hu,"",44)}주</span></label><label>엑셀 표 (7일)<span>AI ${num("lead.7.ai",g.lead[7].ai,"",44)} 인간 ${num("lead.7.hu",g.lead[7].hu,"",44)}주</span></label>`:""}
+    </div></details></div>`;
+  // ② 월별 표
+  const V=LPV.view, lab={launch:"런칭",onair:"연재 중",start:"착수 (발주)"};
+  const cellC=(t,m)=>{ const n=V==="launch"?C.agg.launch[t][m]:V==="onair"?C.agg.onair[t][m]:C.agg.start[t][m];
+    let cls=""; if(V==="launch"&&n){ const a=C.agg.ai[t][m]; cls=a===n?" ai":a?" mx":""; }
+    if(V==="start"){ const T=P.teams.find(x=>x.id===t); if(T&&+T.cap&&n>+T.cap) cls=" over"; }
+    return `<td class="lpc${cls}${n?"":" z"}">${n||"–"}</td>`; };
+  h+=`<div class="lpsec" style="margin-top:14px">② 월별 현황
+      <span class="seg sm">${["launch","onair","start"].map(v=>`<button type="button" data-lpv="${v}" aria-pressed="${V===v}">${lab[v]}</button>`).join("")}</span>
+      <span class="seg sm">${[2027,2028].map(y=>`<button type="button" data-lpy="${y}" aria-pressed="${yr===y}">${y}</button>`).join("")}</span>
+      ${V==="launch"?`<span class="hint"><i class="lgd ai"></i>AI만 <i class="lgd mx"></i>인간+AI <i class="lgd"></i>인간만</span>`:V==="start"?`<span class="hint">빨강 = 팀 월 착수 상한 초과</span>`:g.maxOnAir?`<span class="hint">빨강 = 서비스 최대 ${g.maxOnAir} 초과</span>`:""}</div>
+    <div class="card" style="padding:0;overflow-x:auto"><table class="lpt grid"><thead><tr><th>팀</th>${MS.map(m=>`<th>${+m.slice(5)}월</th>`).join("")}<th>합계</th></tr></thead><tbody>
+    ${C.teams.map(t=>`<tr><td class="tl">${esc(t)}</td>${MS.map(m=>cellC(t,m)).join("")}<td class="sum">${V==="onair"?(C.agg.onair[t][MS[11]]||0):MS.reduce((a,m)=>a+(V==="launch"?C.agg.launch[t][m]:C.agg.start[t][m]),0)}</td></tr>`).join("")}
+    ${V==="launch"?`<tr><td class="tl">CP 유통 <span class="hint">입력</span></td>${MS.map(m=>`<td class="lpc"><input class="lpcp" data-cp="${m}" value="${esc(P.cp&&P.cp[m]||"")}" placeholder="·"></td>`).join("")}<td class="sum">${MS.reduce((a,m)=>a+(+(P.cp||{})[m]||0),0)}</td></tr>`:""}
+    <tr class="tot"><td class="tl">월 합계</td>${MS.map(m=>{ const n=C.T[V==="launch"?"launch":V][m]; const over=V==="onair"&&g.maxOnAir&&n>g.maxOnAir; return `<td class="${over?"over":""}">${n||"–"}</td>`; }).join("")}<td class="sum">${V==="onair"?C.T.onair[MS[11]]:MS.reduce((a,m)=>a+C.T[V==="launch"?"launch":V][m],0)}</td></tr>
+    ${V==="launch"?`<tr class="sub"><td class="tl">└ 인간 성우</td>${MS.map(m=>`<td>${(C.T.launch[m]-C.T.ai[m]-(+(P.cp||{})[m]||0))||"–"}</td>`).join("")}<td></td></tr>
+    <tr class="sub ai"><td class="tl">└ AI 성우</td>${MS.map(m=>`<td>${C.T.ai[m]||"–"}</td>`).join("")}<td></td></tr>
+    <tr class="tot"><td class="tl">누적</td>${MS.map(m=>{ const tg=(P.targets.launch||{})[m]; const c=C.cum[m]; return `<td class="${tg!=null?(c>=tg?"okc":"badc"):""}">${c}</td>`; }).join("")}<td></td></tr>
+    <tr class="tg"><td class="tl">목표 (누적) <span class="hint">입력</span></td>${MS.map(m=>`<td><input class="lpcp" data-tg="launch:${m}" value="${esc((P.targets.launch||{})[m]??"")}" placeholder="·"></td>`).join("")}<td></td></tr>`
+    :V==="onair"?`<tr class="tg"><td class="tl">목표 (연재 중) <span class="hint">입력</span></td>${MS.map(m=>{ const tg=(P.targets.onair||{})[m]; return `<td class="${tg!=null?((C.T.onair[m]||0)>=tg?"okc":"badc"):""}"><input class="lpcp" data-tg="onair:${m}" value="${esc(tg??"")}" placeholder="·"></td>`; }).join("")}<td></td></tr>`:""}
+    </tbody></table></div>`;
+  // ③ 작품 플랜
+  const WL=C.res.filter(Boolean).filter(r=>!LPV.team||r.T.id===LPV.team).sort((a,b)=>a.launch-b.launch);
+  h+=`<div class="lpsec" style="margin-top:14px">③ 작품 플랜 <span class="hint">비워 두면 레버를 따라가요 · 확정작은 항상 런칭 고정</span>
+      <span class="seg sm"><button type="button" data-lpt="" aria-pressed="${!LPV.team}">전체 ${C.res.filter(Boolean).length}</button>${P.teams.map(t=>`<button type="button" data-lpt="${esc(t.id)}" aria-pressed="${LPV.team===t.id}">${esc(t.id)}</button>`).join("")}</span>
+      <span class="vsp"></span><button type="button" class="btn" id="lpAddW" style="padding:3px 10px;font-size:12px">+ 작품 추가</button></div>
+    <div class="card" style="padding:0;overflow:auto;max-height:520px"><table class="lpt wk"><thead><tr><th>작품</th><th>팀</th><th>일정 기준</th><th>착수일</th><th>런칭일</th><th>영업일</th><th>성우</th><th>착수→런칭</th><th>메모</th><th></th></tr></thead><tbody>
+    ${WL.map(r=>{ const w=r.w, i=P.works.indexOf(w), fs=r.basis==="start";
+      return `<tr class="${r.viol?"viol":""}${w.fixed?" fx":""}">
+        <td><input class="lpw nm" data-w="${i}:id" value="${esc(w.id)}">${w.fixed?`<span class="tag good" style="font-size:10px">확정</span>`:""}</td>
+        <td><select class="lpw" data-w="${i}:team">${P.teams.map(t=>`<option${t.id===w.team?" selected":""}>${esc(t.id)}</option>`).join("")}</select></td>
+        <td>${w.fixed?`<span class="hint">런칭 고정</span>`:g.basisAll==="each"?`<select class="lpw" data-w="${i}:basis"><option value="start"${w.basis==="start"?" selected":""}>착수 고정</option><option value="launch"${w.basis==="launch"?" selected":""}>런칭 고정</option></select>`:`<span class="hint">${r.basis==="start"?"착수 고정":"런칭 고정"}</span>`}</td>
+        <td>${fs?`<input class="lpw" type="date" data-w="${i}:start" value="${esc(w.start)}">`:`<span class="calc">${ymd(r.start)}</span>`}${r.viol?`<div class="vod">팀 착수 가능일 ${esc(r.T.start)} 전</div>`:""}</td>
+        <td>${!fs?`<input class="lpw" type="date" data-w="${i}:launch" value="${esc(w.launch)}">`:`<span class="calc">${ymd(r.launch)}</span>`}</td>
+        <td><input class="lpw n" type="number" min="3" max="15" data-w="${i}:bd" value="${esc(w.bd)}" placeholder="${r.bd}"></td>
+        <td><select class="lpw" data-w="${i}:voice"><option value=""${!w.voice?" selected":""}>자동 (${r.voice==="ai"?"AI":"인간"})</option><option value="human"${w.voice==="human"?" selected":""}>인간</option><option value="ai"${w.voice==="ai"?" selected":""}>AI</option></select></td>
+        <td class="hint">${r.lead}주</td><td><input class="lpw memo" data-w="${i}:note" value="${esc(w.note||"")}"></td>
+        <td><button type="button" class="vdel" data-wdel="${i}" title="삭제">✕</button></td></tr>`; }).join("")}</tbody></table></div>`;
+  $("v-lp").innerHTML=h;
+  // 이벤트
+  const ro=!!LPV.peek;
+  document.querySelectorAll("#v-lp [data-g]").forEach(el=>el.onchange=()=>lpSet(P=>{ const k=el.dataset.g, v=el.value;
+    if(k.startsWith("lead.")){ const [,b,t]=k.split("."); P.g.lead[b][t]=+v; return; }
+    P.g[k]=["follow","basisAll","leadSrc"].includes(k)?v:(v===""?0:+v); }));
+  document.querySelectorAll("#v-lp [data-gc]").forEach(el=>el.onchange=()=>lpSet(P=>{ P.g[el.dataset.gc]=el.checked; }));
+  document.querySelectorAll("#v-lp [data-tm]").forEach(el=>el.onchange=()=>lpSet(P=>{ const [i,k]=el.dataset.tm.split(":"); let v=el.value;
+    if(k==="ai") v=Math.max(0,Math.min(100,+v||0))/100; else if(k==="bd"||k==="cap") v=+v||0; else if(k==="bd2") v=v?+v:""; else if(k==="aiFrom"||k==="bd2From") v=v?v+"-01":"";
+    P.teams[+i][k]=v; }));
+  document.querySelectorAll("#v-lp [data-all]").forEach(el=>el.onchange=()=>{ if(el.value==="") return; lpSet(P=>{ const k=el.dataset.all; let v=el.value;
+    if(k==="ai") v=Math.max(0,Math.min(100,+v||0))/100; else if(k==="bd") v=+v; else if(k==="bd2") v=+v; else v=v+"-01"; P.teams.forEach(t=>t[k]=v); }); });
+  document.querySelectorAll("#v-lp [data-cp]").forEach(el=>el.onchange=()=>lpSet(P=>{ P.cp=P.cp||{}; const v=parseInt(el.value,10); if(v>0) P.cp[el.dataset.cp]=v; else delete P.cp[el.dataset.cp]; }));
+  document.querySelectorAll("#v-lp [data-tg]").forEach(el=>el.onchange=()=>lpSet(P=>{ const [k,m]=el.dataset.tg.split(":"); P.targets[k]=P.targets[k]||{}; const v=parseInt(el.value,10); if(v>=0&&el.value!=="") P.targets[k][m]=v; else delete P.targets[k][m]; }));
+  document.querySelectorAll("#v-lp [data-w]").forEach(el=>el.onchange=()=>lpSet(P=>{ const [i,k]=el.dataset.w.split(":"); let v=el.value; if(k==="bd") v=v?+v:""; P.works[+i][k]=v; }));
+  document.querySelectorAll("#v-lp [data-wdel]").forEach(b=>b.onclick=()=>{ const w=lpPlan().works[+b.dataset.wdel]; if(confirm(`'${w.id}'을(를) 플랜에서 뺄까요?`)) lpSet(P=>{ P.works.splice(+b.dataset.wdel,1); }); });
+  if($("lpAddW")) $("lpAddW").onclick=()=>lpSet(P=>{ const t=LPV.team||P.teams[0].id, n=P.works.filter(w=>w.team===t).length+1;
+    P.works.push({id:`${t}-${String(n).padStart(2,"0")}`,team:t,basis:"launch",start:"",launch:key(monOnOrAfter(addDays(TODAY,7*30))),bd:"",voice:"",fixed:false,note:"새 작품"}); });
+  document.querySelectorAll("#v-lp [data-lpv]").forEach(b=>b.onclick=()=>{ LPV.view=b.dataset.lpv; render(); });
+  document.querySelectorAll("#v-lp [data-lpy]").forEach(b=>b.onclick=()=>{ LPV.year=+b.dataset.lpy; render(); });
+  document.querySelectorAll("#v-lp [data-lpt]").forEach(b=>b.onclick=()=>{ LPV.team=b.dataset.lpt; render(); });
+  const adv=document.querySelector("#v-lp .lpadv"); if(adv) adv.ontoggle=()=>{ LPV.adv=adv.open; };
+  $("lpHist").onclick=()=>{ LPV.showHist=!LPV.showHist; render(); };
+  if($("lpSnap")) $("lpSnap").onclick=()=>{ const nm=prompt("기록 이름 (예: 10/15 리드 보고)",`${md(TODAY)} 기록`); if(!nm) return;
+    lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:nm.trim(),by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}}); LPV.showHist=true; toast("기록을 남겼어요"); render(); };
+  if($("lpBack")) $("lpBack").onclick=()=>{ LPV.peek=null; render(); };
+  if($("lpRestore")) $("lpRestore").onclick=()=>{ const pk=LPV.peek; if(!confirm(`'${pk.name}'으로 현재 버전을 되돌릴까요? 지금 현재 버전은 기록으로 먼저 남겨둘게요.`)) return;
+    lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`되돌리기 전 자동 기록 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
+    lpOp({op:"cur",v:clone(pk.plan)}); LPV.peek=null; toast("현재 버전을 되돌렸어요"); render(); };
+  document.querySelectorAll("#v-lp [data-hpeek]").forEach(b=>b.onclick=()=>{ const x=(LP.hist||[]).find(h=>h.id===b.dataset.hpeek); LPV.peek=x?{id:x.id,name:x.name,plan:x.plan}:null; render(); });
+  document.querySelectorAll("#v-lp [data-hdel]").forEach(b=>b.onclick=()=>{ const x=(LP.hist||[]).find(h=>h.id===b.dataset.hdel); if(x&&confirm(`'${x.name}' 기록을 지울까요?`)){ if(LPV.peek&&LPV.peek.id===x.id) LPV.peek=null; lpOp({op:"hdel",id:x.id}); render(); } });
+  if(ro) document.querySelectorAll("#v-lp input:not([type=checkbox]).lpi, #v-lp .lpw, #v-lp .lpcp, #v-lp .lpa, #v-lp [data-gc]").forEach(el=>el.disabled=true);
+}
+
 /* ---------- 탭 · 시작 ---------- */
 function setTab(t){
   TAB=t; $("pop").hidden=true;
@@ -3422,7 +3680,7 @@ if(LANG==="ja"){ document.documentElement.lang="ja"; document.title="アニメ�
 TR_OBS.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["title","placeholder","aria-label"]});
 (async function init(){
   try{ const q=new URLSearchParams(location.search);
-    if(["open","prod","std","sim","vendors","users"].includes(q.get("tab"))) TAB=q.get("tab");
+    if(["open","prod","std","lp","sim","vendors","users"].includes(q.get("tab"))) TAB=q.get("tab");
     if(q.get("w")) SEL=q.get("w"); }catch(e){}
   if(!SB.on){
     WORKS=clone(DEFAULT_WORKS).map(normW); VENDORS=clone(V_SEED);
