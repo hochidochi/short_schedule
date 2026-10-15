@@ -3851,7 +3851,7 @@ function lp2Seed(){
     if(g.id==="외부 일본"){ const s=lp2Split(g.start,"",3); return {id:g.id,line:g.line,pipes:s.map((st,i)=>mk(g,`외부${i+1}`,st))}; }
     if(g.id==="외부 일본 외"){ const s=lp2Split(g.start,"",2); return {id:g.id,line:g.line,pipes:s.map((st,i)=>mk(g,`외부${i+4}`,st))}; }
     return {id:g.id,line:g.line,pipes:[mk(g,g.id,{...g.start})]}; });
-  return lp2ExtSplit(lp2AiMigrate({v:2,g:{season:30,openK:3,extExtra:0,leadSrc:"auto",lead:{5:{ai:13,hu:19},7:{ai:26,hu:32}},noAI5:true},groups,targets:{onair:{"2027-12":40,"2028-12":100}}}));
+  return lp2ExtSplit(lp2AiMigrate({v:2,g:{season:30,openK:3,extExtra:0,leadSrc:"auto",lead:{5:{ai:13,hu:19},7:{ai:26,hu:32}},noAI5:false},groups,targets:{onair:{"2027-12":40,"2028-12":100}}}));
 }
 const lp2MStart=(m)=>D(m+"-01"), lp2MEnd=(m)=>{ const [y,mm]=m.split("-").map(Number); return addDays(D(`${mm===12?y+1:y}-${String(mm===12?1:mm+1).padStart(2,"0")}-01`),-1); };
 const lp2ff=(obj,i,def)=>{ for(let j=i;j>=0;j--){ const v=(obj||{})[LP2_M[j]]; if(v!==undefined&&v!==""&&v!==null) return +v; } return def; };   // 비어 있으면 왼쪽 값을 이어 씀
@@ -3904,6 +3904,7 @@ function lp2Cost(P,C){ const k={...LP2_COST0,...(P.cost||{})}, M=LP2_M, n=M.leng
   return {k,rows:[["내부 · 영상 제작",iv],["내부 · 성우 (다음 달)",ivo],["내부 · 자막 번역 (다음 달)",isb],["내부 소계",it,"sub"],["외주 제작 (납품 기준)",ex],["합계",all,"tot"]]}; }
 function bdCount(a,b){ let n=0; for(let d=a;d<=b;d=addDays(d,1)) if(isBD(d)) n++; return n; }
 function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.cur.ext1)) lpOp({op:"cur",v:lp2ExtSplit(lp2AiMigrate(LP.cur))});
+  if(LP.cur&&LP.cur.v===2&&!LP.cur.ai5v){ const P=clone(LP.cur); P.g.noAI5=false; P.ai5v=1; lpOp({op:"cur",v:P}); }   // 10/16: 영업일 단축은 AI 성우 공정이 녹아든 것 → 5영업일 이하도 AI 성우 가능
   if(!LP.cur||LP.cur.v!==2){ const old=LP.cur; const seed=lp2Seed();
     if(old&&old.works) lpOp({op:"hadd",v:{id:"h-v1",name:"이전 런칭 플랜 (작품 목록 방식)",by:"",at:LP.at||new Date().toISOString(),plan:old}});
     lpOp({op:"hadd",v:{id:"h-x1",name:"엑셀 시뮬레이터 원본 (10/15)",by:"엑셀",at:new Date().toISOString(),plan:clone(seed)}});
@@ -4002,7 +4003,7 @@ function renderLP2(){
     <label>런칭 시 공개 화수<input class="in n lpi" type="number" min="1" max="10" data-g2="openK" value="${g.openK}"${ro?" disabled":""}></label>
     <label>착수→런칭 주수<select class="in lpi" data-g2="leadSrc"${ro?" disabled":""}><option value="auto"${g.leadSrc==="auto"?" selected":""}>공정 기준 탭 자동 (내부·외부 프로세스)</option><option value="excel"${g.leadSrc==="excel"?" selected":""}>엑셀 표 값 (5일 13/19주 · 7일 26/32주)</option></select></label>
     <label>외부 추가 소요<span><input class="in n lpi" type="number" min="0" max="30" data-g2="extExtra" value="${g.extExtra}"${ro?" disabled":""}> 영업일</span></label>
-    <label class="lpyn"><input type="checkbox" data-g2c="noAI5"${g.noAI5?" checked":""}${ro?" disabled":""}> 5영업일 이하는 AI 성우 제외</label>
+    <label class="lpyn" title="기본은 꺼짐: 영업일 단축에 AI 성우 공정이 포함된 것으로 봄"><input type="checkbox" data-g2c="noAI5"${g.noAI5?" checked":""}${ro?" disabled":""}> 5영업일 이하는 AI 성우 제외</label>
     <span class="hint lpleads">7일 기준 · 내부 ${leadNote("int",7)} / 외부 ${leadNote("ext",7)}<br>5일 기준 · 내부 ${leadNote("int",5)} / 외부 ${leadNote("ext",5)}</span>
   </div></div>`;
   // ── 레버: 엑셀처럼 파이프라인마다 3줄 (착수 / 영업일 / AI 성우) ──
