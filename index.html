@@ -252,7 +252,7 @@ table.vtab tr.off td{opacity:.5} .vwrap{min-width:140px;max-width:240px;word-bre
 .vlink{font-size:11px} .vod{color:var(--bad);font-weight:700;font-size:11.5px}
 .pop.wide{width:min(640px,94vw)} .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:10px 0}
 .vgrid .vf{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted)} .vgrid textarea{font:inherit;font-size:12.5px;resize:vertical}
-.vtwrap{background:var(--surface);border:1px solid var(--line2);border-radius:10px;overflow:auto;max-height:76vh}
+.vtwrap{background:var(--surface);border:1px solid var(--line2);border-radius:10px;overflow-x:auto}
 table.vt{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px;min-width:1350px}
 table.vt th{position:sticky;top:0;z-index:3;background:#EEF0EB;color:var(--ink2);font-size:11.5px;font-weight:700;text-align:left;padding:8px 10px;border-bottom:2px solid var(--line2);border-right:1px solid var(--line);white-space:nowrap}
 table.vt td{vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line2);border-right:1px solid var(--line);background:var(--surface)}
@@ -291,7 +291,7 @@ table.vt tr:hover .ve.empty .ph{opacity:1}
 .vmini{border:1px solid var(--line2);border-radius:4px;font-size:11px;padding:0 2px;background:var(--page);color:var(--ink2)}
 .vdate{margin-top:4px;border:1px solid var(--line);border-radius:4px;font-size:11.5px;padding:1px 4px;color:var(--ink2);background:transparent}
 .vdate.od{border-color:var(--bad);color:var(--bad)}
-.vdate:not(.has){opacity:0} table.vt tr:hover .vdate,.vdate:focus{opacity:1}
+
 .vdel{border:0;background:none;color:#B9BCB5;cursor:pointer;font-size:13px} .vdel:hover{color:var(--bad)}
 .vcalbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
 .vcalt{font-size:16px;min-width:92px;text-align:center} .vleg{display:flex;gap:4px;flex-wrap:wrap}
@@ -384,6 +384,10 @@ table.lpt.wk .calc{color:var(--ink2);font-weight:600} table.lpt.wk tr.viol td{ba
 .pgb:hover{filter:brightness(1.08);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--c)} .pgb.ok{opacity:.38} .pgb.late{background:var(--c)!important;box-shadow:inset 0 0 0 2px var(--bad),0 0 0 1px var(--bad)}
 .pgb.memo{background:repeating-linear-gradient(135deg,var(--c) 0 6px,#8E98A4 6px 9px)} .pgb.pgcl{border-top-left-radius:0;border-bottom-left-radius:0} .pgb.pgcr{border-top-right-radius:0;border-bottom-right-radius:0}
 .pgflag{margin:3px 1px;border:0;border-radius:4px;background:var(--c);color:#fff;font-size:15px;cursor:pointer;z-index:1}
+.vrng{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap} .vrng span{color:var(--muted)}
+.vrng .vdate{margin:0;width:118px} .vrng .vdate:placeholder-shown,.vrng .vdate[value=""]{color:#B9BCB5}
+.vrng.od .vdate[data-vk=to]{border-color:var(--bad);color:var(--bad)} .vrng .vod{font-size:11px}
+.ve.vstat{line-height:1.5}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -765,7 +769,7 @@ const DEFAULT_CONF={
     {k:"author",  n:"작가 승인",         s:"작가 승인",   team:"작가",             v:{ih:5, ia:5, eh:10,ea:10}, sc:"ep",    upto:3},      // 내부: 작가+내부 = 10
     {k:"intAppr", n:"내부 승인",         s:"내부 승인",   team:"내부관계자",       v:{ih:5, ia:5, eh:2, ea:2},  sc:"ep",    upto:{i:3,e:0}, conc:"ext"},   // 내부: 작가+내부 = 10 (1~3화) · 외부: 1~3화 병렬, 4화부터 2일   // 내부: 1~3화만 · 외부: 전 회차 (1~3화는 작가 승인과 병렬)
     {k:"ratingFb",n:"등급 분류 피드백",   s:"등급 피드백", team:"내부관계자",       v:{ih:2, ia:2, eh:2, ea:2},  sc:"ep",    upto:3, conc:"author"},   // 1~3화만 · 승인과 병렬 (추가 기간 없음)
-    {k:"prodF",   n:"영상 최종 수정",     s:"영상 최종",   team:"내부 제작팀",      v:{ih:5, ia:5, eh:5, ea:5},  sc:"ep",    upto:{i:3,e:0}},   // 내부: 1~3화만 · 외부: 전 회차
+    {k:"prodF",   n:"영상 최종 수정",     s:"영상 최종",   sx:"영상 수정", team:"내부 제작팀", tx:"외부 제작사", v:{ih:5, ia:5, eh:3, ea:3},  sc:"ep",    upto:{i:3,e:0}},   // 외부: 4화부터 내부 승인 뒤 3영업일 안에 수정   // 내부: 1~3화만 · 외부: 전 회차
     {k:"trans",   n:"대사 번역",         s:"대사 번역",   team:"GW content",       v:{ih:5, ia:5, eh:0, ea:0},  sc:"batch"},  // 5회차씩 · 외부: 제작사가 대사·녹음 대본 준비 → 없음
     {k:"vtrans",  n:"영상 번역 (번인)",   s:"영상 번역",   team:"미정 (업체 선정 중)", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", conc:true, par:true, tbdDur:true},   // 대사 번역과 동시 시작 · 기간 미정 (업체 정해지면 공정 기준에서 일수 입력)
     {k:"script",  n:"성우 대사집 확정",   s:"대사집 확정", team:"사운드 스튜디오",  v:{ih:7, ia:0, eh:0, ea:0},  sc:"batch"},  // ┐ 외부는 '더빙·믹싱'에 포함
@@ -1158,6 +1162,10 @@ function runMigrations0(){
       const touched=Object.keys(w.ov||{}).some(kk=>{ const [ep,sk]=kk.split(":"); return FB3_OLD.includes(sk)&&+ep>=1&&+ep<=3; });
       if(touched) edit(w.id,[{p:["fbLegacy"],v:true}]); });
     CONF.migr.push("fb3-1012"); dirty=true;
+  }
+  if(!has("ext-fix4-1015")){   // 외부: 4화부터 내부 승인 → 영상 수정 3영업일 (회차별) 다시 켜기
+    CONF.ext4=true; const pf=CONF.stages.find(x=>x.k==="prodF"); if(pf){ pf.v={...pf.v,eh:3,ea:3}; pf.sx="영상 수정"; pf.tx="외부 제작사"; }
+    CONF.migr.push("ext-fix4-1015"); dirty=true;
   }
   if(dirty) saveConf();
 }
@@ -1591,7 +1599,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","공정별 (간트)":"工程別 (ガント)","월간 달력":"月間カレンダー","주부터":"週から","주 보기":"週表示","이번 주":"今週","+ 메모·목표 추가":"+ メモ・目標追加","최종 목표":"最終目標","최종 목표로 표시 (간트 맨 위에 D-day로 보여요)":"最終目標として表示 (ガント上部にD-dayで表示)","주말 제외 · 평일만 표시 · 막대를 누르면 표의 그 칸으로 이동":"週末除外・平日のみ表示・バーをクリックすると表のセルへ移動","이 기간에는 표시할 공정이 없어요. 작품이나 공정 칩을 켜 보세요.":"この期間に表示する工程はありません。作品や工程チップをオンにしてください。","런칭 플랜":"ローンチプラン","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","진행 상황 · 일정":"進行状況・日程","+ 진행 상황":"+ 進行状況","시작일":"開始日","종료일 (기한)":"終了日 (期限)","영상 수정":"映像修正","공정별 (간트)":"工程別 (ガント)","월간 달력":"月間カレンダー","주부터":"週から","주 보기":"週表示","이번 주":"今週","+ 메모·목표 추가":"+ メモ・目標追加","최종 목표":"最終目標","최종 목표로 표시 (간트 맨 위에 D-day로 보여요)":"最終目標として表示 (ガント上部にD-dayで表示)","주말 제외 · 평일만 표시 · 막대를 누르면 표의 그 칸으로 이동":"週末除外・平日のみ表示・バーをクリックすると表のセルへ移動","이 기간에는 표시할 공정이 없어요. 작품이나 공정 칩을 켜 보세요.":"この期間に表示する工程はありません。作品や工程チップをオンにしてください。","런칭 플랜":"ローンチプラン","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -2763,7 +2771,7 @@ function renderStd(){
   ${(()=>{ const lg=WORKS.filter(w=>!fb3On(w)); return `<div class="card fb3all" style="margin-top:10px"><b>1~3화 피드백 방식</b>
     <span class="hint">한 번에(통합 피드백 → 통합 수정) ${WORKS.length-lg.length}작품 · 회차별(예전 방식) ${lg.length}작품${lg.length?`: ${lg.map(w=>esc(w.n)).join(", ")}`:""}</span>
     ${lg.length?`<button type="button" class="btn pri" id="fb3All" style="padding:3px 10px">모든 작품 한 번에로 바꾸기</button>`:""}
-    <label style="display:flex;gap:6px;align-items:center;width:100%;font-size:12.5px;color:var(--ink2)"><input type="checkbox" id="ext4"${CONF.ext4?" checked":""}> 외부 제작은 4화부터 영상 최종 수정(5일)도 회차마다 진행 <span class="hint">(외부 4화부터 내부 승인은 항상 회차별로 진행 · 작가 승인은 1~3화 통합 피드백에만)</span></label></div>`; })()}
+    <label style="display:flex;gap:6px;align-items:center;width:100%;font-size:12.5px;color:var(--ink2)"><input type="checkbox" id="ext4"${CONF.ext4?" checked":""}> 외부 제작은 4화부터 내부 승인 뒤 영상 수정(${(CONF.stages.find(x=>x.k==="prodF")||{v:{}}).v.eh||3}일)을 회차마다 진행 <span class="hint">(외부 4화부터 내부 승인은 항상 회차별로 진행 · 작가 승인은 1~3화 통합 피드백에만)</span></label></div>`; })()}
   <h2>오픈 규칙</h2>
   <div class="card"><div class="rules">
     <span>런칭 시 <b>${OPEN_K}화</b> 동시 오픈</span><span>이후 <b>주 1회</b></span><span><b>휴재 없음</b> — 완결까지 끊기지 않는 가장 이른 날로 런칭일 자동 결정</span>
@@ -3215,6 +3223,9 @@ async function vPull(force){
   if(V_PENDING.length||(!force&&r[0].updated_at===V_SEEN)) return false;
   V_SEEN=r[0].updated_at; VENDORS=(r[0].data&&r[0].data.list)||[];
   const mg=(r[0].data&&r[0].data.migr)||[];
+  if(!mg.includes("act-1015")){   // 일정 및 액션 단순화 (진행 상황 + 시작~종료)
+    VENDORS=vActMigrate(VENDORS); const now=new Date().toISOString(); mg.push("act-1015");
+    await sb("POST",T_CONF,"",[{id:"vendors",data:{list:VENDORS,migr:[...mg,...(mg.includes("owner-en")?[]:[])]},updated_at:now}],"resolution=merge-duplicates"); V_SEEN=now; }
   if(!mg.includes("owner-en")){   // 컨택 담당자 이름 영어로 (한 번만)
     VENDORS=vOwnerEn(VENDORS); const now=new Date().toISOString();
     await sb("POST",T_CONF,"",[{id:"vendors",data:{list:VENDORS,migr:[...mg,"owner-en"]},updated_at:now}],"resolution=merge-duplicates"); V_SEEN=now; }
@@ -3225,7 +3236,7 @@ function vFiltered(){
   const list=VENDORS.filter(v=>(!VF.kind||vKind(v)===VF.kind)&&(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.stage.size||VF.stage.has(v.stage||"contact"))
     &&(!VF.owner||(v.owner||"").includes(VF.owner))&&(!q||JSON.stringify(v).toLowerCase().includes(q)));
   const po={high:0,mid:1,low:2}, so=Object.fromEntries(V_STAGES.map((s,i)=>[s[0],i]));
-  const nd=(v)=>v.nextDue||"9999";
+  const nd=(v)=>vTo(v)||"9999";
   const last=(v)=>v.stage==="no"?1:0;   // 진행 불가는 항상 맨 아래
   return list.sort((a,b)=>(last(a)-last(b))||(VF.sort==="next"?nd(a).localeCompare(nd(b)):VF.sort==="stage"?(so[b.stage]||0)-(so[a.stage]||0):VF.sort==="country"?(a.country||"").localeCompare(b.country||""):(po[a.prio||"mid"]-po[b.prio||"mid"])||((so[b.stage]||0)-(so[a.stage]||0))));
 }
@@ -3240,6 +3251,14 @@ function vParseKey(t){   // "9/30 납품", "10/15 시연", "10월 중순" → �
     return {d:D(`${yr(mm)}-${String(mm).padStart(2,"0")}-${String(dd).padStart(2,"0")}`),approx:true}; }
   return null;
 }
+/* 일정 및 액션 → '진행 상황 + 일정(시작~종료)' 두 가지로 단순화 */
+const vTo=(v)=>v.to||"", vFrom=(v)=>v.from||"";
+const vOd=(v)=>!!vTo(v)&&vTo(v)<key(TODAY)&&!["signed","prod","no","hold"].includes(v.stage);
+function vActMigrate(list){ return list.map(v=>{ if(v.actv===2) return v;
+  const parts=[v.status,v.keyDate,v.next?`다음: ${v.next}`:""].map(x=>(x||"").trim()).filter(Boolean);
+  const uniq=parts.filter((x,i)=>parts.indexOf(x)===i);
+  let to=v.to||v.nextDue||""; if(!to){ const p=vParseKey(v.keyDate); if(p&&!p.approx) to=key(p.d); }
+  return {...v,status:uniq.join("\n"),from:v.from||"",to,keyDate:"",next:"",nextDue:"",actv:2}; }); }
 function vCalItems(list){
   const out=[];
   list.forEach(v=>{
@@ -3250,7 +3269,10 @@ function vCalItems(list){
         for(let d=a,n=0;d<=b&&n<370;d=addDays(d,1),n++){ const k=key(d);
           out.push({...base,date:k,rng,from:e.date,to:e.to,pos:k===e.date?"s":k===e.to?"e":"m",lab:k===e.date||d.getUTCDay()===0}); }
       } else out.push({...base,date:e.date}); });
-    if(v.nextDue) out.push({v,kind:"next",date:v.nextDue,text:v.next||"다음 액션",done:false});
+    if(vTo(v)){ const txt=(v.status||"일정").split("\n")[0], f=vFrom(v), t=vTo(v);
+      if(f&&f<t){ const a=D(f), b=D(t), rng=`${md(a)}~${md(b)}`;
+        for(let d=a,n=0;d<=b&&n<370;d=addDays(d,1),n++){ const k=key(d); out.push({v,kind:"next",date:k,text:txt,rng,from:f,to:t,pos:k===f?"s":k===t?"e":"m",lab:k===f||d.getUTCDay()===0,done:false}); } }
+      else out.push({v,kind:"next",date:t,text:txt,done:false}); }
     const p=vParseKey(v.keyDate); if(p) out.push({v,kind:"key",date:key(p.d),text:v.keyDate,approx:p.approx});
   });
   return out;
@@ -3298,10 +3320,10 @@ function vEvtEditor(v,ref,day,anchor,list){
     $("eX").onclick=closePop; $("eT").onclick=()=>{ closePop(); VVIEW="table"; VF.q=v.name; render(); }; return; }
   const isNext=kind==="next";
   const vendorSel=v?`<b>${esc(v.name)}</b>`:`<select class="in" id="eV" style="flex:1">${list.filter(x=>x.stage!=="no").map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select>`;
-  vPopAt(anchor,`<h4>${isNext?"다음 액션":ref?"일정 수정":"일정 추가"}</h4>
+  vPopAt(anchor,`<h4>${isNext?"진행 상황 · 일정":ref?"일정 수정":"일정 추가"}</h4>
     <div class="row"><span>외주사</span>${vendorSel}</div>
     ${isNext?"":`<div class="row"><span>종류</span><select class="in" id="eY">${V_EVT.map(([k,l])=>`<option value="${k}"${(ev.type||"meet")===k?" selected":""}>${l}</option>`).join("")}</select></div>`}
-    <div class="row"><span>${isNext?"날짜":"시작일"}</span><input class="in" type="date" id="eD" value="${esc(isNext?v.nextDue:ev.date||day||key(TODAY))}"></div>
+    <div class="row"><span>${isNext?"날짜":"시작일"}</span><input class="in" type="date" id="eD" value="${esc(isNext?vTo(v):ev.date||day||key(TODAY))}"></div>
     ${isNext?"":`<div class="row"><span>종료일</span><input class="in" type="date" id="eTo" value="${esc(ev.to||"")}"><span class="hint" style="width:auto">하루짜리면 비워 두세요</span></div>`}
     <div class="row"><span>내용</span><input class="in" id="eTx" style="flex:1" value="${esc(isNext?v.next||"":ev.text||"")}" placeholder="${isNext?"예: 견적 회신 받기":"예: 시연 미팅 · 2차 샘플 납품"}"></div>
     <div class="acts">${ref?`<button type="button" class="btn danger" id="eDel">${isNext?"다음 액션 지우기":"삭제"}</button>`:""}${ref&&!isNext?`<button type="button" class="btn" id="eDone">${ev.done?"완료 취소":"✓ 완료"}</button>`:""}<span style="flex:1"></span>
@@ -3311,13 +3333,13 @@ function vEvtEditor(v,ref,day,anchor,list){
   const target=()=>v||VENDORS.find(x=>x.id===$("eV").value);
   $("eOk").onclick=()=>{ const t=target(); if(!t) return; const date=$("eD").value, text=$("eTx").value.trim();
     if(!date){ toast("날짜를 넣어 주세요"); return; }
-    if(isNext){ vEdit({op:"set",id:t.id,v:{next:text,nextDue:date}}); closePop(); return; }
+    if(isNext){ const rest=(t.status||"").split("\n").slice(1); vEdit({op:"set",id:t.id,v:{status:[text,...rest].filter(Boolean).join("\n"),to:date,...(vFrom(t)&&vFrom(t)>date?{from:""}:{})}}); closePop(); return; }
     const to=$("eTo")?$("eTo").value:"";
     if(to&&to<date){ toast("종료일이 시작일보다 빨라요"); return; }
     const evs=clone(t.events||[]); const item={date,text,type:$("eY").value,done:!!ev.done}; if(to&&to>date) item.to=to;
     if(ref) evs[ref.i]=item; else evs.push(item);
     vEdit({op:"set",id:t.id,v:{events:evs}}); closePop(); };
-  if($("eDel")) $("eDel").onclick=()=>{ if(isNext){ vEdit({op:"set",id:v.id,v:{next:"",nextDue:""}}); }
+  if($("eDel")) $("eDel").onclick=()=>{ if(isNext){ vEdit({op:"set",id:v.id,v:{from:"",to:""}}); }
     else { const evs=clone(v.events||[]); evs.splice(ref.i,1); vEdit({op:"set",id:v.id,v:{events:evs}}); } closePop(); };
   if($("eDone")) $("eDone").onclick=()=>{ const evs=clone(v.events||[]); evs[ref.i]={...evs[ref.i],done:!evs[ref.i].done}; vEdit({op:"set",id:v.id,v:{events:evs}}); closePop(); };
   $("pop").onkeydown=(e)=>{ if(e.key==="Escape") closePop(); if(e.key==="Enter"&&e.target.tagName==="INPUT") $("eOk").click(); };
@@ -3341,9 +3363,9 @@ function vNextBoard(all){
   const t=key(TODAY), wk=key(addDays(TODAY,7)), po={high:0,mid:1,low:2};
   const rows=all.filter(v=>!["signed","prod","no","hold"].includes(v.stage)).map(v=>{
     const ci=vChkInfo(v), touched=vTouched(v), idle=touched?Math.round((TODAY-D(touched))/86400000):null;
-    const od=v.nextDue&&v.nextDue<t, soon=v.nextDue&&v.nextDue>=t&&v.nextDue<=wk;
+    const dt=vTo(v), od=vOd(v), soon=!!dt&&dt>=t&&dt<=wk;
     const tag=od?"od":(idle!=null&&idle>=7)?"idle":soon?"soon":"go";
-    const what=v.next||(ci.rest.length?"":"다음 단계 정하기");
+    const what=(v.status||"").split("\n")[0]||(ci.rest.length?"":"다음 단계 정하기");
     return {v,ci,idle,od,soon,tag,what,score:(od?0:tag==="idle"?2:soon?1:3)*10+po[v.prio||"mid"]};
   }).sort((a,b)=>a.score-b.score);
   const cnt=(t)=>rows.filter(r=>r.tag===t).length, LIM=6, list=VNB_MORE?rows:rows.slice(0,LIM);
@@ -3355,9 +3377,9 @@ function vNextBoard(all){
     <ul>${list.map(r=>`<li class="t-${r.tag}"><span class="vnbt">${lab[r.tag]}</span>
       <button type="button" class="vnbn" data-goto="${r.v.id}">${esc(r.v.name)}</button><span class="vkt k-${vKind(r.v)}">${vKindL(vKind(r.v)).replace(" 외주","")}</span>
       <span class="hint">${vStep(r.v.stage)+1}. ${esc(vStage(r.v.stage))} · 계약 준비 ${r.ci.done}/${r.ci.total}</span>
-      ${r.what?`<span class="vnbw">→ <span data-tx data-notr>${esc(r.what)}</span>${r.v.nextDue?` <span class="hint">(${esc(r.v.nextDue.slice(5).replace("-","/"))}까지)</span>`:""}</span>`:""}
+      ${r.what?`<span class="vnbw">→ <span data-tx data-notr>${esc(r.what)}</span>${vTo(r.v)?` <span class="hint">(${vFrom(r.v)?esc(vFrom(r.v).slice(5).replace("-","/"))+"~":""}${esc(vTo(r.v).slice(5).replace("-","/"))}까지)</span>`:""}</span>`:""}
       ${r.idle!=null&&r.idle>=7?`<span class="vnbi">${r.idle}일째 진행 없음</span>`:""}
-      ${!r.v.next&&r.ci.rest.length?`<span class="vnbr"><span class="hint">남은 ${r.ci.rest.length}개 · 끝난 것 체크</span>${r.ci.rest.slice(0,4).map(([k,l])=>`<button type="button" class="vnbok" data-vid="${r.v.id}" data-ck="${k}" title="끝났으면 눌러서 체크">${esc(l)}</button>`).join("")}${r.ci.rest.length>4?`<button type="button" class="vnbok more" data-chk="${r.v.id}">+${r.ci.rest.length-4}</button>`:""}</span>`:""}</li>`).join("")}</ul>
+      ${r.ci.rest.length?`<span class="vnbr"><span class="hint">남은 ${r.ci.rest.length}개 · 끝난 것 체크</span>${r.ci.rest.slice(0,4).map(([k,l])=>`<button type="button" class="vnbok" data-vid="${r.v.id}" data-ck="${k}" title="끝났으면 눌러서 체크">${esc(l)}</button>`).join("")}${r.ci.rest.length>4?`<button type="button" class="vnbok more" data-chk="${r.v.id}">+${r.ci.rest.length-4}</button>`:""}</span>`:""}</li>`).join("")}</ul>
     ${rows.length>LIM?`<button type="button" class="btn vnbm" style="padding:2px 10px;font-size:12px">${VNB_MORE?"접기":`외 ${rows.length-LIM}곳 더 보기`}</button>`:""}</div>`;
 }
 function vChkToggle(v,k,on){ const c={...vChk(v)}; if(on) c[k]=key(TODAY); else delete c[k]; vEdit({op:"set",id:v.id,v:{chk:c}}); }
@@ -3376,9 +3398,9 @@ function renderVendors(){
   const L=vFiltered(), all=VENDORS.filter(v=>!VF.kind||vKind(v)===VF.kind), cnt=(f,k)=>all.filter(v=>f(v)===k).length;
   const chip=(grp,k,label,n)=>`<button type="button" class="vchip${VF[grp].has(k)?" on":""}" data-vf="${grp}" data-k="${k}">${esc(label)} <span>${n}</span></button>`;
   const owners=[...new Set(all.flatMap(v=>(v.owner||"").split("/").map(x=>x.trim()).filter(Boolean)))];
-  const overdue=all.filter(v=>v.nextDue&&v.nextDue<key(TODAY)&&!["signed","prod","no"].includes(v.stage)).length;
+  const overdue=all.filter(vOd).length;
   let h=`<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
-    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">전체 ${all.length}곳 · 진행 중 ${all.filter(v=>!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">다음 액션 기한 지남 ${overdue}곳</b>`:""}</span></p></div>
+    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">전체 ${all.length}곳 · 진행 중 ${all.filter(v=>!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">일정 기한 지남 ${overdue}곳</b>`:""}</span></p></div>
     <span style="display:flex;gap:8px;align-items:center"><span class="seg sm" role="group" aria-label="보기"><button type="button" data-vv="table" aria-pressed="${VVIEW==="table"}">표</button><button type="button" data-vv="cal" aria-pressed="${VVIEW==="cal"}">캘린더</button></span>
     <button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></span></div>
   <div class="vkseg" role="group" aria-label="외주 구분">${[["","전체",VENDORS.length,"all"],...V_KINDS.map(([k,l])=>[k,l,VENDORS.filter(v=>vKind(v)===k).length,k])].map(([k,l,n,c])=>`<button type="button" class="vkb k-${c}" data-vk2="${k}" aria-pressed="${VF.kind===k}"><i></i>${l} <b>${n}</b></button>`).join("")}</div>
@@ -3402,8 +3424,8 @@ function renderVendors(){
   const TXK=new Set(["status","keyDate","next","interest","note","price","intro"]);   // 자동 번역 대상
   const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}"${v[k]&&TXK.has(k)?" data-tx data-notr":""} data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
   if(VVIEW==="cal"){ h+=renderVCal(L); }
-  else { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>일정 및 액션</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
-  const vRow=(v)=>{ const od=v.nextDue&&v.nextDue<key(TODAY)&&!["signed","prod","no"].includes(v.stage);
+  else { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>진행 상황 · 일정</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
+  const vRow=(v)=>{ const od=vOd(v);
     const home=(v.url||"").split(/\s+/).filter(Boolean)[0]||"", st=v.stage||"contact", si=vStep(st);
     h+=`<tr class="${["no","hold"].includes(st)?"off":""} pr-${v.prio||"mid"} k-${vKind(v)}">
       <td class="c-name"><div class="vnrow">${home?`<a class="vname" href="${esc(home)}" target="_blank" rel="noopener" title="홈페이지 열기 · ${esc(home)}">${esc(v.name)}</a>`:`<span class="vname">${esc(v.name)}</span>`}
@@ -3417,9 +3439,8 @@ function renderVendors(){
           <optgroup label="진행 외">${V_SIDE.map(([k,l])=>`<option value="${k}"${st===k?" selected":""}>${l}</option>`).join("")}</optgroup></select>
         ${si>=0?`<div class="vprog" title="${si+1} / ${V_FLOW.length} 단계">${V_FLOW.map((_,i)=>`<i class="${i<si?"d":i===si?"c":""}"></i>`).join("")}</div>`:`<div class="vprog off">${esc(vStage(st))}</div>`}
         ${["no"].includes(st)?"":(()=>{const ci=vChkInfo(v);return `<button type="button" class="vchkb${ci.done===ci.total?" ok":""}" data-vid="${v.id}" title="계약 준비 체크리스트">계약 준비 <b>${ci.done}/${ci.total}</b>${ci.done===ci.total?" ✓":` · 남은 ${ci.total-ci.done}개`}</button>`;})()}</td>
-      <td class="c-w2">${ve(v,"keyDate","+ 주요 일정","vkey")}${ve(v,"status","+ 상세 상황")}
-        <div class="vact${v.next||v.nextDue?"":" vempty"}"><span class="vacl">다음</span>${ve(v,"next","+ 다음 액션")}</div>
-        <input type="date" class="vdate${od?" od":""}${v.nextDue?" has":""}" data-vid="${v.id}" data-vk="nextDue" value="${esc(v.nextDue||"")}" title="다음 액션 기한">${od?`<span class="vod">기한 지남</span>`:""}</td>
+      <td class="c-w2">${ve(v,"status","+ 진행 상황","vstat")}
+        <div class="vrng${od?" od":""}"><input type="date" class="vdate" data-vid="${v.id}" data-vk="from" value="${esc(vFrom(v))}" title="시작일"><span>~</span><input type="date" class="vdate" data-vid="${v.id}" data-vk="to" value="${esc(vTo(v))}" title="종료일 (기한)">${od?`<b class="vod">기한 지남</b>`:""}</div></td>
       <td class="c-w">${ve(v,"interest","+ 작품")}</td>
       <td class="c-w">${ve(v,"note","+ 비고")}${ve(v,"price","+ 단가","vsub")}</td>
       <td>${ve(v,"owner","+ 담당")}</td>
@@ -3490,8 +3511,7 @@ function vInline(el){
 }
 function vEditor(v,anchor){
   const isNew=!v; v=v||{id:"v"+Date.now().toString(36),kind:VF.kind||"video",country:"한국",prio:"mid",stage:"contact",owner:(ME&&ME.name)||""};
-  const F=[["name","외주 제작사","text"],["kind","구분","kind"],["country","국가","country"],["prio","우선순위","prio"],["stage","진행 단계","stage"],["status","상세 상황","text"],["keyDate","주요 일정","text"],
-    ["next","다음 액션","text"],["nextDue","다음 액션 기한","date"],["interest","관심·배정 작품","text"],["owner","컨택 담당자","text"],["contact","상대 담당자","text"],["email","이메일","text"],["phone","전화","text"],
+  const F=[["name","외주 제작사","text"],["kind","구분","kind"],["country","국가","country"],["prio","우선순위","prio"],["stage","진행 단계","stage"],["status","진행 상황","area"],["from","일정 시작일","date"],["to","일정 종료일 (기한)","date"],["interest","관심·배정 작품","text"],["owner","컨택 담당자","text"],["contact","상대 담당자","text"],["email","이메일","text"],["phone","전화","text"],
     ["url","링크 (여러 개는 줄바꿈)","area"],["intro","소개","area"],["price","단가 (예: 분당 ○원)","text"],["note","비고","area"]];
   const inp=([k,l,t])=>`<label class="vf"><span>${l}</span>${t==="kind"?`<select class="in" data-ef="${k}">${V_KINDS.map(([a,b])=>`<option value="${a}"${vKind(v)===a?" selected":""}>${b}</option>`).join("")}</select>`:t==="country"?`<select class="in" data-ef="${k}">${V_COUNTRY.map(c=>`<option${v[k]===c?" selected":""}>${c}</option>`).join("")}</select>`
     :t==="prio"?`<select class="in" data-ef="${k}">${V_PRIO.map(([a,b])=>`<option value="${a}"${(v[k]||"mid")===a?" selected":""}>${b}</option>`).join("")}</select>`
@@ -3762,7 +3782,7 @@ TR_OBS.observe(document.body,{childList:true,subtree:true,characterData:true,att
     if(["open","prod","std","lp","sim","vendors","users"].includes(q.get("tab"))) TAB=q.get("tab");
     if(q.get("w")) SEL=q.get("w"); }catch(e){}
   if(!SB.on){
-    WORKS=clone(DEFAULT_WORKS).map(normW); VENDORS=clone(V_SEED);
+    WORKS=clone(DEFAULT_WORKS).map(normW); VENDORS=vActMigrate(clone(V_SEED));
     setSync("off","공유 저장소 미설정 — 고친 내용이 이 창에만 남습니다");
     runMigrations(); render(); return;
   }
