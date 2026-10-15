@@ -1709,7 +1709,7 @@ document.addEventListener("focusout",()=>setTimeout(()=>{if(DEFER&&$("pop").hidd
 /* 세이브 회차: 런칭일에 최종본이 끝난 회차 − 런칭 동시 오픈 회차 · 같은 속도로 계속 만들 때 휴재 없이 갈 수 있는 마지막 회차 */
 let SAVE_CACHE=new Map();
 function saveInfo(w){
-  const ck=JSON.stringify(w)+"|"+JSON.stringify(CONF.stages).length+"|"+CONF.lockBD+"|"+HOL.size+"|"+key(TODAY);
+  const ck=JSON.stringify(w)+"|"+confSig()+"|"+CONF.lockBD+"|"+HOL.size+"|"+key(TODAY);
   if(SAVE_CACHE.has(ck)) return SAVE_CACHE.get(ck);
   let r=null;
   try{ const S=schedule(w);
@@ -3626,11 +3626,13 @@ let LP=null, LP_SEEN=null, LP_OPS=[], LP_TIMER=null, LPV={year:2027,view:"launch
 const lpPlan=()=>LPV.peek?LPV.peek.plan:LP.cur;
 /* 착수→런칭 주수 */
 const LP_LEAD_CACHE=new Map();
+/* 공정 기준이 조금이라도 바뀌면 달라지는 서명 (영업일 5→6처럼 글자 수가 같아도 구분) */
+function confSig(){ const t=JSON.stringify([CONF.stages,CONF.ext4,CONF.lockBD]); let h=0; for(let i=0;i<t.length;i++){ h=(h*31+t.charCodeAt(i))|0; } return h; }
 function lpLead(line,voice,bd,g){
   bd=Math.max(3,Math.min(15,+bd||7));
   if(g.leadSrc==="excel"){ const t=g.lead, a=t[5]||{ai:13,hu:19}, b=t[7]||{ai:26,hu:32}, k=voice==="ai"?"ai":"hu";
     return Math.ceil(+a[k]+(+b[k]-+a[k])*(bd-5)/2); }
-  const ck=[line,voice,bd,g.season,g.openK,JSON.stringify(CONF.stages).length,CONF.lockBD,HOL.size].join("|");
+  const ck=[line,voice,bd,g.season,g.openK,confSig(),CONF.lockBD,HOL.size].join("|");
   if(LP_LEAD_CACHE.has(ck)) return LP_LEAD_CACHE.get(ck);
   let wk=30;
   try{ const w=normW({id:"lp",n:"lp",line,voice,team:line==="ext"?{prod1:"외부 제작사",prodF:"외부 제작사"}:{},start:"2027-03-02",done:0,rate:bd,total:+g.season||30,b1:5,launchAuto:true});
