@@ -4326,22 +4326,26 @@ function lp2FloatInit(){
     document.body.appendChild(box); LP2_FH.push({t,wrap,box,inner,ct,lead});
     wrap.addEventListener("scroll",lp2FloatUpdate,{passive:true}); });
   lp2FloatUpdate(); }
-function lp2FloatUpdate(){ if(TAB!=="lp"){ LP2_FH.forEach(x=>x.box.style.display="none"); return; }
+let LP2_FHRAF=0;
+function lp2FloatUpdate(){ if(LP2_FHRAF) return; LP2_FHRAF=requestAnimationFrame(()=>{ LP2_FHRAF=0; lp2FloatUpdate0(); }); }
+window.addEventListener("resize",()=>{ LP2_FH.forEach(x=>{ x.measured=false; }); });
+function lp2FloatUpdate0(){ if(TAB!=="lp"){ LP2_FH.forEach(x=>x.box.style.display="none"); return; }
   const top=(document.querySelector("header.top")||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom;
   LP2_FH.forEach(x=>{ const r=x.wrap.getBoundingClientRect(), th=x.t.tHead, hh=th.getBoundingClientRect().height;
     const show=th.getBoundingClientRect().top<top&&r.bottom-hh>top;
-    if(!show){ x.box.style.display="none"; return; }
+    if(!show){ if(x.box.style.display!=="none") x.box.style.display="none"; x.measured=false; return; }
+    if(x.measured){ x.box.style.top=top+"px"; x.box.style.left=r.left+"px"; x.inner.style.transform=`translate3d(${-x.wrap.scrollLeft}px,0,0)`; return; }   // 이미 맞춰둔 칸 폭은 그대로 · 위치만 옮김
     x.box.style.display="block"; x.box.style.top=top+"px"; x.box.style.left=r.left+"px"; x.box.style.width=x.wrap.clientWidth+"px"; x.box.style.height=hh+"px";
     x.ct.style.width=x.t.getBoundingClientRect().width+"px";
     // 칸 폭을 원본과 똑같이
     const src=[...th.rows], dst=[...x.ct.tHead.rows]; src.forEach((row,ri)=>[...row.cells].forEach((c,ci)=>{ const d=dst[ri]&&dst[ri].cells[ci]; if(d){ const w=c.getBoundingClientRect().width; d.style.width=w+"px"; d.style.minWidth=w+"px"; d.style.maxWidth=w+"px"; d.style.position="static"; } }));
-    x.inner.style.transform=`translateX(${-x.wrap.scrollLeft}px)`;
+    x.inner.style.transform=`translate3d(${-x.wrap.scrollLeft}px,0,0)`;
     // 왼쪽 첫 칸(이름 칸)은 고정
     const first=th.rows[th.rows.length-1].cells[0], fw=first.getBoundingClientRect().width;
     if(!x.lead.firstChild){ const lt=document.createElement("table"); lt.className=x.t.className; lt.style.tableLayout="fixed"; const thead=document.createElement("thead");
       [...th.rows].forEach(row=>{ const tr=document.createElement("tr"); tr.className=row.className; const c=row.cells[0].cloneNode(true); tr.appendChild(c); thead.appendChild(tr); }); lt.appendChild(thead); x.lead.appendChild(lt); }
     const lt=x.lead.firstChild; lt.style.width=fw+"px"; [...lt.tHead.rows].forEach((row,ri)=>{ const sc=th.rows[ri].cells[0]; const c=row.cells[0]; c.style.width=fw+"px"; c.style.height=sc.getBoundingClientRect().height+"px"; c.style.position="static"; });
-    x.lead.style.width=fw+"px";
+    x.lead.style.width=fw+"px"; x.measured=true;
     // 오른쪽 고정 '합계' 칸
     const lastRow=th.rows[th.rows.length-1], lc=lastRow.cells[lastRow.cells.length-1];
     if(lc&&lc.classList.contains("tsum")){ if(!x.tail){ x.tail=document.createElement("div"); x.tail.className="lpfh-tail"; x.box.appendChild(x.tail); }
@@ -4576,8 +4580,12 @@ function renderLP2(){
   document.querySelectorAll("#v-lp [data-c]").forEach(el=>{ el.onchange=()=>set(P=>lp2SetCell(P,el.dataset.c,el.value)); });
   lp2YearCols(); lp2GridBind(); setTimeout(lp2FloatInit,0);
   // 결과 표와 레버 표 가로 스크롤 맞추기 (월 칸이 위아래로 같은 자리)
-  const wraps=[...document.querySelectorAll("#v-lp table.lp2.res:not(.cost),#v-lp table.lp2.lev2")].map(t=>t.parentElement); let syncing=false;
-  wraps.forEach(w=>w.addEventListener("scroll",()=>{ if(syncing) return; syncing=true; wraps.forEach(o=>{ if(o!==w) o.scrollLeft=w.scrollLeft; }); syncing=false; }));
+  const wraps=[...document.querySelectorAll("#v-lp table.lp2.res:not(.cost),#v-lp table.lp2.lev2")].map(t=>t.parentElement);
+  let driver=null, rel=0, raf=0;   // 지금 사용자가 미는 표만 기준으로 다른 표를 따라오게 (서로 밀어주기 반복 방지)
+  wraps.forEach(w=>{ const grab=()=>{ driver=w; clearTimeout(rel); rel=setTimeout(()=>{ driver=null; },160); };
+    w.addEventListener("wheel",grab,{passive:true}); w.addEventListener("pointerdown",grab,{passive:true}); w.addEventListener("touchstart",grab,{passive:true}); w.addEventListener("keydown",grab);
+    w.addEventListener("scroll",()=>{ if(driver&&driver!==w) return; if(!driver){ driver=w; clearTimeout(rel); rel=setTimeout(()=>{ driver=null; },160); }
+      if(raf) return; raf=requestAnimationFrame(()=>{ raf=0; const x=w.scrollLeft; wraps.forEach(o=>{ if(o!==w&&Math.abs(o.scrollLeft-x)>0.5) o.scrollLeft=x; }); }); },{passive:true}); });
   document.querySelectorAll("#v-lp [data-pn]").forEach(el=>el.onchange=()=>set(P=>{ const [gi,pi]=el.dataset.pn.split(":"); P.groups[+gi].pipes[+pi].name=el.value.trim()||"파이프라인"; }));
   document.querySelectorAll("#v-lp [data-addp]").forEach(b=>b.onclick=()=>set(P=>{ const G=P.groups[+b.dataset.addp]; const n=P.groups.reduce((a,x)=>a+x.pipes.filter(p=>/^외부\d+$/.test(p.name)).length,0);
       const mx=P.groups.reduce((a,x)=>Math.max(a,...x.pipes.map(p=>{ const r=/^외부(\d+)$/.exec(p.name); return r?+r[1]:0; })),0);
