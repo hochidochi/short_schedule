@@ -478,8 +478,9 @@ table.lp2.cost tr.yhead th{background:#3B4A6B;font-size:11.5px;font-weight:600;t
 table.lp2.cost tr.yhead th b{font-weight:800} table.lp2.cost tr.yhead .ysub{opacity:.85;font-size:11px}
 table.lp2.cost td.tl .pctb{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#5B7BD5;background:#EEF2FB;border-radius:8px;padding:0 6px}
 table.lp2.cost td.pcell{background:rgba(91,123,213,var(--a));font-weight:700;color:#1F2A44}
-table.lp2.res td.tsum,table.lp2.res th.tsum{background:#E3E9F5;font-weight:800;text-align:right;padding-right:8px;border-left:2px solid #9AA3B2;position:sticky;right:0;z-index:2}
-table.lp2.res th.tsum{background:#1F2A44;color:#fff;z-index:3} table.lp2.res td.tsum small{font-size:9.5px;color:var(--muted);margin-left:2px;font-weight:600}
+table.lp2.lev2 td.tsum,table.lp2.lev2 th.tsum,table.lp2.res td.tsum,table.lp2.res th.tsum{background:#E3E9F5;font-weight:800;text-align:right;padding-right:8px;border-left:2px solid #9AA3B2;position:sticky;right:0;z-index:2}
+table.lp2.res th.tsum,table.lp2.lev2 th.tsum{background:#1F2A44;color:#fff;z-index:3} table.lp2.lev2 td.tsum small,table.lp2.res td.tsum small{font-size:9.5px;color:var(--muted);margin-left:2px;font-weight:600}
+table.lp2.lev2 tr.lsum td.tsum,table.lp2.lev2 tr.lcat td.tsum{background:#33415F;color:#fff} table.lp2.res.src tr.yhead th.tsum{background:#3B4A6B} table.lp2.res td.tsum small{font-size:9.5px;color:var(--muted);margin-left:2px;font-weight:600}
 #v-lp table.lp2 td.ysum,#v-lp table.lp2 th.ysum{background:#EEF2FA;font-weight:800;color:#1F2A44;border-left:1px solid #C9D2E6;border-right:2px solid #9AA3B2;text-align:center;white-space:nowrap}
 #v-lp table.lp2 th.ysum{background:#33415F;color:#fff;font-size:11px} #v-lp table.lp2.lev2 tr.lsum td.ysum,#v-lp table.lp2.lev2 tr.lcat td.ysum{background:#3B4A6B;color:#fff}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
@@ -4366,7 +4367,19 @@ function lp2YearCols(){ const M=LP2_M, NM=M.length; const yrs=[...new Set(M.map(
         if(isHead){ el.textContent=`${y.slice(2)}년 계`; }
         else if(noyr){ el.textContent=""; }
         else { const vals=mcs.slice(firstI[yi],li+1).map(num); const v=stock?vals[vals.length-1]:vals.reduce((a,b)=>a+b,0); el.textContent=v?Math.round(v).toLocaleString("ko-KR"):"–"; if(stock) el.title=`${y}년 말 기준`; }
-        ref.after(el); }); }); }); }
+        ref.after(el); }); }); 
+    // 맨 위 결과 표처럼 오른쪽 고정 '합계' 칸을 레버·발굴 표에도
+    if(!t.querySelector("td.tsum,th.tsum")){ const cg2=t.querySelector("colgroup"); if(cg2){ const c=document.createElement("col"); c.style.width="76px"; cg2.appendChild(c); }
+      t.style.width=(parseFloat(t.style.width)||0)+76+"px";
+      [...t.rows].forEach(row=>{ const isHead=row.parentElement.tagName==="THEAD", el=document.createElement(isHead?"th":"td"); el.className="tsum";
+        if(row.classList.contains("yhead")){ el.innerHTML=""; row.appendChild(el); return; }
+        const cells=[...row.cells]; const mcs=cells.filter(c=>!c.classList.contains("tl")&&!c.classList.contains("tl2")&&!c.classList.contains("ysum"));
+        if(isHead){ el.textContent="합계"; row.appendChild(el); return; }
+        if(mcs.length<NM||mcs.some(c=>c.colSpan>1)){ const lc=cells[cells.length-1]; if(lc&&lc.colSpan>1){ lc.colSpan+=1; return; } }
+        const ms=mcs.slice(-NM), vals=ms.map(num), stock=row.classList.contains("stock"), noyr=row.classList.contains("noyr");
+        const v=noyr?0:stock?vals[vals.length-1]:vals.reduce((a,b)=>a+b,0);
+        el.innerHTML=noyr?"":(v?Math.round(v).toLocaleString("ko-KR"):"–")+(stock&&v?"<small>말</small>":""); row.appendChild(el); }); }
+  }); }
 function renderLP2(){
   if(SB.on&&!LP_LOADED){ $("v-lp").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">런칭 플랜을 불러오는 중이에요…</div>`; return; }
   lp2Ensure(); LPV.peek=null; const PK=null;   // 기록 보기 없이 항상 현재 버전 (바꾸면 바로 공유 저장)
