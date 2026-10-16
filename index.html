@@ -467,6 +467,7 @@ table.lp2.res.src tr.yhead th b{font-weight:800;font-size:12.5px} table.lp2.res.
 table.lp2.res.src thead tr:nth-child(2) th{top:44px} table.lp2.res.src tr.yhead th{line-height:1.3} table.lp2.res.src tr.yhead .ysub span{opacity:.8}
 .lpfh{position:fixed;z-index:35;overflow:hidden;display:none;box-shadow:0 4px 10px rgba(0,0,0,.12);pointer-events:none;border-radius:0 0 6px 6px}
 .lpfh-in{will-change:transform} .lpfh table{border-collapse:separate;border-spacing:0;margin:0}
+.lpfh-tail{position:absolute;right:0;top:0;overflow:hidden;box-shadow:-2px 0 4px rgba(0,0,0,.12);background:#1F2A44}
 .lpfh-lead{position:absolute;left:0;top:0;overflow:hidden;box-shadow:2px 0 4px rgba(0,0,0,.12)}
 table.lp2.cost td.pct{min-width:84px;text-align:right;font-weight:700;color:var(--ink2);background:#F7F8F5;position:relative;white-space:nowrap}
 table.lp2.cost td.pct .pbar{display:inline-block;width:34px;height:6px;border-radius:3px;background:#E3E6EC;margin-right:6px;vertical-align:1px;position:relative;overflow:hidden}
@@ -477,6 +478,8 @@ table.lp2.cost tr.yhead th{background:#3B4A6B;font-size:11.5px;font-weight:600;t
 table.lp2.cost tr.yhead th b{font-weight:800} table.lp2.cost tr.yhead .ysub{opacity:.85;font-size:11px}
 table.lp2.cost td.tl .pctb{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#5B7BD5;background:#EEF2FB;border-radius:8px;padding:0 6px}
 table.lp2.cost td.pcell{background:rgba(91,123,213,var(--a));font-weight:700;color:#1F2A44}
+table.lp2.res td.tsum,table.lp2.res th.tsum{background:#E3E9F5;font-weight:800;text-align:right;padding-right:8px;border-left:2px solid #9AA3B2;position:sticky;right:0;z-index:2}
+table.lp2.res th.tsum{background:#1F2A44;color:#fff;z-index:3} table.lp2.res td.tsum small{font-size:9.5px;color:var(--muted);margin-left:2px;font-weight:600}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -4335,7 +4338,12 @@ function lp2FloatUpdate(){ if(TAB!=="lp"){ LP2_FH.forEach(x=>x.box.style.display
     if(!x.lead.firstChild){ const lt=document.createElement("table"); lt.className=x.t.className; lt.style.tableLayout="fixed"; const thead=document.createElement("thead");
       [...th.rows].forEach(row=>{ const tr=document.createElement("tr"); tr.className=row.className; const c=row.cells[0].cloneNode(true); tr.appendChild(c); thead.appendChild(tr); }); lt.appendChild(thead); x.lead.appendChild(lt); }
     const lt=x.lead.firstChild; lt.style.width=fw+"px"; [...lt.tHead.rows].forEach((row,ri)=>{ const sc=th.rows[ri].cells[0]; const c=row.cells[0]; c.style.width=fw+"px"; c.style.height=sc.getBoundingClientRect().height+"px"; c.style.position="static"; });
-    x.lead.style.width=fw+"px"; }); }
+    x.lead.style.width=fw+"px";
+    // 오른쪽 고정 '합계' 칸
+    const lastRow=th.rows[th.rows.length-1], lc=lastRow.cells[lastRow.cells.length-1];
+    if(lc&&lc.classList.contains("tsum")){ if(!x.tail){ x.tail=document.createElement("div"); x.tail.className="lpfh-tail"; x.box.appendChild(x.tail); }
+      const r2=lc.getBoundingClientRect(); x.tail.innerHTML=`<table class="${x.t.className}" style="table-layout:fixed;width:${r2.width}px"><thead><tr><th class="tsum" style="position:static;width:${r2.width}px;height:${r2.height}px">${lc.innerHTML}</th></tr></thead></table>`;
+      x.tail.style.width=r2.width+"px"; x.tail.style.height=hh+"px"; x.tail.style.display="flex"; x.tail.style.alignItems="flex-end"; } }); }
 window.addEventListener("scroll",()=>{ if(LP2_FH.length) lp2FloatUpdate(); },{passive:true});
 window.addEventListener("resize",()=>{ if(LP2_FH.length) lp2FloatUpdate(); });
 function renderLP2(){
@@ -4355,7 +4363,10 @@ function renderLP2(){
     "연재 목표":"달성하고 싶은 그 달 연재 작품 수예요. 칸에 바로 입력해요.",
     "목표 대비":"연재 작품 수 − 연재 목표. 초록은 달성, 빨강은 부족이에요."};
   const tipOf=(lab)=>{ const t=String(lab).replace(/<[^>]+>/g,"").trim(); const k=Object.keys(TIP).find(x=>t.startsWith(x)||t.includes(x)); return k?TIP[k]:""; };
-  const rowR=(lab,arr,cls,dec)=>`<tr class="${cls||""}"><td class="tl"${tipOf(lab)?` data-tip="${esc(tipOf(lab))}"`:""}>${lab}${tipOf(lab)?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmt(v,dec)}</td>`).join("")}</tr>`;
+  const STOCK=new Set([C.tot.onair,...Object.values(C.R.onair),...(C.SM&&C.SM.queue?[C.SM.queue]:[])]);   // 연재 작품 수는 '쌓이는 숫자'라 합계 대신 마지막 달 값
+  const totCell=(arr)=>{ if(STOCK.has(arr)){ const v=arr[arr.length-1]; return `<td class="tsum" title="${LP2_M[LP2_M.length-1].slice(2,4)}.${+LP2_M[LP2_M.length-1].slice(5)} 기준 (연재·대기처럼 쌓이는 숫자는 합계 대신 마지막 달 값)">${v?v.toLocaleString("ko-KR"):"–"}<small>말</small></td>`; }
+    const t=arr.reduce((a,b)=>a+(+b||0),0); return `<td class="tsum">${t?Math.round(t).toLocaleString("ko-KR"):"–"}</td>`; };
+  const rowR=(lab,arr,cls,dec)=>`<tr class="${cls||""}"><td class="tl"${tipOf(lab)?` data-tip="${esc(tipOf(lab))}"`:""}>${lab}${tipOf(lab)?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmt(v,dec)}</td>`).join("")}${totCell(arr)}</tr>`;
   const tg=P.targets.onair||{};
   let h=`<div class="lphead"><div><p class="lead" style="margin:0">런칭 플랜 계산기</p>
       <div class="lpst"><span id="lpSt">${lpStatTxt()}</span> <button type="button" class="lpundo" id="lpUndo">↶ 이전 상태로</button> <button type="button" class="lpundo" id="lpBase" title="엑셀 시뮬레이터 값으로 처음부터 다시 (지금 값은 자동 보관)">엑셀 기본값으로</button></div></div>
@@ -4368,16 +4379,16 @@ function renderLP2(){
     ${ro?"":`<button type="button" class="btn" id="lpCurve" style="padding:3px 10px;font-size:12px" title="엑셀 기존 계획의 월별 연재 작품 수를 목표 줄에 채움">기존 계획 곡선을 목표로</button>
     <label class="lpauto" data-tip="켜 두면 목표·레버·단가 등 무엇을 바꾸든 목표 연재 수에 맞게 외주 착수와 '월 런칭 계획'을 바로 다시 맞춰요. 착수나 월 런칭 계획을 직접 정하고 싶으면 꺼 주세요."><input type="checkbox" id="lpAF"${g.autoFit!==false?" checked":""}> 목표 자동 맞춤</label>
     ${g.autoFit===false?`<button type="button" class="btn pri" id="lpSolve" style="padding:3px 10px;font-size:12px" title="목표 연재 수는 그대로 · 착수 편수·착수월·외주 제작사 수를 조정">목표에 맞춰 역산</button>`:""}`}</div>
-  <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res" style="width:${210+48*M.length}px"><colgroup><col style="width:210px">${M.map(()=>`<col style="width:48px">`).join("")}</colgroup><thead>${mh}</thead><tbody>
+  <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res" style="width:${210+48*M.length+76}px"><colgroup><col style="width:210px">${M.map(()=>`<col style="width:48px">`).join("")}<col style="width:76px"></colgroup><thead>${mh.replace(/<\/tr>$/,`<th class="tsum">합계</th></tr>`)}</thead><tbody>
     ${rowR("연재 작품 수",C.tot.onair,"tot")}
     ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.onair[G.id],"sub")).join("")}
-    <tr class="tgr"><td class="tl" data-tip="${esc(TIP["연재 목표"])}">연재 목표 <span class="hint">입력</span><span class="tipi">?</span></td>${M.map((m,i)=>`<td class="${yb(i)}"><input class="lp2t" data-tg="${m}" value="${esc(tg[m]??"")}" placeholder="·"${ro?" disabled":""}></td>`).join("")}</tr>
-    <tr class="dif"><td class="tl" data-tip="${esc(TIP["목표 대비"])}">목표 대비<span class="tipi">?</span></td>${M.map((m,i)=>{ const t=tg[m]; if(t==null||t==="") return `<td class="${yb(i)}"></td>`; const d=C.tot.onair[i]-t; return `<td class="${yb(i)} ${d>=0?"okc":"badc"}">${d>=0?"+":""}${d}</td>`; }).join("")}</tr>
+    <tr class="tgr"><td class="tl" data-tip="${esc(TIP["연재 목표"])}">연재 목표 <span class="hint">입력</span><span class="tipi">?</span></td>${M.map((m,i)=>`<td class="${yb(i)}"><input class="lp2t" data-tg="${m}" value="${esc(tg[m]??"")}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum"></td></tr>
+    <tr class="dif"><td class="tl" data-tip="${esc(TIP["목표 대비"])}">목표 대비<span class="tipi">?</span></td>${M.map((m,i)=>{ const t=tg[m]; if(t==null||t==="") return `<td class="${yb(i)}"></td>`; const d=C.tot.onair[i]-t; return `<td class="${yb(i)} ${d>=0?"okc":"badc"}">${d>=0?"+":""}${d}</td>`; }).join("")}<td class="tsum"></td></tr>
     ${rowR("런칭 준비 작품 수",C.tot.ready,"tot")}
     ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.ready[G.id],"sub")).join("")}
     ${rowR(`<span class="ind ai">ㄴ 그중 AI 성우</span>`,C.tot.readyAi,"sub ai")}
     ${rowR(`런칭 작품 수 <span class="hint" style="font-weight:400">${!C.SM||!C.SM.cap?"준비되는 대로":C.SM.cap==="auto"?"평준화":C.SM.cap==="plan"?"월별 계획":`월 최대 ${C.SM.cap}편`}</span>`,C.tot.launch,"tot lpact")}
-    ${C.SM&&C.SM.cap==="plan"?`<tr class="tgr"><td class="tl" data-tip="${g.autoFit!==false?"목표 자동 맞춤이 켜져 있어서 목표에 맞게 자동으로 정해져요. 직접 정하려면 '목표 자동 맞춤'을 꺼 주세요.":"달마다 실제로 런칭할 편수 계획이에요. 바뀌는 달에만 적으면 오른쪽으로 이어져요 (예: 27.10 8 · 28.2 12). 준비된 작품보다 많이 적어도 준비된 만큼만 런칭해요."}">월 런칭 계획 <span class="hint">${g.autoFit!==false?"자동":"입력"}</span><span class="tipi">?</span></td>${M.map((m,i)=>{ const raw=(P.lplan||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)}"><input class="lp2t${has?"":" inh"}" data-lplan="${m}" value="${has?raw:""}" placeholder="${lp2ff(P.lplan||{},i,0)}"${ro||g.autoFit!==false?" disabled":""}></td>`; }).join("")}</tr>`:""}
+    ${C.SM&&C.SM.cap==="plan"?`<tr class="tgr"><td class="tl" data-tip="${g.autoFit!==false?"목표 자동 맞춤이 켜져 있어서 목표에 맞게 자동으로 정해져요. 직접 정하려면 '목표 자동 맞춤'을 꺼 주세요.":"달마다 실제로 런칭할 편수 계획이에요. 바뀌는 달에만 적으면 오른쪽으로 이어져요 (예: 27.10 8 · 28.2 12). 준비된 작품보다 많이 적어도 준비된 만큼만 런칭해요."}">월 런칭 계획 <span class="hint">${g.autoFit!==false?"자동":"입력"}</span><span class="tipi">?</span></td>${M.map((m,i)=>{ const raw=(P.lplan||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)}"><input class="lp2t${has?"":" inh"}" data-lplan="${m}" value="${has?raw:""}" placeholder="${lp2ff(P.lplan||{},i,0)}"${ro||g.autoFit!==false?" disabled":""}></td>`; }).join("")}<td class="tsum">${M.reduce((a,m,i)=>a+lp2ff(P.lplan||{},i,0),0).toLocaleString("ko-KR")}</td></tr>`:""}
     ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.launch[G.id],"sub")).join("")}
     ${C.SM&&C.SM.cap?rowR(`<span class="ind">ㄴ 런칭 대기 (월말)</span>`,C.SM.queue,"sub"):""}
     ${rowR("제작 회차 수",C.tot.eps.map(v=>Math.round(v)),"tot")}
