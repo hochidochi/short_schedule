@@ -468,6 +468,11 @@ table.lp2.res.src thead tr:nth-child(2) th{top:44px} table.lp2.res.src tr.yhead 
 .lpfh{position:fixed;z-index:35;overflow:hidden;display:none;box-shadow:0 4px 10px rgba(0,0,0,.12);pointer-events:none;border-radius:0 0 6px 6px}
 .lpfh-in{will-change:transform} .lpfh table{border-collapse:separate;border-spacing:0;margin:0}
 .lpfh-lead{position:absolute;left:0;top:0;overflow:hidden;box-shadow:2px 0 4px rgba(0,0,0,.12)}
+table.lp2.cost td.pct{min-width:84px;text-align:right;font-weight:700;color:var(--ink2);background:#F7F8F5;position:relative;white-space:nowrap}
+table.lp2.cost td.pct .pbar{display:inline-block;width:34px;height:6px;border-radius:3px;background:#E3E6EC;margin-right:6px;vertical-align:1px;position:relative;overflow:hidden}
+table.lp2.cost td.pct .pbar::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--w);background:#5B7BD5}
+table.lp2.cost td.pct.pt{color:var(--ink)} .cnum{text-align:right}
+table.lp2.cyr{width:auto;min-width:0} table.lp2.cyr th,table.lp2.cyr td{text-align:right;padding:6px 14px;white-space:nowrap;font-variant-numeric:tabular-nums} table.lp2.cyr th.tl,table.lp2.cyr td.tl{text-align:left;min-width:120px}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -4453,7 +4458,8 @@ function renderLP2(){
   // ── 비용 (AOP) ──
   const CO=lp2Cost(P,C), k=CO.k, U=LP2V.unit||1, UL={1:"원",1000:"천원",1000000:"백만원"}[U];
   const fmtW=(v)=>v?Math.round(v/U).toLocaleString("ko-KR"):"–";
-  const ci=(f,lab,unit,w,step)=>`<label>${lab}<span><input class="in n lpi" style="width:${w||96}px" type="number" step="${step||1}" data-cost="${f}" value="${k[f]}"${ro?" disabled":""}> ${unit||""}</span></label>`;
+  const fmtN=(v)=>{ const n=+v; if(!isFinite(n)) return ""; return n.toLocaleString("ko-KR",{maximumFractionDigits:2}); };
+  const ci=(f,lab,unit,w,step)=>`<label>${lab}<span><input class="in n lpi cnum" style="width:${(w||96)+10}px" type="text" inputmode="decimal" data-cost="${f}" value="${fmtN(k[f])}"${ro?" disabled":""}> ${unit||""}</span></label>`;
   const TIPC={"(공통) 판권료":`착수 편수 × 시즌당 ${k.rights.toLocaleString()}원 × 후보 배수 (${k.rightsMul}배${k.rightsFrom?` → ${k.rightsFrom.slice(2,4)}.${+k.rightsFrom.slice(5)} 착수부터 ${k.rightsMul2}배`:""}) · 착수 한 달 전에 잡아요.`,"(공통) 성우 녹음비":`사람 성우 회차 × 회차당 ${k.voiceEp.toLocaleString()}원 · 제작 다음 달 (AI 성우 회차는 0원).`,
     "(내부) 대사 번역비 (한→일)":`내부 한국 작품 회차 × ${k.min}분 × 분당 ${k.dlg.toLocaleString()}원 · 다음 달.`,"(공통) 자막 번역비":`회차 × ${k.min}분 × 분당 ${k.sub.toLocaleString()}원 × 언어 수 (한국 작품 ${k.langKr}개 · 기타 ${k.langEtc}개) · 다음 달.`,
     "(turnkey) 영상 제작비":`외주 회차 × ${k.min}분 × 분당 ${k.turnkey.toLocaleString()}원 · 그 달 (납품 기준).`,"(내부) AI tool - 시댄스 외":"구독 갱신월에 연간(또는 12개월) 요금 × 환율.","(내부) AI tool - 시댄스":`내부 제작 인원 × 인당 월 $${k.sdUsd} × 환율 ${k.fx}.`,
@@ -4469,11 +4475,18 @@ function renderLP2(){
       ${ci("sdUsd","시댄스 인당 월","USD",72,0.5)}${ci("fx","환율","원/USD",64)}${ci("wkRev","웹툰 원작 유입 (주간)","원",100,100000)}${ci("wkN","· 주","주",44)}${ci("wkMul","· 배수","",44)}${ci("wkRate","· 반영률","",54,0.05)}
     </div>
     <div class="lpops" style="margin:6px 0 0"><span class="hint">한국 작품 비율 (번역·언어 수 기준)</span>${P.groups.map(G=>`<label>${esc(G.id)}<span><input class="in n lpi" style="width:52px" type="number" min="0" max="100" step="10" data-ckr="${esc(G.id)}" value="${Math.round((+(k.kr[G.id]??(G.line==="int"?1:0)))*100)}"${ro?" disabled":""}> %</span></label>`).join("")}</div></div>
-    <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res cost" id="lpCostT"><thead><tr><th class="tl">${UL}</th>${M.map((m,i)=>`<th class="${yb(i)}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}<th>합계</th></tr></thead><tbody>
-      ${CO.rows.map(([lab,arr,cls])=>{ const tip=TIPC[lab]; return `<tr class="${cls||""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>cls==="inp"&&!ro?`<td class="${yb(i)} yc"><input class="lp2c cdist" data-dist="${M[i]}" value="${v?Math.round(v/U):""}"></td>`:`<td class="${yb(i)}${v?"":" z"}">${fmtW(v)}</td>`).join("")}<td class="sum">${fmtW(arr.reduce((a,b)=>a+b,0))}</td></tr>`; }).join("")}
-      <tr class="lsh"><td class="tl" colspan="${M.length+2}">내부 제작 인원 (H/C, 인턴 포함) <span class="hint">시댄스 사용료 계산용 · 바뀌는 달만 입력</span></td></tr>
-      ${["내부1","내부2","내부3"].map(t=>`<tr><td class="tl">ㄴ ${t}</td>${M.map((m,i)=>{ const raw=((k.hc||{})[t]||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)} yc"><input class="lp2c${has?"":" inh"}" data-hc="${t}:${m}" value="${has?raw:""}" placeholder="${lp2ff((k.hc||{})[t]||{},i,0)||""}"${ro?" disabled":""}></td>`; }).join("")}<td></td></tr>`).join("")}
-      ${yrs.map(y=>{ const ix=M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0), sm=(arr)=>ix.reduce((a,i)=>a+arr[i],0); return `<tr class="yr"><td class="tl">${y}년 합계</td><td colspan="${M.length+1}" style="text-align:left;padding-left:10px">집행비용 <b>${fmtW(sm(CO.exe))}</b> · 총 제작비 <b>${fmtW(sm(CO.tot))}</b> · 총 매출 <b>${fmtW(sm(CO.rev))}</b> ${UL}</td></tr>`; }).join("")}
+    <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res cost" id="lpCostT"><thead><tr><th class="tl">${UL}</th>${M.map((m,i)=>`<th class="${yb(i)}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}<th>합계</th><th title="집행비용 항목은 총 집행비용 대비 · 내부 영상 제작비는 총 제작비 대비 · 매출 항목은 총 매출 대비">비중</th></tr></thead><tbody>
+      ${CO.rows.map(([lab,arr,cls],ri)=>{ const tip=TIPC[lab]; return `<tr class="${cls||""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>cls==="inp"&&!ro?`<td class="${yb(i)} yc"><input class="lp2c cdist" data-dist="${M[i]}" value="${v?Math.round(v/U).toLocaleString("ko-KR"):""}"></td>`:`<td class="${yb(i)}${v?"":" z"}">${fmtW(v)}</td>`).join("")}<td class="sum">${fmtW(arr.reduce((a,b)=>a+b,0))}</td>${(()=>{ const sumA=(a)=>a.reduce((x,y)=>x+y,0), me=sumA(arr);
+          const base=ri<=7?sumA(CO.exe):ri<=9?sumA(CO.tot):sumA(CO.rev); const pc=base?me/base*100:0;
+          return `<td class="pct${cls&&cls.startsWith("tot")?" pt":""}">${cls&&cls.startsWith("tot")?"100%":pc?`<span class="pbar" style="--w:${Math.min(100,pc)}%"></span>${pc<1?pc.toFixed(1):Math.round(pc)}%`:"–"}</td>`; })()}</tr>`; }).join("")}
+      <tr class="lsh"><td class="tl" data-tip="시댄스 사용료 계산용이에요. 인원이 바뀌는 달에만 입력하면 오른쪽으로 이어져요 (인턴 포함).">내부 제작 인원 (H/C)<span class="tipi">?</span></td><td colspan="${M.length+2}"></td></tr>
+      ${["내부1","내부2","내부3"].map(t=>`<tr><td class="tl">ㄴ ${t}</td>${M.map((m,i)=>{ const raw=((k.hc||{})[t]||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)} yc"><input class="lp2c${has?"":" inh"}" data-hc="${t}:${m}" value="${has?raw:""}" placeholder="${lp2ff((k.hc||{})[t]||{},i,0)||""}"${ro?" disabled":""}></td>`; }).join("")}<td></td><td></td></tr>`).join("")}
+
+    </tbody></table></div>
+    <div class="card" style="padding:0;margin-top:8px;overflow-x:auto"><table class="lp2 cyr"><thead><tr><th class="tl">연도별 합계 (${UL})</th><th>총 집행비용</th><th>총 제작비</th><th>총 매출</th><th>집행비용 큰 항목</th></tr></thead><tbody>
+      ${yrs.map(y=>{ const ix=M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0), sm=(arr)=>ix.reduce((a,i)=>a+arr[i],0), ex=sm(CO.exe);
+        const top=CO.rows.slice(1,8).map(([l,a])=>[l.replace(/^\((공통|내부)\)\s*/,"").replace(/^\(turnkey\)\s*영상 제작비/,"turnkey 영상"),sm(a)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([l,v])=>`${l} ${ex?Math.round(v/ex*100):0}%`).join(" · ");
+        return `<tr><td class="tl">${y}년</td><td><b>${fmtW(ex)}</b></td><td><b>${fmtW(sm(CO.tot))}</b></td><td><b>${fmtW(sm(CO.rev))}</b></td><td class="hint" style="text-align:left">${top||"–"}</td></tr>`; }).join("")}
     </tbody></table></div>
     <div class="card lpg" style="margin-top:8px"><div class="lpops" style="margin:0"><span class="hint">AI 툴 구독 (갱신월 · 연간 USD)</span>${(k.tools||[]).map((t,ti)=>`<label>${esc(t.n)}<span><input class="in n lpi" style="width:44px" type="number" min="1" max="12" data-tool="${ti}:m" value="${t.m}"${ro?" disabled":""}>월 <input class="in n lpi" style="width:70px" type="number" data-tool="${ti}:usd" value="${t.usd}"${ro?" disabled":""}> USD</span></label>`).join("")}</div></div>`;
 
@@ -4530,10 +4543,13 @@ function renderLP2(){
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`역산 전 자동 보관 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     lpOp({op:"cur",v:r.P}); toast(`착수 ${r.moved}건을 옮겼어요`); render(); };
   const costBase=(P)=>{ P.cost=P.cost&&P.cost.v===2?P.cost:clone(LP2_COST0); return P.cost; };
-  document.querySelectorAll("#v-lp [data-cost]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P)[el.dataset.cost]=+el.value||0; }));
+  const pnum=(v)=>{ const n=parseFloat(String(v).replace(/[,\s]/g,"")); return isFinite(n)?n:0; };
+  document.querySelectorAll("#v-lp [data-cost]").forEach(el=>{ el.onchange=()=>set(P=>{ costBase(P)[el.dataset.cost]=pnum(el.value); });
+    el.oninput=()=>{ const raw=el.value.replace(/[^0-9.]/g,""); if(raw===""||raw.endsWith(".")) return; const pos=el.value.length-el.selectionStart; el.value=(+raw).toLocaleString("ko-KR",{maximumFractionDigits:2}); try{ el.setSelectionRange(el.value.length-pos,el.value.length-pos); }catch(e){} }; });
   document.querySelectorAll("#v-lp [data-costm]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P)[el.dataset.costm]=el.value||""; }));
   document.querySelectorAll("#v-lp [data-ckr]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.kr={...LP2_COST0.kr,...(c.kr||{})}; c.kr[el.dataset.ckr]=Math.max(0,Math.min(100,+el.value||0))/100; }));
   document.querySelectorAll("#v-lp [data-hc]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.hc=clone(c.hc||LP2_COST0.hc); const [t,m]=el.dataset.hc.split(":"); c.hc[t]=c.hc[t]||{}; if(el.value==="") delete c.hc[t][m]; else c.hc[t][m]=Math.max(0,+el.value||0); }));
+  document.querySelectorAll("#v-lp [data-dist]").forEach(el=>el.oninput=()=>{ const raw=el.value.replace(/[^0-9]/g,""); if(!raw) return; el.value=(+raw).toLocaleString("ko-KR"); });
   document.querySelectorAll("#v-lp [data-dist]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.dist={...(c.dist||LP2_COST0.dist)}; const v=parseFloat(String(el.value).replace(/,/g,"")); if(!v) delete c.dist[el.dataset.dist]; else c.dist[el.dataset.dist]=v*(LP2V.unit||1); }));
   document.querySelectorAll("#v-lp [data-tool]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.tools=clone(c.tools||LP2_COST0.tools); const [ti,f]=el.dataset.tool.split(":"); c.tools[+ti][f]=+el.value||0; }));
 
