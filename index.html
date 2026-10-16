@@ -4045,6 +4045,7 @@ function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop2&&!LP.cur.afv){   // 10/16: 목표 자동 맞춤 기본 켜기 (지금 값은 보관)
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`자동 맞춤 켜기 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     const P=clone(LP.cur); P.afv=1; P.g={...P.g,autoFit:true}; lpOp({op:"cur",v:lp2AutoFit(P)}); }
+  if(LP.cur&&LP.cur.v===2&&LP.cur.afv&&!LP.cur.ext30&&LP.cur.g.autoFit!==false){ lpOp({op:"cur",v:lp2AutoFit(clone(LP.cur))}); }   // 2029~30년 팀별 착수 이어가기 + 정확한 월 런칭 계획
   if(LP.cur&&LP.cur.v===2&&!LP.cur.aop2){   // 10/16 팀 AOP 시트 반영: 월별 런칭 계획 · 29/30년 목표 · AOP 구조
     const P=clone(LP.cur); P.aop2=1; P.g.smooth="plan";
     P.lplan=P.lplan||{"2027-01":0,"2027-02":1,"2027-03":2,"2027-04":3,"2027-06":4,"2027-10":8,"2028-02":12,"2028-06":14,"2028-10":16};
@@ -4160,38 +4161,59 @@ function lp2Trim(P0){ const P=clone(P0), M=LP2_M, cur=M.indexOf(key(TODAY).slice
    2) 그 곡선을 지키는 데 필요한 '월 런칭 수'를 앞에서부터 계산 (줄지 않게) → 월 런칭 계획
    3) 런칭할 작품이 모자라는 달이 생기지 않게, 모자라는 만큼 외주 착수를 '그 달까지 준비되는 가장 늦은 달'에 추가
    지난 달까지의 착수·런칭은 그대로 · 외주 제작사는 동시 제작 상한에 맞춰 다시 배정 */
+/* 2028년 착수 패턴을 2029~30년에도 그대로 이어감 (팀별 · 한 번만) — 내부 팀·외부 일본도 계속 착수 */
+function lp2Extend(P){ const M=LP2_M, pad=(n)=>String(n).padStart(2,"0");
+  P.groups.forEach(G=>G.pipes.forEach(p=>{ p.start=p.start||{}; if(Object.keys(p.start).some(m=>m>"2028-12"&&+p.start[m]>0)) return;
+    for(const y of [2029,2030]) for(let mo=1;mo<=12;mo++){ const src=`2028-${pad(mo)}`, dst=`${y}-${pad(mo)}`, n=+(p.start[src]||0); if(!n) continue;
+      p.start[dst]=n; p.aiN=p.aiN||{}; p.aiN[dst]=lp2AiN(p,src,M.indexOf(src)); } })); }
+/* 정확한 월 런칭 계획: 준비된 작품을 순서대로 런칭하면서, 매달 말 연재 수가 목표 곡선이 되도록 그 달 런칭 수를 정함 */
+function lp2ExactPlan(P,tgt,cur,fixed){ const M=LP2_M, NM=M.length, MS=M.map(lp2MStart), ME=M.map(lp2MEnd), g=P.g, runW=Math.max(0,(+g.season||30)-(+g.openK||3)), win=7*runW*86400000;
+  const Q=lp2Quick({...P,g:{...g,smooth:"off"}}); const mi=(d)=>{ if(d<MS[0]) return 0; for(let i=0;i<NM;i++) if(d<=ME[i]) return i; return NM; };
+  const arr=Q.works.map(w=>({r:w.ready,i:mi(w.ready)})).sort((a,b)=>a.r-b.r); const L=[], Lm=Array(NM).fill(0); let q=[],k=0, short=Array(NM).fill(0);
+  for(let i=0;i<NM;i++){ while(k<arr.length&&arr[k].i<=i){ q.push(arr[k]); k++; }
+    let n; if(i<=cur) n=Math.min(q.length,fixed[i]||0);
+    else { let on=0; for(const d of L) if(d<=ME[i]&&d>=MS[i]-win) on++; const need=Math.max(0,Math.ceil((tgt[i]??0)-on-1e-9)); n=Math.min(q.length,need); short[i]=need-n; }
+    q.splice(0,n).forEach(x=>L.push(x.i===i?x.r:monOnOrAfter(MS[i]))); Lm[i]=n; }
+  return {Lm,short}; }
 function lp2Construct(P0){ const P=clone(P0), g=P.g, M=LP2_M, NM=M.length, MS=M.map(lp2MStart), ME=M.map(lp2MEnd);
   const cur=Math.max(0,M.indexOf(key(TODAY).slice(0,7))), runW=Math.max(0,(+g.season||30)-(+g.openK||3)), T=P.targets.onair||{};
   const cps=Object.keys(T).filter(m=>M.indexOf(m)>cur).sort().map(m=>[M.indexOf(m),+T[m]]); if(!cps.length) return {P,add:0,rm:0,mv:0,newPipes:0};
-  const Q0=lp2Quick(P); const C0=lp2Compute(P);
+  if(!P.ext30){ lp2Extend(P); P.ext30=1; }
+  const C0=lp2Compute(P0);
   const on0=C0.tot.onair[cur]||0, tgt=Array(NM).fill(null); let prev=[cur,on0];
   cps.forEach(([i,v])=>{ for(let j=prev[0]+1;j<=i;j++) tgt[j]=prev[1]+(v-prev[1])*(j-prev[0])/(i-prev[0]); prev=[i,v]; }); for(let j=prev[0]+1;j<NM;j++) tgt[j]=prev[1];
-  const Lm=Array(NM).fill(0); for(let i=0;i<=cur;i++) Lm[i]=C0.tot.launch[i]||0;
+  const fixed=M.map((m,i)=>i<=cur?(C0.tot.launch[i]||0):0);
+  // 1) 대략적인 월 런칭 수 (공급 계산용)
+  const Lm0=Array(NM).fill(0); for(let i=0;i<=cur;i++) Lm0[i]=fixed[i];
   const onAt=(j,i)=>{ const d=addDays(MS[j],14); return d<=ME[i]&&d>=addDays(MS[i],-7*runW); };
-  for(let i=cur+1;i<NM;i++){ let on=0; for(let j=0;j<i;j++) if(Lm[j]&&onAt(j,i)) on+=Lm[j]; const need=Math.max(0,Math.ceil(tgt[i]-on-1e-9)); Lm[i]=Math.max(need,Lm[i-1]); }
-  // 준비 작품 공급 확인 → 모자라면 외주 착수 추가
-  const rdy=Array(NM).fill(0); Q0.works.forEach(w=>{ for(let i=0;i<NM;i++) if(w.ready>=MS[i]&&w.ready<=ME[i]){ rdy[i]++; break; } });
-  const addG=P.groups.filter(G=>G.line==="ext").sort((a,b)=>b.pipes.length-a.pipes.length)[0]||P.groups[0];
-  const bdAt=(i)=>lp2ff((addG.pipes[0]||{}).bd,i,7);
-  const voiceAt=(i)=>{ let ai=0,n=0; for(let j=Math.min(i,NM-1);j>=0&&n<3;j--) addG.pipes.forEach(p=>{ const c=+((p.start||{})[M[j]])||0; if(c){ n+=c; ai+=lp2AiN(p,M[j],j); } }); return n?(ai/n>=0.5?"ai":"human"):"ai"; };
-  let sup=0, dem=0, added=0; const q=addG.pipes[0]||(addG.pipes[0]={id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}});
-  for(let i=0;i<NM;i++){ sup+=rdy[i]; dem+=Lm[i]; if(i<=cur) continue; let gap=dem-(sup+added); if(gap<=0) continue;
-    const vEff=(s2)=>(g.noAI5&&bdAt(s2)<=5)?"human":voiceAt(s2);   // 5영업일 이하 AI 제외 설정이면 사람 성우 기간으로
-    let sI=-1; for(let s2=i;s2>cur;s2--){ if(lp2Launch(addG.line,vEff(s2),bdAt(s2),g,M[s2])<=ME[i]){ sI=s2; break; } }
-    if(sI<0){ dem=sup+added; continue; }   // 지금 착수해도 그 달까지 못 만드는 수요는 쌓아두지 않음 (나중에 한꺼번에 몰리지 않게)
-    const m=M[sI], v=vEff(sI), bd=bdAt(sI);
-    q.start[m]=(+q.start[m]||0)+gap; q.aiN=q.aiN||{}; q.aiN[m]=(q.aiN[m]||0)+(v==="ai"?gap:0); q.bd=q.bd||{}; if(q.bd[m]==null) q.bd[m]=bd; added+=gap; }
-  // 남는 외주 착수 정리: 런칭 계획보다 준비 작품이 넘치면, 늦게 준비되는 외주 착수부터 뺌 (어느 달에도 모자라지 않는 범위에서)
-  let removed=0; { const Q=lp2Quick(P), S=Array(NM).fill(0), Dm=Array(NM).fill(0); let a1=0,b1=0;
+  for(let i=cur+1;i<NM;i++){ let on=0; for(let j=0;j<i;j++) if(Lm0[j]&&onAt(j,i)) on+=Lm0[j]; Lm0[i]=Math.max(0,Math.ceil(tgt[i]-on-1e-9)); }
+  // 2) 준비 작품이 모자라면 외주 착수 추가 (외주 팀끼리 2028년 착수 비율대로 나눔)
+  const extG=P.groups.filter(G=>G.line==="ext"); const share=extG.map(G=>Math.max(1,G.pipes.reduce((a,p)=>a+Object.entries(p.start||{}).filter(([m])=>m.startsWith("2028")).reduce((b,[,v])=>b+(+v||0),0),0)));
+  const shT=share.reduce((a,b)=>a+b,0)||1;
+  const addPipe=(G)=>G.pipes[0]||(G.pipes[0]={id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}});
+  const bdAt=(G,i)=>lp2ff((G.pipes[0]||{}).bd,i,7);
+  const voiceAt=(G,i)=>{ let ai=0,n=0; for(let j=Math.min(i,NM-1);j>=0&&n<3;j--) G.pipes.forEach(p=>{ const c=+((p.start||{})[M[j]])||0; if(c){ n+=c; ai+=lp2AiN(p,M[j],j); } }); const v=n?(ai/n>=0.5?"ai":"human"):"ai"; return (g.noAI5&&bdAt(G,i)<=5)?"human":v; };
+  const Qr=lp2Quick({...P,g:{...g,smooth:"off"}}); const rdy=Array(NM).fill(0); Qr.works.forEach(w=>{ for(let i=0;i<NM;i++) if(w.ready<=ME[i]){ if(w.ready>=MS[i]||i===0) rdy[i]++; break; } });
+  let sup=0, dem=0, added=0;
+  for(let i=0;i<NM;i++){ sup+=rdy[i]; dem+=Lm0[i]; if(i<=cur) continue; let gap=dem-(sup+added); if(gap<=0) continue;
+    let alloc=extG.map((G,gi)=>Math.floor(gap*share[gi]/shT)); let rem=gap-alloc.reduce((a,b)=>a+b,0); for(let gi=0;rem>0;gi=(gi+1)%Math.max(1,extG.length),rem--) alloc[gi]++;
+    let placed=0; extG.forEach((G,gi)=>{ const n=alloc[gi]; if(!n) return; let sI=-1; for(let s2=i;s2>cur;s2--){ if(lp2Launch(G.line,voiceAt(G,s2),bdAt(G,s2),g,M[s2])<=ME[i]){ sI=s2; break; } }
+      if(sI<0) return; const q=addPipe(G), m=M[sI], v=voiceAt(G,sI); q.start[m]=(+q.start[m]||0)+n; q.aiN=q.aiN||{}; q.aiN[m]=(q.aiN[m]||0)+(v==="ai"?n:0); q.bd=q.bd||{}; if(q.bd[m]==null) q.bd[m]=bdAt(G,sI); placed+=n; });
+    added+=placed; if(placed<gap) dem=sup+added; }   // 지금 착수해도 못 맞추는 수요는 쌓아두지 않음
+  // 3) 정확한 월 런칭 계획
+  let EP=lp2ExactPlan(P,tgt,cur,fixed);
+  // 4) 남는 외주 착수 정리 (늦게 준비되는 것부터, 어느 달에도 모자라지 않게)
+  let removed=0; { const Q=lp2Quick({...P,g:{...g,smooth:"off"}}), S=Array(NM).fill(0), Dm=Array(NM).fill(0); let a1=0,b1=0;
     const rI=(w)=>{ for(let i=0;i<NM;i++) if(w.ready<=ME[i]) return i; return NM; };
     const rr=Q.works.map(w=>({w,ri:rI(w)})); const cnt=Array(NM).fill(0); rr.forEach(x=>{ if(x.ri<NM) cnt[x.ri]++; });
-    for(let i=0;i<NM;i++){ a1+=cnt[i]; b1+=Lm[i]; S[i]=a1; Dm[i]=b1; }
+    for(let i=0;i<NM;i++){ a1+=cnt[i]; b1+=EP.Lm[i]; S[i]=a1; Dm[i]=b1; }
     rr.filter(x=>x.w.G.line==="ext"&&x.w.si>cur&&x.ri<NM).sort((x,y)=>y.ri-x.ri||y.w.si-x.w.si).forEach(x=>{
       for(let j=x.ri;j<NM;j++) if(S[j]-1<Dm[j]) return;
       const G=P.groups.find(gg=>gg.id===x.w.G.id), pp=G&&G.pipes.find(q2=>q2.id===x.w.p.id), m=M[x.w.si]; if(!pp||!(+((pp.start||{})[m])||0)) return;
       pp.start[m]-=1; pp.aiN=pp.aiN||{}; if(x.w.voice==="ai") pp.aiN[m]=Math.max(0,(pp.aiN[m]||0)-1); if(!pp.start[m]){ delete pp.start[m]; delete pp.aiN[m]; } else if((pp.aiN[m]||0)>pp.start[m]) pp.aiN[m]=pp.start[m];
       for(let j=x.ri;j<NM;j++) S[j]--; removed++; }); }
-  const lp={}; let last=null; Lm.forEach((v,i)=>{ if(v!==last){ lp[M[i]]=v; last=v; } }); P.lplan=lp; P.g={...g,smooth:"plan"};
+  EP=lp2ExactPlan(P,tgt,cur,fixed);
+  const lp={}; let last=null; EP.Lm.forEach((v,i)=>{ if(v!==last){ lp[M[i]]=v; last=v; } }); P.lplan=lp; P.g={...g,smooth:"plan"};
   const P2=lp2Repack(P); return {P:P2,add:added,rm:removed,mv:0,newPipes:0,planSet:true}; }
 function lp2SolvePlan(P0){ if(P0.g.smooth==="plan") return lp2Construct(P0);
   const r=lp2Solve({...clone(P0),g:{...P0.g,smooth:"auto"}}); const P=r.P; P.g={...P.g,smooth:"plan"};
