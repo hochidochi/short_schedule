@@ -1284,7 +1284,7 @@ const concOf=(s,w,k)=>{ if(s&&typeof s.conc==="object"&&s.conc){ const c=s.conc[
   if(s.conc===true) return true;
   if(s.conc!=="ext"&&s.conc!=="author") return false; if(s.conc==="ext"&&lineOf(w)!=="ext") return false;
   if(k==null) return true; const a=CONF.stages.find(x=>x.k==="author"), u=a?uptoOf(a,w):0; return !(u>0&&k>u); };
-const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||durOf(s,w)>0||s.tbdDur);
+const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||durOf(s,w)>0||(s.tbdDur&&CONF.showTbd));   // 기간 미정 단계(영상 번역)는 일정표에서 뺌 · 공정 기준에서 일수를 넣으면 다시 나타남
 function batchesOf(w,N){
   const out=[]; let a=1, size=clamp(+w.b1||BATCH,1,N);
   const cut=+w.batchCut||0;   // 시즌 경계: 이 회차에서 묶음을 끊고 다음 회차부터 새 묶음
@@ -3986,16 +3986,21 @@ const lp2Cap=(g)=>Math.max(1,+(g&&g.vcap)||3);
 const lp2ProdEnd=(m,bd,g)=>addBD(lp2MStart(m),Math.max(1,Math.round((+g.season||30)*bd))-1);
 function lp2Load(p,g){ const M=LP2_M, L=Array(M.length).fill(0), MS=M.map(lp2MStart), ME=M.map(lp2MEnd);   // 달마다 이 제작사가 동시에 만드는 작품 수
   M.forEach((m,i)=>{ const n=+((p.start||{})[m])||0; if(!n) return; const e=lp2ProdEnd(m,lp2ff(p.bd,i,7),g); for(let j=i;j<M.length&&MS[j]<=e;j++) L[j]+=n; }); return L; }
-function lp2Fits(p,m,bd,g,cnt){ const i=LP2_M.indexOf(m), e=lp2ProdEnd(m,bd,g), L=lp2Load(p,g), cap=lp2Cap(g); for(let j=i;j<LP2_M.length&&lp2MStart(LP2_M[j])<=e;j++) if(L[j]+(cnt||1)>cap) return false; return true; }
+/* 외주 제작사 신규 셋업: 첫 작품 착수 → 3개월 뒤 두 번째 → 그 1개월 뒤 세 번째 (그 다음부터는 동시 제작 상한만) */
+const LP2_RAMP=[3,1];
+function lp2RampOK(list,i0){ const L=list.slice().sort((a,b)=>a-b); if(!L.length) return true; const k=L.length;
+  if(k<=LP2_RAMP.length){ if(L.some(x=>x>i0)) return false; return i0>=L[k-1]+LP2_RAMP[k-1]; } return true; }
+function lp2Fits(p,m,bd,g,cnt){ const idx=[]; LP2_M.forEach((mm,ii)=>{ const n=+((p.start||{})[mm])||0; for(let x=0;x<n;x++) idx.push(ii); }); if(!lp2RampOK(idx,LP2_M.indexOf(m))) return false; const i=LP2_M.indexOf(m), e=lp2ProdEnd(m,bd,g), L=lp2Load(p,g), cap=lp2Cap(g); for(let j=i;j<LP2_M.length&&lp2MStart(LP2_M[j])<=e;j++) if(L[j]+(cnt||1)>cap) return false; return true; }
 /* 외주 작품을 제작사에 다시 배정: 착수 순서대로, 동시 제작이 상한을 넘지 않는 첫 제작사에 넣고 없으면 제작사를 늘림 */
 function lp2Repack(P0){ const P=clone(P0), g=P.g; let no=0;
   P.groups.forEach(G=>{ if(G.line!=="ext") return; const W=[];
     G.pipes.forEach(p=>LP2_M.forEach((m,i)=>{ const n=+((p.start||{})[m])||0; if(!n) return; const a=lp2AiN(p,m,i), bd=lp2ff(p.bd,i,7); for(let k=0;k<n;k++) W.push({m,bd,ai:k<a}); }));
     W.sort((a,b)=>a.m.localeCompare(b.m)); const pipes=[], loads=[], cap=lp2Cap(g), NM=LP2_M.length, spanC=new Map();
     const span=(m,bd)=>{ const ck=m+"|"+bd; if(spanC.has(ck)) return spanC.get(ck); const i=LP2_M.indexOf(m), e=lp2ProdEnd(m,bd,g); let j=i; while(j+1<NM&&lp2MStart(LP2_M[j+1])<=e) j++; const r=[i,j]; spanC.set(ck,r); return r; };
-    W.forEach(w=>{ const [i0,i1]=span(w.m,w.bd); let qi=loads.findIndex(L=>{ for(let x=i0;x<=i1;x++) if(L[x]+1>cap) return false; return true; });
-      if(qi<0){ no++; pipes.push({id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}}); loads.push(new Int16Array(NM)); qi=pipes.length-1; }
-      const q=pipes[qi], L=loads[qi]; for(let x=i0;x<=i1;x++) L[x]++;
+    const pm=[];
+    W.forEach(w=>{ const [i0,i1]=span(w.m,w.bd); let qi=loads.findIndex((L,ix)=>{ if(!lp2RampOK(pm[ix],i0)) return false; for(let x=i0;x<=i1;x++) if(L[x]+1>cap) return false; return true; });
+      if(qi<0){ no++; pipes.push({id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}}); loads.push(new Int16Array(NM)); pm.push([]); qi=pipes.length-1; }
+      const q=pipes[qi], L=loads[qi]; for(let x=i0;x<=i1;x++) L[x]++; pm[qi].push(i0);
       q.start[w.m]=(+q.start[w.m]||0)+1; q.aiN[w.m]=(q.aiN[w.m]||0)+(w.ai?1:0); if(q.bd[w.m]==null) q.bd[w.m]=w.bd; });
     G.pipes=pipes.length?pipes:[{id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{...((G.pipes[0]||{}).bd||{})},aiN:{}}]; });
   let k=0; P.groups.forEach(G=>{ if(G.line==="ext") G.pipes.forEach(p=>{ p.name=`외부${++k}`; }); });
@@ -4045,6 +4050,7 @@ function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop2&&!LP.cur.afv){   // 10/16: 목표 자동 맞춤 기본 켜기 (지금 값은 보관)
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`자동 맞춤 켜기 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     const P=clone(LP.cur); P.afv=1; P.g={...P.g,autoFit:true}; lpOp({op:"cur",v:lp2AutoFit(P)}); }
+  if(LP.cur&&LP.cur.v===2&&!LP.cur.rampv){ const P=clone(LP.cur); P.rampv=1; lpOp({op:"cur",v:lp2Repack(P)}); }   // 외주 신규 셋업 규칙(3개월 뒤 · 1개월 뒤)으로 다시 배정
   if(LP.cur&&LP.cur.v===2&&LP.cur.afv&&!LP.cur.ext30&&LP.cur.g.autoFit!==false){ lpOp({op:"cur",v:lp2AutoFit(clone(LP.cur))}); }   // 2029~30년 팀별 착수 이어가기 + 정확한 월 런칭 계획
   if(LP.cur&&LP.cur.v===2&&!LP.cur.aop2){   // 10/16 팀 AOP 시트 반영: 월별 런칭 계획 · 29/30년 목표 · AOP 구조
     const P=clone(LP.cur); P.aop2=1; P.g.smooth="plan";
@@ -4347,7 +4353,7 @@ function renderLP2(){
   let lv=`<tr class="lsum"><td class="tl" colspan="2" data-tip="모든 팀·제작사의 월별 착수 편수 합계예요.">제작 착수 작품 수 <span class="hint" style="font-weight:400">합계</span></td>${M.map((m,i)=>`<td class="${yb(i)}${C.tot.start[i]?"":" z"}">${C.tot.start[i]||"–"}</td>`).join("")}</tr>`;
   P.groups.forEach((G,gi)=>{ const sum=M.map(m=>G.pipes.reduce((a,p)=>a+(+((p.start||{})[m])||0),0));
     const gOpen=LP2V.gopen&&LP2V.gopen[G.id]!=null?LP2V.gopen[G.id]:G.line!=="ext";   // 외주 팀은 기본 접힘
-    lv+=`<tr class="lgh"><td class="tl" colspan="2"><button type="button" class="lptog" data-gtog="${esc(G.id)}" title="${gOpen?"접기":"제작사 줄 펼치기"}">${gOpen?"▾":"▸"}</button><b>${esc(G.id)}</b> <span class="ln ${G.line}" style="font-size:10px;padding:0 5px">${G.line==="ext"?"외부":"내부"}</span>${!ro?` <button type="button" class="lpadd" data-addp="${gi}">${G.line==="ext"?"+ 제작사":"+ 파이프라인"}</button>`:""}${G.line==="ext"?` <span class="gcnt" title="제작사 1곳은 동시에 최대 ${lp2Cap(g)}편까지 제작해요 (착수~30화 영상 1차 완료까지)">${G.pipes.length}곳</span>`:""}</td>
+    lv+=`<tr class="lgh"><td class="tl" colspan="2"><button type="button" class="lptog" data-gtog="${esc(G.id)}" title="${gOpen?"접기":"제작사 줄 펼치기"}">${gOpen?"▾":"▸"}</button><b>${esc(G.id)}</b> <span class="ln ${G.line}" style="font-size:10px;padding:0 5px">${G.line==="ext"?"외부":"내부"}</span>${!ro?` <button type="button" class="lpadd" data-addp="${gi}">${G.line==="ext"?"+ 제작사":"+ 파이프라인"}</button>`:""}${G.line==="ext"?` <span class="gcnt" title="제작사 1곳은 동시에 최대 ${lp2Cap(g)}편까지 제작해요 (착수~30화 영상 1차 완료까지) · 새 제작사는 첫 작품 → 3개월 뒤 두 번째 → 1개월 뒤 세 번째 순서로 늘려요">${G.pipes.length}곳</span>`:""}</td>
       ${M.map((m,i)=>`<td class="${yb(i)}${sum[i]?"":" z"}">${sum[i]||""}</td>`).join("")}</tr>`;
     if(!gOpen){ const aiS=M.map((m,i)=>G.pipes.reduce((a,p)=>a+(((g.noAI5&&lp2ff(p.bd,i,7)<=5))?0:lp2AiN(p,m,i)),0));
       lv+=`<tr class="lgai"><td class="tl" colspan="2"><span class="ind ai">ㄴ 그중 AI 성우 (편)</span> <span class="hint">▸ 눌러서 제작사별로 보기·입력</span></td>${M.map((m,i)=>`<td class="${yb(i)}${aiS[i]?"":" z"}">${aiS[i]||""}</td>`).join("")}</tr>`; return; }
