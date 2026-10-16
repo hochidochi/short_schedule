@@ -480,6 +480,8 @@ table.lp2.cost td.tl .pctb{display:inline-block;margin-left:6px;font-size:10.5px
 table.lp2.cost td.pcell{background:rgba(91,123,213,var(--a));font-weight:700;color:#1F2A44}
 table.lp2.res td.tsum,table.lp2.res th.tsum{background:#E3E9F5;font-weight:800;text-align:right;padding-right:8px;border-left:2px solid #9AA3B2;position:sticky;right:0;z-index:2}
 table.lp2.res th.tsum{background:#1F2A44;color:#fff;z-index:3} table.lp2.res td.tsum small{font-size:9.5px;color:var(--muted);margin-left:2px;font-weight:600}
+#v-lp table.lp2 td.ysum,#v-lp table.lp2 th.ysum{background:#EEF2FA;font-weight:800;color:#1F2A44;border-left:1px solid #C9D2E6;border-right:2px solid #9AA3B2;text-align:center;white-space:nowrap}
+#v-lp table.lp2 th.ysum{background:#33415F;color:#fff;font-size:11px} #v-lp table.lp2.lev2 tr.lsum td.ysum,#v-lp table.lp2.lev2 tr.lcat td.ysum{background:#3B4A6B;color:#fff}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -4346,6 +4348,25 @@ function lp2FloatUpdate(){ if(TAB!=="lp"){ LP2_FH.forEach(x=>x.box.style.display
       x.tail.style.width=r2.width+"px"; x.tail.style.height=hh+"px"; x.tail.style.display="flex"; x.tail.style.alignItems="flex-end"; } }); }
 window.addEventListener("scroll",()=>{ if(LP2_FH.length) lp2FloatUpdate(); },{passive:true});
 window.addEventListener("resize",()=>{ if(LP2_FH.length) lp2FloatUpdate(); });
+/* 연도별 합계 칸: 결과 · 레버 · 발굴 계획 표에서 매년 12월(마지막 달) 바로 뒤에 '○○년 계' 칸을 넣음
+   (쌓이는 숫자 — 연재 작품 수 · 런칭 대기 · 누적 — 는 합계 대신 그해 마지막 달 값 · 영업일 줄은 비움) */
+function lp2YearCols(){ const M=LP2_M, NM=M.length; const yrs=[...new Set(M.map(m=>m.slice(0,4)))]; const lastI=yrs.map(y=>M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0).pop()); const firstI=yrs.map(y=>M.findIndex(m=>m.startsWith(y)));
+  const num=(c)=>{ const inp=c.querySelector("input"); const t=inp?(inp.value||inp.placeholder||""):c.textContent; const n=parseFloat(String(t).replace(/[^0-9.\-]/g,"")); return isFinite(n)?n:0; };
+  document.querySelectorAll("#v-lp table.lp2.res:not(.cost), #v-lp table.lp2.lev2").forEach(t=>{ if(t.dataset.yc) return; t.dataset.yc="1";
+    const cg=t.querySelector("colgroup"); if(cg){ const cols=[...cg.children], lead=cols.length-NM-(cols.length-NM>2?1:0); const nLead=t.classList.contains("lev2")?2:1;
+      lastI.slice().reverse().forEach(li=>{ const ref=cols[nLead+li]; if(ref){ const c=document.createElement("col"); c.style.width="58px"; ref.after(c); } }); }
+    t.style.width=(parseFloat(t.style.width)||t.getBoundingClientRect().width)+58*yrs.length+"px";
+    [...t.rows].forEach(row=>{ const cells=[...row.cells]; const hasT=cells.length&&cells[cells.length-1].classList.contains("tsum");
+      // 연도 머리줄(colspan으로 묶인 줄)
+      if(row.classList.contains("yhead")){ cells.forEach(c=>{ if(c.classList.contains("yb")&&c.colSpan>1) c.colSpan+=1; }); return; }
+      const end=cells.length-(hasT?1:0), mcs=cells.slice(Math.max(0,end-NM),end);
+      if(mcs.length<NM||mcs.some(c=>c.colSpan>1)){ const lc=cells[cells.length-1]; if(lc&&lc.colSpan>1) lc.colSpan+=yrs.length; return; }
+      const isHead=row.parentElement.tagName==="THEAD", stock=row.classList.contains("stock"), noyr=row.classList.contains("noyr");
+      lastI.slice().reverse().forEach((li,ri)=>{ const yi=yrs.length-1-ri, y=yrs[yi], ref=mcs[li]; const el=document.createElement(isHead?"th":"td"); el.className="ysum";
+        if(isHead){ el.textContent=`${y.slice(2)}년 계`; }
+        else if(noyr){ el.textContent=""; }
+        else { const vals=mcs.slice(firstI[yi],li+1).map(num); const v=stock?vals[vals.length-1]:vals.reduce((a,b)=>a+b,0); el.textContent=v?Math.round(v).toLocaleString("ko-KR"):"–"; if(stock) el.title=`${y}년 말 기준`; }
+        ref.after(el); }); }); }); }
 function renderLP2(){
   if(SB.on&&!LP_LOADED){ $("v-lp").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">런칭 플랜을 불러오는 중이에요…</div>`; return; }
   lp2Ensure(); LPV.peek=null; const PK=null;   // 기록 보기 없이 항상 현재 버전 (바꾸면 바로 공유 저장)
@@ -4366,7 +4387,7 @@ function renderLP2(){
   const STOCK=new Set([C.tot.onair,...Object.values(C.R.onair),...(C.SM&&C.SM.queue?[C.SM.queue]:[])]);   // 연재 작품 수는 '쌓이는 숫자'라 합계 대신 마지막 달 값
   const totCell=(arr)=>{ if(STOCK.has(arr)){ const v=arr[arr.length-1]; return `<td class="tsum" title="${LP2_M[LP2_M.length-1].slice(2,4)}.${+LP2_M[LP2_M.length-1].slice(5)} 기준 (연재·대기처럼 쌓이는 숫자는 합계 대신 마지막 달 값)">${v?v.toLocaleString("ko-KR"):"–"}<small>말</small></td>`; }
     const t=arr.reduce((a,b)=>a+(+b||0),0); return `<td class="tsum">${t?Math.round(t).toLocaleString("ko-KR"):"–"}</td>`; };
-  const rowR=(lab,arr,cls,dec)=>`<tr class="${cls||""}"><td class="tl"${tipOf(lab)?` data-tip="${esc(tipOf(lab))}"`:""}>${lab}${tipOf(lab)?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmt(v,dec)}</td>`).join("")}${totCell(arr)}</tr>`;
+  const rowR=(lab,arr,cls,dec)=>`<tr class="${cls||""}${STOCK.has(arr)?" stock":""}"><td class="tl"${tipOf(lab)?` data-tip="${esc(tipOf(lab))}"`:""}>${lab}${tipOf(lab)?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmt(v,dec)}</td>`).join("")}${totCell(arr)}</tr>`;
   const tg=P.targets.onair||{};
   let h=`<div class="lphead"><div><p class="lead" style="margin:0">런칭 플랜 계산기</p>
       <div class="lpst"><span id="lpSt">${lpStatTxt()}</span> <button type="button" class="lpundo" id="lpUndo">↶ 이전 상태로</button> <button type="button" class="lpundo" id="lpBase" title="엑셀 시뮬레이터 값으로 처음부터 다시 (지금 값은 자동 보관)">엑셀 기본값으로</button></div></div>
@@ -4422,7 +4443,7 @@ function renderLP2(){
         const lock=g.noAI5&&lp2ff(p.bd,i,7)<=5, an=lock?0:lp2AiN(p,m,i);
         return `<td class="${yb(i)} yc${lock?" lk":""}"><input class="lp2c ai" data-c="aiN:${gi}:${pi}:${m}" value="${an}"${ro||lock?" disabled":""} title="${lock?"5영업일 이하라 AI 제외":`착수 ${n}편 중 AI`}"></td>`; };
       lv+=`<tr class="p1"><td class="tl pn" rowspan="3">${!ro&&canDel?`<input class="lp2n" data-pn="${gi}:${pi}" value="${esc(p.name)}">`:`<b>${esc(label||p.name)}</b>`}${!ro&&canDel&&G.pipes.length>1?`<button type="button" class="vdel" data-delp="${gi}:${pi}" title="삭제">✕</button>`:""}</td><td class="tl2" data-tip="그 달에 새로 착수하는 작품(시즌) 편수예요. 1이면 그 달 새 작품 1편이 제작에 들어가요.">착수 (편)</td>${M.map((m,i)=>cell("start",m,i)).join("")}</tr>
-        <tr class="p2"><td class="tl2" data-tip="회차당 영상 1차 제작 영업일이에요. 비우면 왼쪽 값을 이어서 써요.">영업일 (일)</td>${M.map((m,i)=>cell("bd",m,i)).join("")}</tr>
+        <tr class="p2 noyr"><td class="tl2" data-tip="회차당 영상 1차 제작 영업일이에요. 비우면 왼쪽 값을 이어서 써요.">영업일 (일)</td>${M.map((m,i)=>cell("bd",m,i)).join("")}</tr>
         <tr class="p3"><td class="tl2 ai" data-tip="그 달 착수 작품 중 AI 성우로 만드는 편수예요. 착수 1편에 1이면 AI, 0이면 사람 성우예요.">AI 성우 (편)</td>${M.map((m,i)=>cell("ai",m,i)).join("")}</tr>`; 
     return lv; };
   let lv=`<tr class="lsum"><td class="tl" colspan="2" data-tip="모든 팀·제작사의 월별 착수 편수 합계예요.">제작 착수 작품 수 <span class="hint" style="font-weight:400">합계</span></td>${M.map((m,i)=>`<td class="${yb(i)}${C.tot.start[i]?"":" z"}">${C.tot.start[i]||"–"}</td>`).join("")}</tr>`;
@@ -4466,7 +4487,7 @@ function renderLP2(){
             <div><b>${y}년</b></div><div class="ysub">발굴 <b>${v}</b>곳${n>=9?` <span>(${EXT.map(G=>`${G.id.replace("외부 ","")} ${ysum(src[G.id],y)}`).join(" · ")})</span>`:""} · 첫 착수 <b>${f}</b>곳</div></th>`; }).join("")}</tr>`; })()}${mh}</thead><tbody>
       ${rowS("발굴 필요 제작사 수",srcT,"tot srcr",`이 달까지 새로 찾아서 샘플·계약을 끝내야 하는 외주 제작사 수예요 (첫 착수 ${LEADM}개월 전 기준).${lateT?` 이미 기한이 지난 ${lateT}곳은 이번 달에 모아 표시했어요.`:""}`)}
       ${EXT.map(G=>rowS(`<span class="ind">ㄴ ${esc(G.id)}</span>`,src[G.id],"sub srcr")).join("")}
-      ${rowS("누적 필요 제작사",cumSrc,"sub","지금까지 확보해 둬야 하는 외주 제작사 누적 수예요.")}
+      ${rowS("누적 필요 제작사",cumSrc,"sub stock","지금까지 확보해 둬야 하는 외주 제작사 누적 수예요.")}
       ${rowS("첫 착수 시작 제작사",firstT,"sub","그 달에 처음으로 작품 착수를 시작하는 제작사 수예요.")}
     </tbody></table></div>
 
@@ -4540,7 +4561,7 @@ function renderLP2(){
   document.querySelectorAll("#v-lp [data-g2c]").forEach(el=>el.onchange=()=>set(P=>{ P.g[el.dataset.g2c]=el.checked; }));
   document.querySelectorAll("#v-lp [data-tg]").forEach(el=>el.onchange=()=>set(P=>{ P.targets.onair=P.targets.onair||{}; const v=parseInt(el.value,10); if(el.value!==""&&v>=0) P.targets.onair[el.dataset.tg]=v; else delete P.targets.onair[el.dataset.tg]; }));
   document.querySelectorAll("#v-lp [data-c]").forEach(el=>{ el.onchange=()=>set(P=>lp2SetCell(P,el.dataset.c,el.value)); });
-  lp2GridBind(); setTimeout(lp2FloatInit,0);
+  lp2YearCols(); lp2GridBind(); setTimeout(lp2FloatInit,0);
   // 결과 표와 레버 표 가로 스크롤 맞추기 (월 칸이 위아래로 같은 자리)
   const wraps=[...document.querySelectorAll("#v-lp table.lp2.res:not(.cost),#v-lp table.lp2.lev2")].map(t=>t.parentElement); let syncing=false;
   wraps.forEach(w=>w.addEventListener("scroll",()=>{ if(syncing) return; syncing=true; wraps.forEach(o=>{ if(o!==w) o.scrollLeft=w.scrollLeft; }); syncing=false; }));
