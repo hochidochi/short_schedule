@@ -484,6 +484,7 @@ table.lp2.lev2 tr.lsum td.tsum,table.lp2.lev2 tr.lcat td.tsum{background:#33415F
 #v-lp table.lp2 td.ysum,#v-lp table.lp2 th.ysum{background:#EEF2FA;font-weight:800;color:#1F2A44;border-left:1px solid #C9D2E6;border-right:2px solid #9AA3B2;text-align:center;white-space:nowrap}
 #v-lp table.lp2 th.ysum{background:#33415F;color:#fff;font-size:11px} #v-lp table.lp2.lev2 tr.lsum td.ysum,#v-lp table.lp2.lev2 tr.lcat td.ysum{background:#3B4A6B;color:#fff}
 table.lp2.cost td.tsum,table.lp2.cost th.tsum{min-width:110px} table.lp2.cost td.ysum{min-width:96px;text-align:right;padding-right:8px} table.lp2.cost tr.yhead th.tsum{background:#1F2A44;text-align:left}
+#v-lp table.lp2.cost td.ysum.ypct{background:rgba(91,123,213,var(--a));color:#1F2A44;text-align:center}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -4367,10 +4368,12 @@ function lp2YearCols(){ const M=LP2_M, NM=M.length; const yrs=[...new Set(M.map(
       if(row.classList.contains("yhead")){ cells.forEach(c=>{ if(c.classList.contains("yb")&&c.colSpan>1) c.colSpan+=1; }); return; }
       const end=cells.length-(hasT?1:0), mcs=cells.slice(Math.max(0,end-NM),end);
       if(mcs.length<NM||mcs.some(c=>c.colSpan>1)){ const lc=cells[cells.length-1]; if(lc&&lc.colSpan>1) lc.colSpan+=yrs.length; return; }
-      const isHead=row.parentElement.tagName==="THEAD", stock=row.classList.contains("stock"), noyr=row.classList.contains("noyr")||row.classList.contains("pv"), avg=row.classList.contains("avg");
+      const isHead=row.parentElement.tagName==="THEAD", stock=row.classList.contains("stock"), noyr=row.classList.contains("noyr"), avg=row.classList.contains("avg"), pv=row.classList.contains("pv");
       lastI.slice().reverse().forEach((li,ri)=>{ const yi=yrs.length-1-ri, y=yrs[yi], ref=mcs[li]; const el=document.createElement(isHead?"th":"td"); el.className="ysum";
         if(isHead){ el.textContent=`${y.slice(2)}년 계`; }
         else if(noyr){ el.textContent=""; }
+        else if(pv){ const A=JSON.parse(row.dataset.amt||"[]").slice(firstI[yi],li+1), B=JSON.parse(row.dataset.base||"[]").slice(firstI[yi],li+1); const a=A.reduce((x,y)=>x+y,0), b=B.reduce((x,y)=>x+y,0), x=b?a/b*100:0;
+          el.textContent=a&&b?(x<1?x.toFixed(1):Math.round(x))+"%":"–"; el.title=`${y}년 연간 비중`; el.classList.add("ypct"); el.style.setProperty("--a",Math.min(1,x/100*1.4).toFixed(2)); }
         else { const vals=mcs.slice(firstI[yi],li+1).map(num); let v;
           if(avg){ const wv=row.dataset.w?JSON.parse(row.dataset.w).slice(firstI[yi],li+1):vals.map(x=>x?1:0); const W=wv.reduce((a,b)=>a+b,0); v=W?vals.reduce((a,x,k)=>a+x*wv[k],0)/W:0; el.title=`${y}년 착수 작품 가중 평균`; }
           else v=stock?vals[vals.length-1]:vals.reduce((a,b)=>a+b,0);
@@ -4547,7 +4550,7 @@ function renderLP2(){
       const rowsH=CO.rows.slice(0,10).map(([lab,arr,cls],ri)=>{ const tip=TIPC[lab], tot=cls&&cls.startsWith("tot"), base=baseOf(ri), me=sumA(arr), pc=!tot&&sumA(base)?me/sumA(base)*100:0;
         const pct=tot?"":`<span class="pctb" title="전체 기간 ${ri<=7?"총 집행비용":ri<=9?"총 제작비":"총 매출"} 대비">${pc?(pc<1?pc.toFixed(1):Math.round(pc))+"%":"–"}</span>`;
         const PV=(LP2V.cview||"amt")==="pct", pf=(v,b)=>{ if(!v||!b) return "–"; const x=v/b*100; return (x<1?x.toFixed(1):Math.round(x))+"%"; };
-        return `<tr class="${cls||""}${PV&&!tot?" pv":""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}${PV?"":pct}</td>${arr.map((v,i)=>{ const b=base[i]; const t=!tot&&v&&b?` title="${PV?fmtW(v)+" "+UL:`${M[i].slice(2,4)}.${+M[i].slice(5)} ${ri<=7?"집행비용":ri<=9?"총 제작비":"총 매출"}의 ${Math.round(v/b*100)}%`}"`:"";
+        return `<tr class="${cls||""}${PV&&!tot?" pv":""}"${PV&&!tot?` data-amt="${esc(JSON.stringify(arr.map(v=>Math.round(v))))}" data-base="${esc(JSON.stringify(base.map(v=>Math.round(v))))}"`:""}><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}${PV?"":pct}</td>${arr.map((v,i)=>{ const b=base[i]; const t=!tot&&v&&b?` title="${PV?fmtW(v)+" "+UL:`${M[i].slice(2,4)}.${+M[i].slice(5)} ${ri<=7?"집행비용":ri<=9?"총 제작비":"총 매출"}의 ${Math.round(v/b*100)}%`}"`:"";
           if(cls==="inp"&&!ro&&!PV) return `<td class="${yb(i)} yc"><input class="lp2c cdist" data-dist="${M[i]}" value="${v?Math.round(v/U).toLocaleString("ko-KR"):""}"></td>`;
           if(PV&&!tot){ const x=v&&b?v/b*100:0; return `<td class="${yb(i)}${v?"":" z"} pcell" style="--a:${Math.min(1,x/100*1.4).toFixed(2)}"${t}>${pf(v,b)}</td>`; }
           return `<td class="${yb(i)}${v?"":" z"}"${t}>${fmtW(v)}</td>`; }).join("")}<td class="tsum">${PV&&!tot?pf(me,sumA(base)):fmtW(me)}</td></tr>`; }).join("");
@@ -4564,7 +4567,7 @@ function renderLP2(){
         <tr class="sub"><td class="tl">ㄴ 착수 작품 수 <span class="hint">(AI 성우)</span></td>${PE.map((x,i)=>`<td class="${yb(i)}${x.n?"":" z"}">${x.n?`${x.n}${x.ai?` <span class="hint">(${x.ai})</span>`:""}`:"–"}</td>`).join("")}<td class="tsum">${allN.toLocaleString("ko-KR")}</td></tr>
         <tr class="tot2 avg" data-w="${esc(JSON.stringify(PE.map(x=>x.n)))}"><td class="tl">회차당 평균 금액</td>${avgEp.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmtW(v)}</td>`).join("")}<td class="tsum">${fmtW(allAvg)}</td></tr>
         <tr class="sub avg" data-w="${esc(JSON.stringify(PE.map(x=>x.n)))}"><td class="tl">ㄴ 작품당 (${N}화)</td>${avgEp.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmtW(v*N)}</td>`).join("")}<td class="tsum">${fmtW(allAvg*N)}</td></tr>`;
-      return `<div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res cost" id="lpCostT"><thead>${yhead}${head}</thead><tbody>${rowsH}
+      return `<div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res cost" id="lpCostT"><thead>${head}</thead><tbody>${rowsH}
         <tr class="lsh"><td class="tl" data-tip="시댄스 사용료 계산용이에요. 인원이 바뀌는 달에만 입력하면 오른쪽으로 이어져요 (인턴 포함).">내부 제작 인원 (H/C)<span class="tipi">?</span></td><td colspan="${M.length+1}"></td></tr>
         ${["내부1","내부2","내부3"].map(t=>`<tr class="stock"><td class="tl">ㄴ ${t}</td>${M.map((m,i)=>{ const raw=((k.hc||{})[t]||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)} yc"><input class="lp2c${has?"":" inh"}" data-hc="${t}:${m}" value="${has?raw:""}" placeholder="${lp2ff((k.hc||{})[t]||{},i,0)||""}"${ro?" disabled":""}></td>`; }).join("")}<td class="tsum"></td></tr>`).join("")}
         ${peRows}
