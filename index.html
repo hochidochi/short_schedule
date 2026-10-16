@@ -438,11 +438,9 @@ table.lp2.lev2 .lp2c{user-select:none} table.lp2.lev2 .lp2c:focus{user-select:te
 .als{display:flex;gap:10px;font-size:11.5px;color:var(--ink2);margin-top:2px} .als i{margin-right:3px}
 table.lp2.res:not(.cost),table.lp2.lev2{table-layout:fixed;width:calc(210px + 48px * 30)!important;min-width:0!important;max-width:none}
 table.lp2.res:not(.cost) td.tl,table.lp2.lev2 td.tl{overflow:hidden;text-overflow:ellipsis}
-table.lp2.res:not(.cost) th,table.lp2.res:not(.cost) td,table.lp2.lev2 th,table.lp2.lev2 td{width:48px;min-width:48px;max-width:48px;box-sizing:border-box}
-table.lp2.res:not(.cost) th.tl,table.lp2.res:not(.cost) td.tl{width:210px;min-width:210px;max-width:210px}
-table.lp2.lev2 th.tl{width:210px;min-width:210px;max-width:210px}
-table.lp2.lev2 td.tl{width:120px;min-width:120px;max-width:120px} table.lp2.lev2 td.tl[colspan]{width:210px;max-width:210px}
-table.lp2.lev2 td.tl2{width:90px;min-width:90px;max-width:90px;left:120px}
+table.lp2.res:not(.cost) th,table.lp2.res:not(.cost) td,table.lp2.lev2 th,table.lp2.lev2 td{min-width:0;max-width:none;box-sizing:border-box}
+table.lp2.res:not(.cost) th.tl,table.lp2.res:not(.cost) td.tl{min-width:0;max-width:none}
+table.lp2.lev2 th.tl,table.lp2.lev2 td.tl{min-width:0;max-width:none} table.lp2.lev2 td.tl2{min-width:0;max-width:none;left:120px}
 table.lp2.lev2 tr.lsum td{background:#1F2A44;color:#fff;font-weight:800} table.lp2.lev2 tr.lsum td.tl{background:#1F2A44;color:#fff} table.lp2.lev2 tr.lsum td.z{color:#7C879B}
 table.lp2.res tr.lpact td{background:#DDEBDD} table.lp2.res tr.lpact td.tl{background:#CFE3CF}
 table.lp2.res tr.aie td{background:#ECEAFB;color:#3C3489} table.lp2.res tr.aie td.tl{background:#E2DFF8} table.lp2 .ai{color:#534AB7}
@@ -4155,7 +4153,7 @@ function renderLP2(){
   h+=`<div class="lpsec">결과 <span class="hint">자동 계산 · 팀별 합계</span><span class="vsp"></span>
     ${ro?"":`<button type="button" class="btn" id="lpCurve" style="padding:3px 10px;font-size:12px" title="엑셀 기존 계획의 월별 연재 작품 수를 목표 줄에 채움">기존 계획 곡선을 목표로</button>
     <button type="button" class="btn pri" id="lpSolve" style="padding:3px 10px;font-size:12px" title="목표 연재 수는 그대로 · 착수 편수·착수월·외주 제작사 수를 조정">목표에 맞춰 역산</button>`}</div>
-  <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res"><thead>${mh}</thead><tbody>
+  <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res"><colgroup><col style="width:210px">${M.map(()=>`<col style="width:48px">`).join("")}</colgroup><thead>${mh}</thead><tbody>
     ${rowR("연재 작품 수",C.tot.onair,"tot")}
     ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.onair[G.id],"sub")).join("")}
     <tr class="tgr"><td class="tl">연재 목표 <span class="hint">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)}"><input class="lp2t" data-tg="${m}" value="${esc(tg[m]??"")}" placeholder="·"${ro?" disabled":""}></td>`).join("")}</tr>
@@ -4200,7 +4198,7 @@ function renderLP2(){
         <tr class="p2"><td class="tl2">영업일 (일)</td>${M.map((m,i)=>cell("bd",m,i)).join("")}</tr>
         <tr class="p3"><td class="tl2 ai">AI 성우 (편)</td>${M.map((m,i)=>cell("ai",m,i)).join("")}</tr>`; }); });
   const mh2=`<tr><th class="tl" colspan="2"></th>${M.map((m,i)=>`<th class="${yb(i)}${m===key(TODAY).slice(0,7)?" now":""}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}</tr>`;
-  h+=`<div class="card" style="padding:0;overflow-x:auto"><table class="lp2 lev2"><thead>${mh2}</thead><tbody>${lv}</tbody></table></div>`;
+  h+=`<div class="card" style="padding:0;overflow-x:auto"><table class="lp2 lev2"><colgroup><col style="width:120px"><col style="width:90px">${M.map(()=>`<col style="width:48px">`).join("")}</colgroup><thead>${mh2}</thead><tbody>${lv}</tbody></table></div>`;
   // ── 비용 (AOP) ──
   const CO=lp2Cost(P,C), k=CO.k, U=LP2V.unit||1, UL={1:"원",1000:"천원",1000000:"백만원"}[U];
   const fmtW=(v)=>v?Math.round(v/U).toLocaleString("ko-KR"):"–";
