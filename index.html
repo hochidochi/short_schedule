@@ -436,12 +436,17 @@ table.lp2.lev2 .lp2c{user-select:none} table.lp2.lev2 .lp2c:focus{user-select:te
 .alen{background:#F2F4F8;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:8px}
 .alh{font-size:11.5px;color:var(--ink2);font-weight:700} .alv{font-size:22px;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
 .als{display:flex;gap:10px;font-size:11.5px;color:var(--ink2);margin-top:2px} .als i{margin-right:3px}
-table.lp2.res,table.lp2.lev2{table-layout:fixed;width:max-content;min-width:0}
-table.lp2.res th,table.lp2.res td,table.lp2.lev2 th,table.lp2.lev2 td{width:48px;min-width:48px;max-width:48px;box-sizing:border-box}
-table.lp2.res th.tl,table.lp2.res td.tl{width:210px;min-width:210px;max-width:210px}
+table.lp2.res:not(.cost),table.lp2.lev2{table-layout:fixed;width:calc(210px + 48px * 30)!important;min-width:0!important;max-width:none}
+table.lp2.res:not(.cost) td.tl,table.lp2.lev2 td.tl{overflow:hidden;text-overflow:ellipsis}
+table.lp2.res:not(.cost) th,table.lp2.res:not(.cost) td,table.lp2.lev2 th,table.lp2.lev2 td{width:48px;min-width:48px;max-width:48px;box-sizing:border-box}
+table.lp2.res:not(.cost) th.tl,table.lp2.res:not(.cost) td.tl{width:210px;min-width:210px;max-width:210px}
 table.lp2.lev2 th.tl{width:210px;min-width:210px;max-width:210px}
 table.lp2.lev2 td.tl{width:120px;min-width:120px;max-width:120px} table.lp2.lev2 td.tl[colspan]{width:210px;max-width:210px}
 table.lp2.lev2 td.tl2{width:90px;min-width:90px;max-width:90px;left:120px}
+table.lp2.lev2 tr.lsum td{background:#1F2A44;color:#fff;font-weight:800} table.lp2.lev2 tr.lsum td.tl{background:#1F2A44;color:#fff} table.lp2.lev2 tr.lsum td.z{color:#7C879B}
+table.lp2.res tr.lpact td{background:#DDEBDD} table.lp2.res tr.lpact td.tl{background:#CFE3CF}
+table.lp2.res tr.aie td{background:#ECEAFB;color:#3C3489} table.lp2.res tr.aie td.tl{background:#E2DFF8} table.lp2 .ai{color:#534AB7}
+table.lp2.lev2 td.tl.pn{overflow:visible} table.lp2.lev2 td.tl.pn .lp2n{width:72px} table.lp2.lev2 td.tl.pn .vdel{padding:0 2px}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1663,7 +1668,7 @@ const JA_PHRASE={
 "관리자가 승인하면 들어올 수 있어요.":"管理者が承認すると入れます。","관리자 승인을 기다리고 있어요.":"管理者の承認を待っています。","승인됐는지 다시 확인":"承認されたか再確認","가입 신청 완료!":"登録申請完了！","로그인 화면으로":"ログイン画面へ",
 "메일 또는 비밀번호가 맞지 않아요.":"メールアドレスまたはパスワードが正しくありません。","메일과 비밀번호를 입력해 주세요.":"メールアドレスとパスワードを入力してください。","비밀번호가 서로 달라요.":"パスワードが一致しません。",
 "이미 가입된 메일이에요. 로그인해 주세요.":"既に登録済みのメールです。ログインしてください。","비밀번호는 6자 이상이어야 해요.":"パスワードは6文字以上必要です。","로그인이 만료됐어요. 다시 로그인해 주세요.":"ログインの有効期限が切れました。再度ログインしてください。",
-"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","진행 상황 · 일정":"進行状況・日程","+ 진행 상황":"+ 進行状況","시작일":"開始日","종료일 (기한)":"終了日 (期限)","영상 수정":"映像修正","공정별 (간트)":"工程別 (ガント)","월간 달력":"月間カレンダー","주부터":"週から","주 보기":"週表示","이번 주":"今週","+ 메모·목표 추가":"+ メモ・目標追加","최종 목표":"最終目標","최종 목표로 표시 (간트 맨 위에 D-day로 보여요)":"最終目標として表示 (ガント上部にD-dayで表示)","주말 제외 · 평일만 표시 · 막대를 누르면 표의 그 칸으로 이동":"週末除外・平日のみ表示・バーをクリックすると表のセルへ移動","이 기간에는 표시할 공정이 없어요. 작품이나 공정 칩을 켜 보세요.":"この期間に表示する工程はありません。作品や工程チップをオンにしてください。","런칭 플랜":"ローンチプラン","런칭 플랜 계산기":"ローンチプラン計算機","목표에 맞춰 역산":"目標に合わせて逆算","착수 줄여서 목표 맞추기":"着手を減らして目標に合わせる","착수월 옮겨서 맞추기":"着手月を移して合わせる","엑셀 기본값으로":"Excel既定値に戻す","전체 평균 길이":"全体の平均尺","화 입력":"話入力","↶ 이전 상태로":"↶ 前の状態へ","이전 상태로 되돌리기":"前の状態に戻す","런칭 플랜을 불러오는 중이에요…":"ローンチプランを読み込み中…","기존 계획 곡선을 목표로":"既存計画カーブを目標に","목표에 맞춰 착수 역산":"目標に合わせて着手を逆算","복사했어요":"コピーしました","+ 제작사":"+ 制作会社","1곳당 월 1편":"1社あたり月1本","착수 (편)":"着手 (本)","영업일 (일)":"営業日 (日)","AI 성우 (편)":"AI声優 (本)","제작비 (AOP)":"制作費 (AOP)","엑셀로 복사":"Excelにコピー","노란 칸만 입력":"黄色いセルのみ入力","작품 착수 계획":"作品着手計画","구간 설정":"区間設定","인간":"人間","전부 AI 성우":"すべてAI声優","전부 인간 성우":"すべて人間声優","절반 AI (내림)":"半分AI (切り捨て)","적용 범위":"適用範囲","이 파이프라인":"このパイプライン","모든 팀":"全チーム","시작 달":"開始月","그대로":"そのまま","결과":"結果","레버":"レバー","연재 작품 수":"連載作品数","런칭 작품 수":"ローンチ作品数","제작 회차 수":"制作話数","연재 목표":"連載目標","목표 대비":"目標比","① 제작 착수 작품 수":"① 制作着手作品数","② 제작 영업일 수":"② 制作営業日数","③ AI 성우 비중":"③ AI声優比率","+ 파이프라인":"+ パイプライン","그중 AI 성우":"うちAI声優","외부 추가 소요":"外部追加所要","런칭 시 공개 화수":"ローンチ時公開話数","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
+"승인 대기":"承認待ち","승인된 사용자":"承認済みユーザー","승인됨":"承認済み","승인":"承認","승인 취소":"承認取消","가입일":"登録日","상태":"状態","메일":"メール","새로고침":"再読み込み","대기 중인 사람이 없어요.":"待機中の人はいません。","관리자만 볼 수 있어요.":"管理者のみ閲覧できます。","오늘 할 일":"今日のタスク","외주사 관리":"外注先管理","진행 상황 · 일정":"進行状況・日程","+ 진행 상황":"+ 進行状況","시작일":"開始日","종료일 (기한)":"終了日 (期限)","영상 수정":"映像修正","공정별 (간트)":"工程別 (ガント)","월간 달력":"月間カレンダー","주부터":"週から","주 보기":"週表示","이번 주":"今週","+ 메모·목표 추가":"+ メモ・目標追加","최종 목표":"最終目標","최종 목표로 표시 (간트 맨 위에 D-day로 보여요)":"最終目標として表示 (ガント上部にD-dayで表示)","주말 제외 · 평일만 표시 · 막대를 누르면 표의 그 칸으로 이동":"週末除外・平日のみ表示・バーをクリックすると表のセルへ移動","이 기간에는 표시할 공정이 없어요. 작품이나 공정 칩을 켜 보세요.":"この期間に表示する工程はありません。作品や工程チップをオンにしてください。","런칭 플랜":"ローンチプラン","런칭 플랜 계산기":"ローンチプラン計算機","런칭 준비 작품 수":"ローンチ準備作品数","런칭 대기 (월말)":"ローンチ待ち (月末)","그중 AI 성우 회차":"うちAI声優話数","실제 런칭 (월 편수)":"実際のローンチ (月本数)","자동 평준화":"自動平準化","준비되는 대로 바로":"準備でき次第すぐ","레버 · 제작 착수 작품 수":"レバー・制作着手作品数","제작 착수 작품 수":"制作着手作品数","목표에 맞춰 역산":"目標に合わせて逆算","착수 줄여서 목표 맞추기":"着手を減らして目標に合わせる","착수월 옮겨서 맞추기":"着手月を移して合わせる","엑셀 기본값으로":"Excel既定値に戻す","전체 평균 길이":"全体の平均尺","화 입력":"話入力","↶ 이전 상태로":"↶ 前の状態へ","이전 상태로 되돌리기":"前の状態に戻す","런칭 플랜을 불러오는 중이에요…":"ローンチプランを読み込み中…","기존 계획 곡선을 목표로":"既存計画カーブを目標に","목표에 맞춰 착수 역산":"目標に合わせて着手を逆算","복사했어요":"コピーしました","+ 제작사":"+ 制作会社","1곳당 월 1편":"1社あたり月1本","착수 (편)":"着手 (本)","영업일 (일)":"営業日 (日)","AI 성우 (편)":"AI声優 (本)","제작비 (AOP)":"制作費 (AOP)","엑셀로 복사":"Excelにコピー","노란 칸만 입력":"黄色いセルのみ入力","작품 착수 계획":"作品着手計画","구간 설정":"区間設定","인간":"人間","전부 AI 성우":"すべてAI声優","전부 인간 성우":"すべて人間声優","절반 AI (내림)":"半分AI (切り捨て)","적용 범위":"適用範囲","이 파이프라인":"このパイプライン","모든 팀":"全チーム","시작 달":"開始月","그대로":"そのまま","결과":"結果","레버":"レバー","연재 작품 수":"連載作品数","런칭 작품 수":"ローンチ作品数","제작 회차 수":"制作話数","연재 목표":"連載目標","목표 대비":"目標比","① 제작 착수 작품 수":"① 制作着手作品数","② 제작 영업일 수":"② 制作営業日数","③ AI 성우 비중":"③ AI声優比率","+ 파이프라인":"+ パイプライン","그중 AI 성우":"うちAI声優","외부 추가 소요":"外部追加所要","런칭 시 공개 화수":"ローンチ時公開話数","기록 남기기":"記録を残す","현재 버전 자동 저장":"現在のバージョン自動保存","현재 버전으로":"現在のバージョンへ","이 기록으로 되돌리기":"この記録に戻す","핵심 레버":"主要レバー","착수 가능일":"着手可能日","월 착수 상한":"月の着手上限","제작 영업일":"制作営業日","생산성 개선":"生産性改善","AI 성우 비율":"AI声優比率","AI 가능일":"AI可能日","착수→런칭":"着手→ローンチ","전체 기본값":"全体既定値","일괄 적용":"一括適用","공개 주기":"公開周期","런칭 오픈 회차":"ローンチ公開話数","시즌 사이 휴식":"シーズン間休止","후속 시즌 운영":"後続シーズン運営","일정 기준":"日程基準","착수→런칭 주수":"着手→ローンチ週数","공정 기준 탭 자동":"工程基準タブ自動","엑셀 표 값":"Excel表の値","고급 설정":"詳細設定","월별 현황":"月別現況","작품 플랜":"作品プラン","월 합계":"月合計","누적":"累計","목표 (누적)":"目標 (累計)","입력":"入力","CP 유통":"CP流通","내부 제작만":"内部制作のみ","외부 제작만":"外部制作のみ","만 보는 중":"のみ表示中","런칭 플랜":"ローンチプラン","연말 티징 (고정)":"年末ティザー (固定)","티징 고정":"ティザー固定","연재 대기":"連載待ち","티징 오픈일":"ティザー公開日","티징 회차":"ティザー話数","티징 회차 먼저 더빙 (첫 묶음 분리)":"ティザー話を先に吹替 (最初のバッチ分離)","연말 티징 고정 시나리오":"年末ティザー固定シナリオ","티징 준비":"ティザー準備","휴재 없이 주 1회 하려면":"休載なしで週1回にするには","추천":"推奨","준비 안 됨":"未準備","시즌마다":"シーズンごと","무기한 휴재":"無期限休載","담당 없음":"担当なし","공개 후":"公開後","티징 고정 작품 외":"ティザー固定作品以外","년 안에 오픈":"年内に公開","위 방식으로":"上の方式で","첫 회차 준비 안 됨":"初回が未準備","에 휴재 없이 여는 작품":"に休載なしで公開する作品","우선순위 자동 (연말 오픈 → 프리뷰 → 격주 → 시즌제)":"優先度自動 (年末公開 → プレビュー → 隔週 → シーズン制)","직접 설정 (아래 연재·런칭)":"手動設定 (下の連載・ローンチ)","목표 오픈일":"目標公開日","프리뷰 먼저 오픈":"プレビューを先に公開","프리뷰 회차":"プレビュー話数","본 연재 시작":"本連載開始","주 뒤":"週後","격주 허용":"隔週を許可","시즌제 허용":"シーズン制を許可","시즌당 화수 (시즌제 쓸 때)":"シーズンあたり話数 (シーズン制時)","적용 방식":"適用方式","첫 오픈":"初公開","목표일 불가":"目標日不可","주 1회 그대로":"週1回のまま","프리뷰 후 주 1회":"プレビュー後 週1回","격주":"隔週","프리뷰":"プレビュー","같은 날":"同日","휴재 없이는":"休載なしなら","전체 담당":"全担当","담당":"担当","진행 중인 외주사가 없어요.":"進行中の外注先はありません。","이 담당자의 외주사만 보기":"この担当者の外注先のみ表示","Enter 줄바꿈 · 다른 곳 클릭 또는 Ctrl/⌘+Enter 저장 · Esc 취소":"Enterで改行・他をクリックまたはCtrl/⌘+Enterで保存・Escで取消","시즌 회차":"シーズン話数","시즌 1 완결":"シーズン1完結","시즌 2를 같은 속도로 이어가면":"シーズン2を同じペースで続けると","휴재 없이 이어가기 가능":"休載なしで継続可能","시즌 2 바로 가능":"シーズン2すぐ可能","시즌 2 바로 이어가기 가능":"シーズン2すぐ継続可能","시즌 휴재":"シーズン休載","필요":"必要","시즌 2 첫 화":"シーズン2初話","늦게 준비됨":"遅れて準備","시즌 1 안에서 휴재 발생":"シーズン1内で休載発生","재개일 지우기":"再開日を消す","인턴 전환 (11/2 착수)":"インターン転換 (11/2 着手)","미정 (김명진 졸업)":"未定 (担当者卒業)","인턴 (11월 초 제작력 확인 후 판단)":"インターン (11月初めに制作力確認後判断)","계약 준비":"契約準備","남은":"残り","끝난 것 체크":"済んだものをチェック","끝났으면 눌러서 체크":"済んだらクリックでチェック","파트너스사 등록":"パートナー登録","NDA 체결":"NDA締結","영상 시연":"映像デモ","작품 선정":"作品選定","샘플 계약서 작성":"サンプル契約書作成","견적서 협의":"見積協議","샘플 계약 리소스 기안":"サンプル契約リソース起案","샘플 계약 완료":"サンプル契約完了","관리자에게만 보여요":"管理者のみ表示","진행 없음":"進捗なし","이번 주":"今週","일째 진행 없음":"日間進捗なし","다음 단계 정하기":"次の段階を決める","순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.":"順番どおりでなくて大丈夫です。済んだ項目だけチェックすると日付が残ります。","계약 준비 체크리스트":"契約準備チェックリスト","런칭 시 세이브":"ローンチ時のストック","같은 속도로 계속 만들면":"同じペースで制作し続けると","계속 연재 가능":"連載継続可能","계속 가능":"継続可能","휴재 없음":"休載なし","세이브":"ストック","동시 오픈":"同時公開","주 1회보다 빠름":"週1回より速い","화까지 휴재 없음":"話まで休載なし","화까지":"話まで","주 부족":"週不足","화부터":"話から","주 휴재":"週休載","부터 약":"から約","캘린더":"カレンダー","표":"表","이번 달":"今月","날짜 칸을 누르면 일정을 추가해요":"日付をクリックすると予定を追加できます","샘플 납품":"サンプル納品","피드백":"フィードバック","계약":"契約","미팅":"ミーティング","일정 추가":"予定追加","일정 수정":"予定編集","외주사":"外注先","종류":"種類","날짜":"日付","내용":"内容","다음 액션 지우기":"次のアクションを消す","표에서 보기":"表で見る","휴일":"休日","오늘":"今日","이름 · 홈페이지 수정":"名前・ホームページ編集","제작사 이름":"制作会社名","홈페이지":"ホームページ","이름을 누르면 첫 번째 주소가 열려요":"名前をクリックすると最初のURLが開きます","✎ 수정":"✎ 編集","본 제작 중":"本制作中","진행 외":"進行外","진행 순서":"進行順","일정 및 액션":"日程・アクション","관심 &amp; 배정 작품":"関心・割当作品","관심 & 배정 작품":"関心・割当作品","상대 담당자 연락처":"先方担当者連絡先","홈페이지 열기":"ホームページを開く","이름·홈페이지 수정":"名前・ホームページ編集","홈페이지 주소":"ホームページURL","다음":"次","단계":"段階","클릭해서 수정":"クリックで編集","비고 · 단가":"備考・単価","다음 액션 · 기한":"次のアクション・期限","링크 추가 (여러 개는 줄바꿈)":"リンク追加（複数は改行）","외주 제작사 이름은 비울 수 없어요":"外注制作会社名は空にできません","기한 지남":"期限超過","외주사 추가":"外注先追加","외주 제작사":"外注制作会社","국가":"国","우선순위":"優先度","진행 단계":"進行段階","상세 상황 · 주요 일정":"詳細状況・主要日程","다음 액션":"次のアクション","관심·배정 작품":"関心・割当作品","컨택 담당":"コンタクト担当","상대 담당자 · 연락처":"先方担当・連絡先","비고":"備考","수정":"編集",
 "컨택 전":"コンタクト前","미팅 예정":"ミーティング予定","미팅 완료":"ミーティング済み","샘플 계약 진행":"サンプル契約進行","샘플 제작 중":"サンプル制作中","샘플 납품·평가":"サンプル納品・評価","본계약 협의":"本契約協議","계약 완료":"契約完了","보류":"保留","진행 불가":"進行不可",
 "높음":"高","보통":"中","낮음":"低","한국":"韓国","일본":"日本","중국":"中国","미국":"米国","기타":"その他","컨택 담당자 전체":"コンタクト担当 全員","우선순위순":"優先度順","진행 단계순":"進行段階順","다음 액션 기한순":"次のアクション期限順","국가순":"国順","필터 초기화":"フィルター解除",
 "검색 (이름·담당·메모)":"検索 (名前・担当・メモ)","다음 액션 기한 지남":"次のアクション期限超過","조건에 맞는 외주사가 없어요.":"条件に合う外注先はありません。","샘플 계약 진행 중":"サンプル契約進行中","샘플 제작 완료":"サンプル制作完了","링크":"リンク","전체":"全体","곳":"社","진행 중":"進行中",
@@ -3897,25 +3902,48 @@ function lp2Launch(line,voice,bd,g,m){ const st=lp2MStart(m); let L=addDays(st,7
   if(g.leadSrc==="excel"){ const r=CONF.stages.find(x=>x.k==="rating"); const dd=r?+(r.v[(line==="ext"?"e":"i")+(voice==="ai"?"a":"h")]||0):0;
     if(dd&&(!r.from||key(L)>=r.from)) L=lp2AddBDX(L,dd); }
   return L; }
+/* 실제 런칭 평준화: 준비된 작품(최종본 완료 기준 런칭 가능일)을 대기열에 넣고, 달마다 최대 c편만 런칭
+   c = 자동(2028.12까지 대기 없이 다 나가는 가장 작은 월 편수) · 직접 지정 · 끄기(준비되는 대로) */
+function lp2Smooth(works,g){ works.forEach(w=>{ w.ready=w.launch; }); const mode=g.smooth==null?"auto":String(g.smooth);
+  if(mode==="off") return {cap:null,queue:Array(LP2_M.length).fill(0)};
+  const M=LP2_M, NM=M.length, MS=M.map(lp2MStart), ME=M.map(lp2MEnd);
+  const mi=(d)=>{ if(d<MS[0]) return 0; for(let i=0;i<NM;i++) if(d<=ME[i]) return i; return NM; };
+  const arr=works.slice().sort((a,b)=>a.ready-b.ready).map(w=>({w,i:mi(w.ready)}));
+  const run=(cap,apply)=>{ const qlen=Array(NM).fill(0); let q=[],k=0;
+    for(let i=0;i<NM;i++){ while(k<arr.length&&arr[k].i<=i){ q.push(arr[k]); k++; }
+      const out=q.splice(0,cap); if(apply) out.forEach(x=>{ x.w.launch=x.i===i?x.w.ready:monOnOrAfter(MS[i]); }); qlen[i]=q.length; }
+    if(apply){ q.forEach(x=>{ x.w.launch=monOnOrAfter(D("2029-01-01")); }); } return {left:q.length,qlen}; };
+  const cap=+mode;
+  if(cap>0){ const r=run(cap,true); return {cap,queue:r.qlen,left:r.left}; }
+  // 자동 평준화: 준비 편수에서 '줄었다 늘었다' 하는 구간을 평균으로 펴서, 월 런칭 수가 줄지 않게 (런칭은 늦출 수만 있고 당길 수 없음)
+  const rdy=Array(NM).fill(0); arr.forEach(x=>{ if(x.i<NM) rdy[x.i]++; });
+  const blocks=[]; rdy.forEach((v,i)=>{ blocks.push({s:i,e:i,sum:v}); while(blocks.length>1){ const B=blocks[blocks.length-1], A=blocks[blocks.length-2]; if(B.sum/(B.e-B.s+1)<A.sum/(A.e-A.s+1)){ A.e=B.e; A.sum+=B.sum; blocks.pop(); } else break; } });
+  const plan=Array(NM).fill(0); blocks.forEach(B=>{ const L=B.e-B.s+1, f=Math.floor(B.sum/L); let rem=B.sum-f*L; for(let i=B.s;i<=B.e;i++) plan[i]=f; for(let i=B.e;rem>0;i--,rem--) plan[i]++; });
+  const qlen=Array(NM).fill(0); let q=[],k=0;
+  for(let i=0;i<NM;i++){ while(k<arr.length&&arr[k].i<=i){ q.push(arr[k]); k++; } q.splice(0,plan[i]).forEach(x=>{ x.w.launch=x.i===i?x.w.ready:monOnOrAfter(MS[i]); }); qlen[i]=q.length; }
+  q.forEach(x=>{ x.w.launch=monOnOrAfter(D("2029-01-01")); });
+  return {cap:"auto",plan,queue:qlen,left:q.length}; }
 function lp2Compute(P){
   const g=P.g, M=LP2_M, NM=M.length, runW=Math.max(0,(+g.season||30)-(+g.openK||3));
   const z=()=>Array(NM).fill(0), works=[];
-  const R={onair:{},launch:{},ai:{},eps:{},start:{}}, tot={onair:z(),launch:z(),ai:z(),eps:z(),start:z()};
+  const R={onair:{},launch:{},ai:{},eps:{},start:{},ready:{},readyAi:{},epsAi:{}}, tot={onair:z(),launch:z(),ai:z(),eps:z(),start:z(),ready:z(),readyAi:z(),epsAi:z()};
   const EV={int:{human:z(),ai:z()},ext:{human:z(),ai:z()}};   // 비용용: 라인 × 성우별 제작 회차
-  P.groups.forEach(G=>{ ["onair","launch","ai","eps","start"].forEach(k=>R[k][G.id]=z());
+  P.groups.forEach(G=>{ ["onair","launch","ai","eps","start","ready","readyAi","epsAi"].forEach(k=>R[k][G.id]=z());
     G.pipes.forEach(p=>{ M.forEach((m,i)=>{ const n=+((p.start||{})[m])||0; if(!n) return;
       const bd=lp2ff(p.bd,i,7), sh=lp2ff(p.ai,i,0), aiSet=p.aiN&&p.aiN[m]!=null?Math.min(n,+p.aiN[m]):Math.floor(n*sh+1e-9), ai=(g.noAI5&&bd<=5)?0:aiSet;
       [["ai",ai],["human",n-ai]].forEach(([voice,c])=>{ for(let j=0;j<c;j++){
         const st=lp2MStart(m); const L=lp2Launch(G.line,voice,bd,g,m);
         works.push({G,p,start:st,launch:L,voice,bd}); } }); R.start[G.id][i]+=n; tot.start[i]+=n; }); }); });
+  const SM=lp2Smooth(works,g);
   works.forEach(w=>{ const gid=w.G.id;
     M.forEach((m,i)=>{ const a=lp2MStart(m), b=lp2MEnd(m);
       if(w.launch>=a&&w.launch<=b){ R.launch[gid][i]++; tot.launch[i]++; if(w.voice==="ai"){ R.ai[gid][i]++; tot.ai[i]++; } }
+      if(w.ready>=a&&w.ready<=b){ R.ready[gid][i]++; tot.ready[i]++; if(w.voice==="ai"){ R.readyAi[gid][i]++; tot.readyAi[i]++; } }
       if(w.launch<=b&&w.launch>=addDays(a,-7*runW)){ R.onair[gid][i]++; tot.onair[i]++; }   // 엑셀과 같은 기준: 런칭 후 (시즌 화수 − 런칭 공개 화수)주 동안 연재
       // 제작 회차: 착수부터 회차당 영업일씩 시즌 화수만큼 → 그 달에 만든 회차 수 (소수)
       const pe=addBD(w.start,Math.max(1,Math.round((+g.season||30)*w.bd))-1);
-      if(w.start<=b&&pe>=a){ const s=w.start>a?w.start:a, e=pe<b?pe:b; const nbd=bdCount(s,e); const v=nbd/w.bd; R.eps[gid][i]+=v; tot.eps[i]+=v; EV[w.G.line][w.voice][i]+=v; } }); });
-  return {R,tot,works,EV};
+      if(w.start<=b&&pe>=a){ const s=w.start>a?w.start:a, e=pe<b?pe:b; const nbd=bdCount(s,e); const v=nbd/w.bd; R.eps[gid][i]+=v; tot.eps[i]+=v; EV[w.G.line][w.voice][i]+=v; if(w.voice==="ai"){ R.epsAi[gid][i]+=v; tot.epsAi[i]+=v; } } }); });
+  return {R,tot,works,EV,SM};
 }
 const lp2AiN=(p,m,i)=>{ const n=+((p.start||{})[m])||0; if(!n) return 0; return p.aiN&&p.aiN[m]!=null?Math.min(n,+p.aiN[m]):Math.floor(n*lp2ff(p.ai,i,0)+1e-9); };
 /* 레버 단순화: 비중(%) → 작품마다 AI/인간 직접 지정 (기존 % 값은 같은 편수로 옮김) */
@@ -4021,6 +4049,7 @@ function lp2Quick(P){ const g=P.g, M=LP2_M, runW=Math.max(0,(+g.season||30)-(+g.
   P.groups.forEach(G=>G.pipes.forEach(p=>M.forEach((m,i)=>{ const n=+((p.start||{})[m])||0; if(!n) return;
     const bd=lp2ff(p.bd,i,7), sh=lp2ff(p.ai,i,0), aiSet=p.aiN&&p.aiN[m]!=null?Math.min(n,+p.aiN[m]):Math.floor(n*sh+1e-9), ai=(g.noAI5&&bd<=5)?0:aiSet;
     [["ai",ai],["human",n-ai]].forEach(([voice,c])=>{ for(let j=0;j<c;j++){ const L=lp2Launch(G.line,voice,bd,g,m); works.push({G,p,si:i,launch:L,voice}); } }); })));
+  lp2Smooth(works,g);
   works.forEach(w=>{ for(let i=0;i<M.length;i++){ if(w.launch<=ME[i]&&w.launch>=addDays(MS[i],-7*runW)) on[i]++; } });
   return {works,on}; }
 /* 목표는 그대로 두고 착수 편수를 줄여서 맞춤: 목표보다 연재가 많은 달 → 그 달 연재 중인 작품 중 가장 늦게 런칭하는 착수부터 뺌
@@ -4060,18 +4089,22 @@ function lp2Solve(P0){ const P=clone(P0), M=LP2_M, NM=M.length, cur=Math.max(0,M
   // 새 착수에 쓸 팀: 착수가 가장 많은 외주 팀 (없으면 첫 팀)
   const addG=P.groups.filter(G=>G.line==="ext").sort((a,b)=>b.pipes.reduce((s,p)=>s+Object.keys(p.start||{}).length,0)-a.pipes.reduce((s,p)=>s+Object.keys(p.start||{}).length,0))[0]||P.groups[0];
   const voiceFor=(G,i)=>{ let ai=0,n=0; for(let j=i;j>=0&&n<3;j--){ G.pipes.forEach(p=>{ const c=+((p.start||{})[M[j]])||0; if(c){ n+=c; ai+=lp2AiN(p,M[j],j); } }); } return n&&ai/n>=0.5?"ai":"human"; };
-  for(let it=0;it<500;it++){ const Q=lp2Quick(P); let i=tg.findIndex((t,j)=>t!=null&&Q.on[j]!==t); if(i<0) break; const d=Q.on[i]-tg[i], a=lp2MStart(M[i]), b=lp2MEnd(M[i]); let did=false;
-    if(d>0){ const cand=Q.works.filter(w=>w.si>=cur&&w.launch<=b&&w.launch>=addDays(a,-7*runW)).sort((x,y)=>y.launch-x.launch);
-      for(const w of cand){ const sv=snap(); const [G,p]=pipeOf(w); take(p,M[w.si],w.voice); const Q1=lp2Quick(P); if(Q1.on[i]<Q.on[i]&&okPrev(Q,Q1,i)){ st.rm++; did=true; break; } restore(sv); } }
-    else { // 1) 당기기
-      const cand=Q.works.filter(w=>w.si-1>=cur&&w.launch>b&&w.launch<=addDays(b,62)).sort((x,y)=>x.launch-y.launch);
-      for(const w of cand){ const sv=snap(); const [G,p]=pipeOf(w); const m=M[w.si], m2=M[w.si-1]; const bd=lp2ff(p.bd,w.si,7); take(p,m,w.voice); const q=G.line==="ext"?freePipe(G,m2):p; put(G,q,m2,w.voice,bd);
-        const Q1=lp2Quick(P); if(Q1.on[i]>Q.on[i]&&okPrev(Q,Q1,i)){ st.mv++; did=true; break; } restore(sv); }
-      // 2) 추가: 그 달 안에 런칭되는 가장 늦은 착수월
-      if(!did){ const G=addG; for(let sI=i;sI>=cur&&!did;sI--){ const m=M[sI], voice=voiceFor(G,sI), bd=lp2ff((G.pipes[0]||{}).bd,sI,7), L=lp2Launch(G.line,voice,bd,g,m);
-          if(L>b||L<addDays(a,-7*runW)) continue; const sv=snap(), np=st.newPipes; const p=freePipe(G,m); put(G,p,m,voice,bd);
-          const Q1=lp2Quick(P); if(Q1.on[i]>Q.on[i]&&okPrev(Q,Q1,i)){ st.add++; did=true; } else { restore(sv); st.newPipes=np; } } } }
-    if(!did) break; }
+  const obj=(Q)=>tg.reduce((acc,t,j)=>acc+(t==null?0:Math.abs(Q.on[j]-t)),0);
+  const extGs=P.groups.filter(G=>G.line==="ext");
+  for(let it=0;it<300;it++){ const Q=lp2Quick(P), o=obj(Q); if(!o) break;
+    const i=tg.findIndex((t,j)=>t!=null&&Q.on[j]!==t); const d=Q.on[i]-tg[i], a=lp2MStart(M[i]), b=lp2MEnd(M[i]); const cands=[];
+    if(d>0){ Q.works.filter(w=>w.si>=cur&&w.launch<=b&&w.launch>=addDays(a,-7*runW)).sort((x,y)=>y.launch-x.launch).slice(0,14)
+        .forEach(w=>cands.push({k:"rm",f:()=>{ const [G,p]=pipeOf(w); take(p,M[w.si],w.voice); }})); }
+    else {
+      Q.works.filter(w=>w.si-1>=cur&&(w.ready||w.launch)>b&&(w.ready||w.launch)<=addDays(b,92)).sort((x,y)=>(x.ready||x.launch)-(y.ready||y.launch)).slice(0,10)
+        .forEach(w=>cands.push({k:"mv",f:()=>{ const [G,p]=pipeOf(w); const m=M[w.si], m2=M[w.si-1], bd=lp2ff(p.bd,w.si,7); take(p,m,w.voice); put(G,G.line==="ext"?freePipe(G,m2):p,m2,w.voice,bd); }}));
+      (extGs.length?extGs:[P.groups[0]]).map(x=>x.id).forEach(gid=>{ const G=P.groups.find(x=>x.id===gid); let n=0; for(let sI=i;sI>=Math.max(cur,i-18)&&n<6;sI--){ const m=M[sI], voice=voiceFor(G,sI), bd=lp2ff((G.pipes[0]||{}).bd,sI,7);
+          if(lp2Launch(G.line,voice,bd,g,m)>b) continue; n++;
+          [1,2,3].forEach(cnt=>cands.push({k:"add",cnt,late:sI,f:()=>{ const GG=P.groups.find(x=>x.id===gid); for(let x=0;x<cnt;x++) put(GG,freePipe(GG,m),m,voice,bd); }})); } }); }
+    let best=null;
+    for(const c of cands){ const sv=snap(), np=st.newPipes; c.f(); const Q1=lp2Quick(P), o1=obj(Q1); restore(sv); st.newPipes=np;
+      const sc=o1+0.01*(c.cnt||1)+(c.late!=null?0.0005*c.late:0); /* 같은 효과면 적게, 그리고 이른 달에 추가 (한 달에 몰리지 않게) */ if(o1<o&&okPrev(Q,Q1,i)&&(!best||sc<best.sc)) best={c,o:o1,sc}; }
+    if(!best) break; best.c.f(); const kk=best.c.k==="rm"?"rm":best.c.k==="mv"?"mv":"add"; st[kk]+=(best.c.cnt||1); }
   P.groups.forEach(G=>{ if(G.line!=="ext") return; const keep=G.pipes.filter(p=>Object.keys(p.start||{}).length); if(keep.length) G.pipes=keep; });
   return {P,...st}; }
 function lp2Fit(P0){ const P=clone(P0), M=LP2_M, cur=M.indexOf(key(TODAY).slice(0,7)), T=P.targets.onair||{};
@@ -4127,26 +4160,31 @@ function renderLP2(){
     ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.onair[G.id],"sub")).join("")}
     <tr class="tgr"><td class="tl">연재 목표 <span class="hint">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)}"><input class="lp2t" data-tg="${m}" value="${esc(tg[m]??"")}" placeholder="·"${ro?" disabled":""}></td>`).join("")}</tr>
     <tr class="dif"><td class="tl">목표 대비</td>${M.map((m,i)=>{ const t=tg[m]; if(t==null||t==="") return `<td class="${yb(i)}"></td>`; const d=C.tot.onair[i]-t; return `<td class="${yb(i)} ${d>=0?"okc":"badc"}">${d>=0?"+":""}${d}</td>`; }).join("")}</tr>
-    ${rowR("런칭 작품 수",C.tot.launch,"tot")}
-    ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.launch[G.id],"sub")).join("")}
-    ${rowR(`<span class="ind ai">ㄴ 그중 AI 성우</span>`,C.tot.ai,"sub ai")}
+    ${rowR("런칭 준비 작품 수",C.tot.ready,"tot")}
+    ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.ready[G.id],"sub")).join("")}
+    ${rowR(`<span class="ind ai">ㄴ 그중 AI 성우</span>`,C.tot.readyAi,"sub ai")}
+    ${rowR(`런칭 작품 수 <span class="hint" style="font-weight:400">${!C.SM||!C.SM.cap?"준비되는 대로":C.SM.cap==="auto"?"평준화 (줄지 않게)":`월 최대 ${C.SM.cap}편`}</span>`,C.tot.launch,"tot lpact")}
+    ${C.SM&&C.SM.cap?rowR(`<span class="ind">ㄴ 런칭 대기 (월말)</span>`,C.SM.queue,"sub"):""}
     ${rowR("제작 회차 수",C.tot.eps.map(v=>Math.round(v)),"tot")}
     ${P.groups.map(G=>rowR(`<span class="ind">ㄴ ${esc(G.id)}</span>`,C.R.eps[G.id].map(v=>Math.round(v)),"sub")).join("")}
+    ${rowR(`<span class="ai">그중 AI 성우 회차</span>`,C.tot.epsAi.map(v=>Math.round(v)),"tot aie")}
+    ${P.groups.map(G=>rowR(`<span class="ind ai">ㄴ ${esc(G.id)}</span>`,C.R.epsAi[G.id].map(v=>Math.round(v)),"sub ai")).join("")}
   </tbody></table></div>`;
   // ── 레버 (노란 칸) ──
   const leadNote=(line,bd)=>`인간 ${lp2Lead(line,"human",bd,g)}주 · AI ${lp2Lead(line,"ai",bd,g)}주`;
-  h+=`<div class="lpsec" style="margin-top:16px">레버 <span class="hint">노란 칸 입력 · 드래그로 여러 칸 선택 후 숫자+Enter · Ctrl/⌘+C·V</span></div><textarea id="lpKey" class="lpkey" aria-label="선택한 칸 입력"></textarea>
+  h+=`<div class="lpsec" style="margin-top:16px">레버 · 제작 착수 작품 수 <span class="hint">노란 칸 입력 · 드래그로 여러 칸 선택 후 숫자+Enter · Ctrl/⌘+C·V</span></div><textarea id="lpKey" class="lpkey" aria-label="선택한 칸 입력"></textarea>
   <div class="card lpg"><div class="lpops" style="margin:0">
     <label>시즌 화수<input class="in n lpi" type="number" min="5" max="100" data-g2="season" value="${g.season}"${ro?" disabled":""}></label>
     <label>런칭 시 공개 화수<input class="in n lpi" type="number" min="1" max="10" data-g2="openK" value="${g.openK}"${ro?" disabled":""}></label>
     <label>착수→런칭 주수<select class="in lpi" data-g2="leadSrc"${ro?" disabled":""}><option value="excel"${g.leadSrc==="excel"?" selected":""}>엑셀 표 (기본 · 5일 13/19주 · 7일 26/32주)</option><option value="auto"${g.leadSrc==="auto"?" selected":""}>공정 기준 탭 자동 (실제 공정)</option></select></label>
+    <label>실제 런칭 (월 편수)<select class="in lpi" data-g2s="smooth"${ro?" disabled":""}>${[["auto","자동 평준화 (월 런칭이 줄지 않게)"],["off","준비되는 대로 바로"],...[2,3,4,5,6,7,8,9,10,12,14,16].map(n=>[String(n),`월 최대 ${n}편`])].map(([v,l])=>`<option value="${v}"${String(g.smooth??"auto")===v?" selected":""}>${l}</option>`).join("")}</select></label>
     <label>외부 추가 소요<span><input class="in n lpi" type="number" min="0" max="30" data-g2="extExtra" value="${g.extExtra}"${ro?" disabled":""}> 영업일</span></label>
     <label class="lpyn" title="기본은 꺼짐: 영업일 단축에 AI 성우 공정이 포함된 것으로 봄"><input type="checkbox" data-g2c="noAI5"${g.noAI5?" checked":""}${ro?" disabled":""}> 5영업일 이하는 AI 성우 제외</label>
     <span class="hint lpleads">7일 기준 · 내부 ${leadNote("int",7)} / 외부 ${leadNote("ext",7)}<br>5일 기준 · 내부 ${leadNote("int",5)} / 외부 ${leadNote("ext",5)}</span>
   </div></div>`;
   // ── 레버: 엑셀처럼 파이프라인마다 3줄 (착수 / 영업일 / AI 성우) ──
   const nCols=M.length;
-  let lv="";
+  let lv=`<tr class="lsum"><td class="tl" colspan="2">제작 착수 작품 수 <span class="hint" style="font-weight:400">합계</span></td>${M.map((m,i)=>`<td class="${yb(i)}${C.tot.start[i]?"":" z"}">${C.tot.start[i]||"–"}</td>`).join("")}</tr>`;
   P.groups.forEach((G,gi)=>{ const sum=M.map(m=>G.pipes.reduce((a,p)=>a+(+((p.start||{})[m])||0),0));
     lv+=`<tr class="lgh"><td class="tl" colspan="2"><b>${esc(G.id)}</b> <span class="ln ${G.line}" style="font-size:10px;padding:0 5px">${G.line==="ext"?"외부":"내부"}</span>${!ro?` <button type="button" class="lpadd" data-addp="${gi}">${G.line==="ext"?"+ 제작사":"+ 파이프라인"}</button>`:""}${G.line==="ext"?` <span class="hint">${G.pipes.length}곳 · 1곳당 월 1편</span>`:""}</td>
       ${M.map((m,i)=>`<td class="${yb(i)}${sum[i]?"":" z"}">${sum[i]||""}</td>`).join("")}</tr>`;
@@ -4182,6 +4220,7 @@ function renderLP2(){
   // ── 이벤트 ──
   const set=(fn)=>lpSet(fn);
   document.querySelectorAll("#v-lp [data-g2]").forEach(el=>el.onchange=()=>set(P=>{ const k=el.dataset.g2; P.g[k]=k==="leadSrc"?el.value:(+el.value||0); }));
+  document.querySelectorAll("#v-lp [data-g2s]").forEach(el=>el.onchange=()=>set(P=>{ P.g.smooth=el.value==="auto"||el.value==="off"?el.value:+el.value; }));
   document.querySelectorAll("#v-lp [data-g2c]").forEach(el=>el.onchange=()=>set(P=>{ P.g[el.dataset.g2c]=el.checked; }));
   document.querySelectorAll("#v-lp [data-tg]").forEach(el=>el.onchange=()=>set(P=>{ P.targets.onair=P.targets.onair||{}; const v=parseInt(el.value,10); if(el.value!==""&&v>=0) P.targets.onair[el.dataset.tg]=v; else delete P.targets.onair[el.dataset.tg]; }));
   document.querySelectorAll("#v-lp [data-c]").forEach(el=>{ el.onchange=()=>set(P=>lp2SetCell(P,el.dataset.c,el.value)); });
