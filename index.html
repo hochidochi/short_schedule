@@ -4029,19 +4029,20 @@ function lp2BdSteps(p){ const out=[]; let last=null; LP2_M.forEach((m,i)=>{ cons
    집행비용: 판권료(착수 1달 전) · 성우 녹음비(사람 성우 회차, 다음 달) · 대사 번역(내부 한국 작품, 다음 달) · 자막 번역(한국 7개/기타 8개 언어, 다음 달)
             · turnkey 영상(외주, 그 달 · 납품 기준) · AI 툴(구독 갱신월) · 시댄스(내부 인원 × 인당 월 사용료)
    총 제작비 = 집행비용 + 내부 영상 제작비(그 달) − 시댄스 × 70% · 매출 = 외부 유통(입력) + 웹툰 원작 유입(런칭 편수 기준) */
-const LP2_COST0={v:2,min:5,rights:15000000,rightsMul:2,voiceEp:4000000,dlg:50000,sub:20000,langKr:7,langEtc:8,turnkey:2500000,intVideo:1000000,
+const LP2_COST0={v:2,min:5,rights:15000000,rightsMul:2,rightsMul2:1.5,rightsFrom:"2027-07",voiceEp:4000000,dlg:50000,sub:20000,langKr:7,langEtc:8,turnkey:2500000,intVideo:1000000,
   fx:1350,sdUsd:3396.5,sdDisc:0.7,wkRev:5000000,wkN:10,wkMul:2,wkRate:0.2,
   kr:{"내부1":1,"내부2":1,"내부3":0,"외부 일본":0,"외부 일본 외":0.5},
   tools:[{n:"Topaz",m:2,usd:399,from:"2027-02"},{n:"Elevenlabs·Midjourney·Higgsfield",m:5,usd:242+96*12+938,from:"2027-05"},{n:"Suno",m:11,usd:342,from:"2027-11"}],
   sdFix:{"2026-07":1757},
   hc:{"내부1":{"2026-08":10,"2026-12":15,"2027-02":10},"내부2":{"2027-01":10,"2027-04":13,"2027-11":10},"내부3":{"2027-01":10,"2027-04":13,"2027-11":10}},
   dist:{"2027-07":1500000000,"2027-10":1500000000}};
-function lp2Cost(P,C){ const k0=P.cost&&P.cost.v===2?P.cost:{}; const k={...LP2_COST0,...k0,kr:{...LP2_COST0.kr,...(k0.kr||{})},hc:k0.hc||LP2_COST0.hc,dist:k0.dist||LP2_COST0.dist,tools:k0.tools||LP2_COST0.tools};
+function lp2Cost(P,C){ const k0=P.cost&&P.cost.v===2?P.cost:{}; const k={...LP2_COST0,...k0,rightsMul2:k0.rightsMul2!=null?k0.rightsMul2:LP2_COST0.rightsMul2,rightsFrom:k0.rightsFrom!=null?k0.rightsFrom:LP2_COST0.rightsFrom,kr:{...LP2_COST0.kr,...(k0.kr||{})},hc:k0.hc||LP2_COST0.hc,dist:k0.dist||LP2_COST0.dist,tools:k0.tools||LP2_COST0.tools};
   const M=LP2_M, n=M.length, z=()=>Array(n).fill(0), mn=+k.min||5, G=P.groups;
   const eps=(gid,i)=>i<0?0:((C.R.eps[gid]||[])[i]||0), epsAi=(gid,i)=>i<0?0:((C.R.epsAi[gid]||[])[i]||0);
   const R={rights:z(),voice:z(),dlg:z(),sub:z(),turn:z(),tools:z(),sd:z(),intV:z(),dist:z(),web:z()};
   for(let i=0;i<n;i++){
-    const nx=C.tot.start[i+1]||0; R.rights[i]=(nx+(i===0?C.tot.start[0]:0))*k.rightsMul*k.rights;   // 착수 1달 전 (시즌당 · 후보 배수)
+    const mulAt=(m)=>(k.rightsFrom&&m&&m>=k.rightsFrom&&k.rightsMul2!=null&&k.rightsMul2!=="")?+k.rightsMul2:+k.rightsMul;   // 착수월 기준 배수 (27년 하반기부터 1.5배)
+    const nx=C.tot.start[i+1]||0; R.rights[i]=(nx*mulAt(M[i+1])+(i===0?(C.tot.start[0]||0)*mulAt(M[0]):0))*k.rights;   // 착수 1달 전 (시즌당 · 후보 배수)
     let hu=0, dl=0, sk=0, so=0, ext=0, iv=0, extNow=0;
     G.forEach(g=>{ const e=eps(g.id,i-1), h=e-epsAi(g.id,i-1), kr=+(k.kr[g.id]??(g.line==="int"?1:0));
       hu+=h; sk+=e*kr; so+=e*(1-kr); if(g.line==="int") dl+=e*kr; if(g.line==="ext") ext+=e; if(g.line==="ext") extNow+=eps(g.id,i); if(g.line==="int") iv+=eps(g.id,i); });
@@ -4453,7 +4454,7 @@ function renderLP2(){
   const CO=lp2Cost(P,C), k=CO.k, U=LP2V.unit||1, UL={1:"원",1000:"천원",1000000:"백만원"}[U];
   const fmtW=(v)=>v?Math.round(v/U).toLocaleString("ko-KR"):"–";
   const ci=(f,lab,unit,w,step)=>`<label>${lab}<span><input class="in n lpi" style="width:${w||96}px" type="number" step="${step||1}" data-cost="${f}" value="${k[f]}"${ro?" disabled":""}> ${unit||""}</span></label>`;
-  const TIPC={"(공통) 판권료":`시즌당 ${k.rights.toLocaleString()}원 × 후보 ${k.rightsMul}배수 · 착수 한 달 전에 잡아요.`,"(공통) 성우 녹음비":`사람 성우 회차 × 회차당 ${k.voiceEp.toLocaleString()}원 · 제작 다음 달 (AI 성우 회차는 0원).`,
+  const TIPC={"(공통) 판권료":`착수 편수 × 시즌당 ${k.rights.toLocaleString()}원 × 후보 배수 (${k.rightsMul}배${k.rightsFrom?` → ${k.rightsFrom.slice(2,4)}.${+k.rightsFrom.slice(5)} 착수부터 ${k.rightsMul2}배`:""}) · 착수 한 달 전에 잡아요.`,"(공통) 성우 녹음비":`사람 성우 회차 × 회차당 ${k.voiceEp.toLocaleString()}원 · 제작 다음 달 (AI 성우 회차는 0원).`,
     "(내부) 대사 번역비 (한→일)":`내부 한국 작품 회차 × ${k.min}분 × 분당 ${k.dlg.toLocaleString()}원 · 다음 달.`,"(공통) 자막 번역비":`회차 × ${k.min}분 × 분당 ${k.sub.toLocaleString()}원 × 언어 수 (한국 작품 ${k.langKr}개 · 기타 ${k.langEtc}개) · 다음 달.`,
     "(turnkey) 영상 제작비":`외주 회차 × ${k.min}분 × 분당 ${k.turnkey.toLocaleString()}원 · 그 달 (납품 기준).`,"(내부) AI tool - 시댄스 외":"구독 갱신월에 연간(또는 12개월) 요금 × 환율.","(내부) AI tool - 시댄스":`내부 제작 인원 × 인당 월 $${k.sdUsd} × 환율 ${k.fx}.`,
     "총 제작비":`총 집행비용 + 내부 영상 제작비 − 시댄스 × ${Math.round(k.sdDisc*100)}%.`,"(내부) 영상 제작비":`내부 회차 × ${k.min}분 × 분당 ${k.intVideo.toLocaleString()}원 · 그 달.`,"외부 유통 매출":"달마다 직접 입력해요.",
@@ -4462,7 +4463,7 @@ function renderLP2(){
   h+=`<div class="lpsec" style="margin-top:18px">제작비·매출 (AOP) <span class="seg sm">${[[1,"원"],[1000,"천원"],[1000000,"백만원"]].map(([u,l])=>`<button type="button" data-unit="${u}" aria-pressed="${U===u}">${l}</button>`).join("")}</span>
       <button type="button" class="btn" id="lpCopy" style="padding:3px 10px;font-size:12px">엑셀로 복사</button></div>
     <div class="card lpg"><div class="lpops" style="margin:0">
-      ${ci("min","회차 길이","분",56,0.5)}${ci("rights","판권료 (시즌당)","원",110,1000000)}${ci("rightsMul","판권 배수","배",50)}${ci("voiceEp","성우 녹음 (회차당)","원",100,100000)}
+      ${ci("min","회차 길이","분",56,0.5)}${ci("rights","판권료 (시즌당)","원",110,1000000)}${ci("rightsMul","판권 배수","배",50,0.5)}<label>· 이 달 착수부터<span><input class="in t lpi" type="month" data-costm="rightsFrom" value="${esc(k.rightsFrom||"")}"${ro?" disabled":""}></span></label>${ci("rightsMul2","· 배수","배",50,0.5)}${ci("voiceEp","성우 녹음 (회차당)","원",100,100000)}
       ${ci("dlg","대사 번역 (한→일)","원/분",80,1000)}${ci("sub","자막 번역","원/분",80,1000)}${ci("langKr","언어 수 · 한국 작품","개",48)}${ci("langEtc","· 기타","개",48)}
       ${ci("turnkey","turnkey 영상 (외주)","원/분",100,100000)}${ci("intVideo","내부 영상","원/분",100,100000)}
       ${ci("sdUsd","시댄스 인당 월","USD",72,0.5)}${ci("fx","환율","원/USD",64)}${ci("wkRev","웹툰 원작 유입 (주간)","원",100,100000)}${ci("wkN","· 주","주",44)}${ci("wkMul","· 배수","",44)}${ci("wkRate","· 반영률","",54,0.05)}
@@ -4530,6 +4531,7 @@ function renderLP2(){
     lpOp({op:"cur",v:r.P}); toast(`착수 ${r.moved}건을 옮겼어요`); render(); };
   const costBase=(P)=>{ P.cost=P.cost&&P.cost.v===2?P.cost:clone(LP2_COST0); return P.cost; };
   document.querySelectorAll("#v-lp [data-cost]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P)[el.dataset.cost]=+el.value||0; }));
+  document.querySelectorAll("#v-lp [data-costm]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P)[el.dataset.costm]=el.value||""; }));
   document.querySelectorAll("#v-lp [data-ckr]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.kr={...LP2_COST0.kr,...(c.kr||{})}; c.kr[el.dataset.ckr]=Math.max(0,Math.min(100,+el.value||0))/100; }));
   document.querySelectorAll("#v-lp [data-hc]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.hc=clone(c.hc||LP2_COST0.hc); const [t,m]=el.dataset.hc.split(":"); c.hc[t]=c.hc[t]||{}; if(el.value==="") delete c.hc[t][m]; else c.hc[t][m]=Math.max(0,+el.value||0); }));
   document.querySelectorAll("#v-lp [data-dist]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.dist={...(c.dist||LP2_COST0.dist)}; const v=parseFloat(String(el.value).replace(/,/g,"")); if(!v) delete c.dist[el.dataset.dist]; else c.dist[el.dataset.dist]=v*(LP2V.unit||1); }));
