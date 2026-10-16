@@ -473,6 +473,9 @@ table.lp2.cost td.pct .pbar{display:inline-block;width:34px;height:6px;border-ra
 table.lp2.cost td.pct .pbar::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--w);background:#5B7BD5}
 table.lp2.cost td.pct.pt{color:var(--ink)} .cnum{text-align:right}
 table.lp2.cyr{width:auto;min-width:0} table.lp2.cyr th,table.lp2.cyr td{text-align:right;padding:6px 14px;white-space:nowrap;font-variant-numeric:tabular-nums} table.lp2.cyr th.tl,table.lp2.cyr td.tl{text-align:left;min-width:120px}
+table.lp2.cost tr.yhead th{background:#3B4A6B;font-size:11.5px;font-weight:600;text-align:left;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:2px solid #9AA3B2;line-height:1.3;cursor:help}
+table.lp2.cost tr.yhead th b{font-weight:800} table.lp2.cost tr.yhead .ysub{opacity:.85;font-size:11px}
+table.lp2.cost td.tl .pctb{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#5B7BD5;background:#EEF2FB;border-radius:8px;padding:0 6px}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -4475,19 +4478,37 @@ function renderLP2(){
       ${ci("sdUsd","시댄스 인당 월","USD",72,0.5)}${ci("fx","환율","원/USD",64)}${ci("wkRev","웹툰 원작 유입 (주간)","원",100,100000)}${ci("wkN","· 주","주",44)}${ci("wkMul","· 배수","",44)}${ci("wkRate","· 반영률","",54,0.05)}
     </div>
     <div class="lpops" style="margin:6px 0 0"><span class="hint">한국 작품 비율 (번역·언어 수 기준)</span>${P.groups.map(G=>`<label>${esc(G.id)}<span><input class="in n lpi" style="width:52px" type="number" min="0" max="100" step="10" data-ckr="${esc(G.id)}" value="${Math.round((+(k.kr[G.id]??(G.line==="int"?1:0)))*100)}"${ro?" disabled":""}> %</span></label>`).join("")}</div></div>
-    <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res cost" id="lpCostT"><thead><tr><th class="tl">${UL}</th>${M.map((m,i)=>`<th class="${yb(i)}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}<th>합계</th><th title="집행비용 항목은 총 집행비용 대비 · 내부 영상 제작비는 총 제작비 대비 · 매출 항목은 총 매출 대비">비중</th></tr></thead><tbody>
-      ${CO.rows.map(([lab,arr,cls],ri)=>{ const tip=TIPC[lab]; return `<tr class="${cls||""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>cls==="inp"&&!ro?`<td class="${yb(i)} yc"><input class="lp2c cdist" data-dist="${M[i]}" value="${v?Math.round(v/U).toLocaleString("ko-KR"):""}"></td>`:`<td class="${yb(i)}${v?"":" z"}">${fmtW(v)}</td>`).join("")}<td class="sum">${fmtW(arr.reduce((a,b)=>a+b,0))}</td>${(()=>{ const sumA=(a)=>a.reduce((x,y)=>x+y,0), me=sumA(arr);
-          const base=ri<=7?sumA(CO.exe):ri<=9?sumA(CO.tot):sumA(CO.rev); const pc=base?me/base*100:0;
-          return `<td class="pct${cls&&cls.startsWith("tot")?" pt":""}">${cls&&cls.startsWith("tot")?"100%":pc?`<span class="pbar" style="--w:${Math.min(100,pc)}%"></span>${pc<1?pc.toFixed(1):Math.round(pc)}%`:"–"}</td>`; })()}</tr>`; }).join("")}
-      <tr class="lsh"><td class="tl" data-tip="시댄스 사용료 계산용이에요. 인원이 바뀌는 달에만 입력하면 오른쪽으로 이어져요 (인턴 포함).">내부 제작 인원 (H/C)<span class="tipi">?</span></td><td colspan="${M.length+2}"></td></tr>
-      ${["내부1","내부2","내부3"].map(t=>`<tr><td class="tl">ㄴ ${t}</td>${M.map((m,i)=>{ const raw=((k.hc||{})[t]||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)} yc"><input class="lp2c${has?"":" inh"}" data-hc="${t}:${m}" value="${has?raw:""}" placeholder="${lp2ff((k.hc||{})[t]||{},i,0)||""}"${ro?" disabled":""}></td>`; }).join("")}<td></td><td></td></tr>`).join("")}
-
-    </tbody></table></div>
-    <div class="card" style="padding:0;margin-top:8px;overflow-x:auto"><table class="lp2 cyr"><thead><tr><th class="tl">연도별 합계 (${UL})</th><th>총 집행비용</th><th>총 제작비</th><th>총 매출</th><th>집행비용 큰 항목</th></tr></thead><tbody>
-      ${yrs.map(y=>{ const ix=M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0), sm=(arr)=>ix.reduce((a,i)=>a+arr[i],0), ex=sm(CO.exe);
-        const top=CO.rows.slice(1,8).map(([l,a])=>[l.replace(/^\((공통|내부)\)\s*/,"").replace(/^\(turnkey\)\s*영상 제작비/,"turnkey 영상"),sm(a)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([l,v])=>`${l} ${ex?Math.round(v/ex*100):0}%`).join(" · ");
-        return `<tr><td class="tl">${y}년</td><td><b>${fmtW(ex)}</b></td><td><b>${fmtW(sm(CO.tot))}</b></td><td><b>${fmtW(sm(CO.rev))}</b></td><td class="hint" style="text-align:left">${top||"–"}</td></tr>`; }).join("")}
-    </tbody></table></div>
+    ${(()=>{
+      const sumA=(a)=>a.reduce((x,y)=>x+y,0), Y=yrs, ysum=(arr,y)=>M.reduce((a,m,i)=>a+(m.startsWith(y)?arr[i]:0),0);
+      const ok=(v)=>v>=1e8?`${(v/1e8).toLocaleString("ko-KR",{maximumFractionDigits:1})}억`:v>=1e4?`${Math.round(v/1e4).toLocaleString("ko-KR")}만`:(v?Math.round(v).toLocaleString("ko-KR"):"–");
+      const baseOf=(ri)=>ri<=7?CO.exe:ri<=9?CO.tot:CO.rev;
+      // 연도 머리줄: 그해 합계 (억 단위) · 마우스 오버로 품목별 비중
+      const yhead=`<tr class="yhead"><th class="tl">연도별 합계</th>${Y.map(y=>{ const n=M.filter(m=>m.startsWith(y)).length, ex=ysum(CO.exe,y);
+          const mix=CO.rows.slice(1,8).map(([l,a])=>[l,ysum(a,y)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).map(([l,v])=>`${l} ${ex?Math.round(v/ex*100):0}%`).join("\n");
+          return `<th colspan="${n}" class="yb" title="${esc(`${y}년 집행비용 구성\n${mix}`)}"><div><b>${y}년</b></div><div class="ysub">집행 <b>${ok(ex)}</b> · 제작비 <b>${ok(ysum(CO.tot,y))}</b> · 매출 <b>${ok(ysum(CO.rev,y))}</b></div></th>`; }).join("")}<th class="yb"><div><b>전체</b></div><div class="ysub">${ok(sumA(CO.exe))}</div></th></tr>`;
+      const head=`<tr><th class="tl">${UL}</th>${M.map((m,i)=>`<th class="${yb(i)}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}<th>합계</th></tr>`;
+      const rowsH=CO.rows.map(([lab,arr,cls],ri)=>{ const tip=TIPC[lab], tot=cls&&cls.startsWith("tot"), base=baseOf(ri), me=sumA(arr), pc=!tot&&sumA(base)?me/sumA(base)*100:0;
+        const pct=tot?"":`<span class="pctb" title="전체 기간 ${ri<=7?"총 집행비용":ri<=9?"총 제작비":"총 매출"} 대비">${pc?(pc<1?pc.toFixed(1):Math.round(pc))+"%":"–"}</span>`;
+        return `<tr class="${cls||""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}${pct}</td>${arr.map((v,i)=>{ const b=base[i]; const t=!tot&&v&&b?` title="${M[i].slice(2,4)}.${+M[i].slice(5)} ${ri<=7?"집행비용":ri<=9?"총 제작비":"총 매출"}의 ${Math.round(v/b*100)}%"`:"";
+          return cls==="inp"&&!ro?`<td class="${yb(i)} yc"><input class="lp2c cdist" data-dist="${M[i]}" value="${v?Math.round(v/U).toLocaleString("ko-KR"):""}"></td>`:`<td class="${yb(i)}${v?"":" z"}"${t}>${fmtW(v)}</td>`; }).join("")}<td class="sum">${fmtW(me)}</td></tr>`; }).join("");
+      // 착수 작품당 평균 회차 금액 (그 달 착수 작품 기준 · 직접비)
+      const WK=C.works, PE=M.map(()=>({n:0,ep:0,ai:0})), kk=k, mn=+kk.min||5;
+      const mulAt=(m)=>(kk.rightsFrom&&m>=kk.rightsFrom&&kk.rightsMul2!=null&&kk.rightsMul2!=="")?+kk.rightsMul2:+kk.rightsMul;
+      WK.forEach(w=>{ const i=M.indexOf(key(w.start).slice(0,7)); if(i<0) return; const kr=+(kk.kr[w.G.id]??(w.G.line==="int"?1:0)), N=+P.g.season||30;
+        const per=(kk.rights*mulAt(M[i]))/N + mn*(w.G.line==="ext"?kk.turnkey:kk.intVideo) + (w.voice==="ai"?0:kk.voiceEp) + (w.G.line==="int"?kk.dlg*mn*kr:0) + kk.sub*mn*(kk.langKr*kr+kk.langEtc*(1-kr));
+        PE[i].n++; PE[i].ep+=per; if(w.voice==="ai") PE[i].ai++; });
+      const avgEp=PE.map(x=>x.n?x.ep/x.n:0), N=+P.g.season||30;
+      const allN=PE.reduce((a,x)=>a+x.n,0), allAvg=allN?PE.reduce((a,x)=>a+x.ep,0)/allN:0;
+      const tipPE=`그 달에 착수한 작품들의 회차당 평균 직접비예요: 판권료÷${N}화 + 영상(내부 ${kk.intVideo.toLocaleString()}원/분 · 외주 turnkey ${kk.turnkey.toLocaleString()}원/분)×${mn}분 + 성우 녹음(사람 성우만) + 대사 번역(내부 한국 작품) + 자막 번역. 시댄스·AI 툴 같은 공통비는 빠져요.`;
+      const peRows=`<tr class="lsh"><td class="tl" data-tip="${esc(tipPE)}">착수 작품당 평균 금액<span class="tipi">?</span></td><td colspan="${M.length+1}"></td></tr>
+        <tr class="sub"><td class="tl">ㄴ 착수 작품 수 <span class="hint">(AI 성우)</span></td>${PE.map((x,i)=>`<td class="${yb(i)}${x.n?"":" z"}">${x.n?`${x.n}${x.ai?` <span class="hint">(${x.ai})</span>`:""}`:"–"}</td>`).join("")}<td class="sum">${allN.toLocaleString("ko-KR")}</td></tr>
+        <tr class="tot2"><td class="tl">회차당 평균 금액</td>${avgEp.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmtW(v)}</td>`).join("")}<td class="sum">${fmtW(allAvg)}</td></tr>
+        <tr class="sub"><td class="tl">ㄴ 작품당 (${N}화)</td>${avgEp.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmtW(v*N)}</td>`).join("")}<td class="sum">${fmtW(allAvg*N)}</td></tr>`;
+      return `<div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res cost" id="lpCostT"><thead>${yhead}${head}</thead><tbody>${rowsH}
+        <tr class="lsh"><td class="tl" data-tip="시댄스 사용료 계산용이에요. 인원이 바뀌는 달에만 입력하면 오른쪽으로 이어져요 (인턴 포함).">내부 제작 인원 (H/C)<span class="tipi">?</span></td><td colspan="${M.length+1}"></td></tr>
+        ${["내부1","내부2","내부3"].map(t=>`<tr><td class="tl">ㄴ ${t}</td>${M.map((m,i)=>{ const raw=((k.hc||{})[t]||{})[m], has=raw!=null&&raw!==""; return `<td class="${yb(i)} yc"><input class="lp2c${has?"":" inh"}" data-hc="${t}:${m}" value="${has?raw:""}" placeholder="${lp2ff((k.hc||{})[t]||{},i,0)||""}"${ro?" disabled":""}></td>`; }).join("")}<td></td></tr>`).join("")}
+        ${peRows}
+      </tbody></table></div>`; })()}
     <div class="card lpg" style="margin-top:8px"><div class="lpops" style="margin:0"><span class="hint">AI 툴 구독 (갱신월 · 연간 USD)</span>${(k.tools||[]).map((t,ti)=>`<label>${esc(t.n)}<span><input class="in n lpi" style="width:44px" type="number" min="1" max="12" data-tool="${ti}:m" value="${t.m}"${ro?" disabled":""}>월 <input class="in n lpi" style="width:70px" type="number" data-tool="${ti}:usd" value="${t.usd}"${ro?" disabled":""}> USD</span></label>`).join("")}</div></div>`;
 
   $("v-lp").innerHTML=h;
