@@ -529,6 +529,7 @@ table.lct td.lcm.int{background:#D6E8F7;color:#1F4E79;font-weight:700} table.lct
 table.lct td.lce.int{background:#D6E8F7;color:#1F4E79;line-height:1.1} table.lct td.lce.ext{background:#FBE3D3;color:#8A4514;line-height:1.1} table.lct td.lce b{display:block;font-size:12px}
 table.lct td.lcp{background:repeating-linear-gradient(135deg,#eef3f8 0 4px,#fff 4px 8px)}
 table.lct tr.lcsub td{font-weight:700;background:#F7F8FB}
+.gb.prod.thin{top:8px;height:6px} .gsn{position:absolute;top:4px;font-style:normal;font-size:9.5px;font-weight:800;color:#fff;pointer-events:none}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1317,6 +1318,15 @@ function runMigrations0(){
   if(!has("rating-2710")){   // 27.10부터 광고 모델 → 영상 등급분류 15영업일 (그 전 공개분은 0일)
     const r=CONF.stages.find(x=>x.k==="rating"); if(r){ r.v={ih:15,ia:15,eh:15,ea:15}; r.h=15; r.from="2027-10-01"; }
     CONF.migr.push("rating-2710"); dirty=true;
+  }
+  if(!has("nightrun-tease-1019")){   // 10/19: 나이트런 1화 — 12/21 성우사무소 납품 → 12/28 티징 (연휴 무관 · 무리 일정)
+    const w=WORKS.find(x=>x.n==="나이트런");
+    if(w){ const l=clone(w.cev||[]).filter(e=>!/티징|성우사무소/.test(e.text||""));
+      l.push({date:"2026-12-21",text:"1화 성우사무소(스타리큐브) 더빙 납품 수령 · 당일 더빙본 확인",done:false});
+      l.push({date:"2026-12-22",to:"2026-12-24",text:"1화 티징 준비: 음원 합본 · 자막 최종본 · 썸네일 · 업로드 예약 (12/25 휴일 포함 무리 일정)",done:false});
+      l.push({date:"2026-12-28",text:"⚑ 1화 티징 공개",done:false,goal:true});
+      edit(w.id,[{p:["cev"],v:l}],true); }
+    CONF.migr.push("nightrun-tease-1019"); dirty=true;
   }
   if(dirty) saveConf();
 }
@@ -4135,6 +4145,8 @@ function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop2&&!LP.cur.afv){   // 10/16: 목표 자동 맞춤 기본 켜기 (지금 값은 보관)
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`자동 맞춤 켜기 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     const P=clone(LP.cur); P.afv=1; P.g={...P.g,autoFit:true}; lpOp({op:"cur",v:lp2AutoFit(P)}); }
+  if(LP.cur&&LP.cur.v===2&&!LP.cur.ms3){ const P=clone(LP.cur); if(P.milestones) P.milestones=P.milestones.map(x=>/나이트런 1화/.test(x.t)?{...x,m:"2026-12",t:"12/28 나이트런 1화 티징 (12/21 성우 납품)"}:x); P.ms3=1; lpOp({op:"cur",v:P}); }
+  if(LP.cur&&LP.cur.v===2&&!LP.cur.ms2){ const P=clone(LP.cur); if(P.milestones) P.milestones=P.milestones.filter(x=>!/판권 배수/.test(x.t)); P.ms2=1; lpOp({op:"cur",v:P}); }   // 판권 1.5배 마일스톤 제거
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop4&&!LP.cur.aop5){   // 10/19: 판권 후보 배수 2027년 확보분부터 1.5배 (= 27.2 착수분부터)
     const P=clone(LP.cur); P.cost={...(P.cost||clone(LP2_COST0)),rightsFrom:"2027-02",rightsMul2:1.5}; P.aop5=1; lpOp({op:"cur",v:P}); }
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop3&&!LP.cur.aop4){   // 10/19 AOP_제작비 백데이터 시트 기준 단가·규칙 (제작 개수는 사이트 기준)
@@ -4487,7 +4499,7 @@ function lp2YearCols(){ const M=LP2_M, NM=M.length; const yrs=[...new Set(M.map(
         el.innerHTML=noyr?"":(v?Math.round(v).toLocaleString("ko-KR"):"–")+(stock&&v?"<small>말</small>":""); row.appendChild(el); }); }
   }); }
 /* 전략회의용 주요 마일스톤 (BM·운영) — 런칭 플랜에 저장 · 직접 고칠 수 있음 */
-const LP2_MS0=[{m:"2026-12",t:"첫 1화 공개 (나이트런 1화 · 12/14 납품)",k:"op"},{m:"2027-02",t:"정식 연재 시작 · 광고 BM",k:"bm"},{m:"2027-07",t:"판권 배수 2 → 1.5배",k:"cost"},
+const LP2_MS0=[{m:"2026-12",t:"12/28 나이트런 1화 티징 (12/21 성우 납품)",k:"op"},{m:"2027-02",t:"정식 연재 시작 · 광고 BM",k:"bm"},
   {m:"2027-10",t:"광고 모델 · 영상 등급분류 적용",k:"op"},{m:"2027-10",t:"외부 유통 매출 시작 (창작자 R/S 10%)",k:"bm"},{m:"2027-11",t:"구독(유료) BM 시작",k:"bm"},{m:"2027-07",t:"OTT 유통 검토 (27 하반기)",k:"bm"}];
 const LP2_MSK={bm:["BM","#1F8A5B"],op:["운영","#2B6FD0"],cost:["비용","#B26B00"],etc:["기타","#6B7785"]};
 function lp2Strategy(P,C,g,ro){ const M=LP2_M, Y=[...new Set(M.map(m=>m.slice(0,4)))], K=lp2Cost(P,C);
@@ -4556,16 +4568,22 @@ function lp2Gantt(P,C,g){ const M=LP2_M, MW=40, MS=M.map(lp2MStart), D0=MS[0], D
       <span class="glg"><i class="gb prod"></i>제작 (착수~30화 영상 1차) <i class="gb wait"></i>런칭 대기 <i class="gb air"></i>연재 (사람 성우) <i class="gb air ai"></i>연재 (AI 성우) <b class="gt0"></b>오늘 <b class="gm0"></b>마일스톤</span></div>
     <div class="gwrap"><div class="ghead"><div class="gl">작품</div><div class="gtl" style="width:${W}px">${Ms.map((m,i)=>`<span style="width:${MW}px" class="${m.endsWith("-01")?"y":""}">${m.endsWith("-01")||i===0?`<b>${m.slice(2,4)}.</b>`:""}${+m.slice(5)}</span>`).join("")}</div></div>
       <div class="gms"><div class="gl">마일스톤</div><div class="gtl" style="width:${W}px;position:relative">${grid}${MSs.slice().sort((a,b)=>a.m.localeCompare(b.m)).map((x,ii)=>{ const kk=LP2_MSK[x.k]||LP2_MSK.etc; const l=X(lp2MStart(x.m))-off; return `<em class="gmt" style="left:${l}px;top:${3+(ii%4)*17}px;--c:${kk[1]}" title="${esc(x.m.slice(2,4)+"."+(+x.m.slice(5))+" "+x.t)}">${+x.m.slice(5)}월 ${esc(x.t)}</em>`; }).join("")}</div></div>`;
-  gs.forEach(G=>{ const ws=C.works.filter(w=>w.G.id===G.id&&w.launch<=lp2MEnd(M[i1])&&addDays(w.launch,7*runW)>=MS[i0]).sort((a,b)=>a.launch-b.launch);
+  const WT=C.works.map(w=>({...w,last:addDays(w.launch,7*runW)})); lcTitles(WT,g.contRate!=null?+g.contRate:0.5);
+  gs.forEach(G=>{ const ws=WT.filter(w=>w.G.id===G.id&&w.launch<=lp2MEnd(M[i1])&&w.last>=MS[i0]).sort((a,b)=>a.launch-b.launch);
     const open=LP2V.gopen2&&LP2V.gopen2[G.id]!=null?LP2V.gopen2[G.id]:G.line!=="ext";
     // 팀 요약 줄: 달마다 연재 중 편수 막대
     const dens=Ms.map((m,k)=>{ const i=i0+k; return C.R.onair[G.id][i]||0; }), mx=Math.max(1,...dens);
     h+=`<div class="grow gteam"><div class="gl"><button type="button" class="lptog" data-gtg="${esc(G.id)}">${open?"▾":"▸"}</button><b>${esc(G.id)}</b> <span class="hint">${ws.length}편</span></div><div class="gtl" style="width:${W}px">${grid}${dens.map((v,k)=>v?`<i class="gd" style="left:${k*MW+4}px;height:${Math.round(v/mx*18)+2}px" title="${Ms[k].slice(2,4)}.${+Ms[k].slice(5)} 연재 중 ${v}편"></i>`:"").join("")}</div></div>`;
     if(!open) return;
-    ws.forEach((w,j)=>{ if(rows++>LIM) return; const pe=addBD(w.start,Math.max(1,Math.round((+g.season||30)*w.bd))-1), last=addDays(w.launch,7*runW);
-      const nm=`${G.id} · ${w.p.name||""} ${key(w.start).slice(2,7).replace("-",".")} 착수`;
-      h+=`<div class="grow"><div class="gl" title="${esc(nm)}"><span class="gnm">${esc(w.p.name&&G.line==="ext"?w.p.name:G.id)}</span> <span class="hint">${key(w.start).slice(2,7).replace("-",".")} 착수 → ${key(w.launch).slice(2,10).replace(/-/g,".")}</span>${w.voice==="ai"?` <span class="gai">AI</span>`:""}</div>
-        <div class="gtl" style="width:${W}px">${grid}${bar(w.start,pe,"prod",`제작 ${key(w.start)} ~ ${key(pe)} (회차당 ${w.bd}영업일)`)}${w.launch>w.ready?bar(w.ready,w.launch,"wait",`런칭 대기 ${key(w.ready)} ~ ${key(w.launch)}`):""}${bar(w.launch,last,"air"+(w.voice==="ai"?" ai":""),`연재 ${key(w.launch)} ~ ${key(last)} (${g.season}화)`)}</div></div>`; }); });
+    const tmap=new Map(); ws.forEach(w=>{ if(!tmap.has(w.title)) tmap.set(w.title,[]); tmap.get(w.title).push(w); });
+    [...tmap.values()].forEach(ss=>{ if(rows++>LIM) return; const t0=ss[0];
+      const nm=`${G.id}${t0.p.name&&G.line==="ext"?" · "+t0.p.name:""} · 작품 ${t0.tno}`;
+      const sl=(w)=>ss.length>1?`S${w.sno} `:"";   // 제작 막대 먼저(아래) · 연재 막대는 위에 — 다음 시즌 제작이 앞 시즌 연재를 가리지 않게
+      const bars=ss.map(w=>{ const pe=addBD(w.start,Math.max(1,Math.round((+g.season||30)*w.bd))-1); return bar(w.start,pe,"prod thin",`${sl(w)}제작 ${key(w.start)} ~ ${key(pe)} (회차당 ${w.bd}영업일)`); }).join("")
+        +ss.map(w=>w.launch>w.ready?bar(w.ready,w.launch,"wait",`${sl(w)}런칭 대기 ${key(w.ready)} ~ ${key(w.launch)}`):"").join("")
+        +ss.map(w=>bar(w.launch,w.last,"air"+(w.voice==="ai"?" ai":""),`${sl(w)}연재 ${key(w.launch)} ~ ${key(w.last)} (${g.season}화)`)+(ss.length>1?`<em class="gsn" style="left:${cl(X(w.launch))+3}px">S${w.sno}</em>`:"")).join("");
+      h+=`<div class="grow"><div class="gl" title="${esc(nm)}"><span class="gnm">${esc(t0.p.name&&G.line==="ext"?t0.p.name+" · ":"")}작품 ${t0.tno}</span> <span class="hint">${ss.length>1?`시즌 1~${ss.length} · `:""}${key(t0.launch).slice(2,10).replace(/-/g,".")} 런칭</span>${t0.voice==="ai"?` <span class="gai">AI</span>`:""}</div>
+        <div class="gtl" style="width:${W}px">${grid}${bars}</div></div>`; }); });
   if(rows>LIM) h+=`<p class="hint" style="padding:6px 12px">작품이 많아서 처음 ${LIM}편만 그렸어요. 팀이나 기간을 좁혀 보세요.</p>`;
   h+=`</div></div>`; return h; }
 /* ======================= 연재 캘린더 =======================
@@ -4652,10 +4670,10 @@ function lp2RightSplit(P,C){ if(LP2_RS_CACHE.has(C)) return LP2_RS_CACHE.get(C);
   const r={nb,cb}; LP2_RS_CACHE.set(C,r); return r; }
 function lcTitles(W,rate){ rate=Math.max(0,Math.min(1,+rate||0)); const byPipe=new Map(); let nT=0, acc=0, dec=0;
   W.slice().sort((a,b)=>a.launch-b.launch||a.start-b.start).forEach(w=>{ const pk=w.p.id; if(!byPipe.has(pk)) byPipe.set(pk,[]); const pool=byPipe.get(pk);
-    const elig=pool.filter(t=>!t.busy&&t.end<=w.launch).sort((a,b)=>a.end-b.end);
+    const elig=pool.filter(t=>!t.busy&&t.end<=w.launch&&t.voice===w.voice).sort((a,b)=>a.end-b.end);   // 같은 작품은 성우 방식(AI/사람)을 바꿀 수 없음
     let t=null; if(elig.length){ dec++; if((acc+1)/dec<=rate+1e-9){ acc++; t=elig[0]; } }
     if(t){ t.n++; w.title=t.id; w.tno=t.no; w.sno=t.n; w.cont=true; t.end=w.last; }
-    else { nT++; const nt={id:pk+":"+(pool.length+1),no:pool.length+1,n:1,end:w.last}; pool.push(nt); w.title=nt.id; w.tno=nt.no; w.sno=1; w.cont=false; } });
+    else { nT++; const nt={id:pk+":"+(pool.length+1),no:pool.length+1,n:1,end:w.last,voice:w.voice}; pool.push(nt); w.title=nt.id; w.tno=nt.no; w.sno=1; w.cont=false; } });
   return nT; }
 function renderLC(){
   lp2Ensure(); if(SB.on&&!LP_LOADED){ $("v-lc").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">런칭 플랜을 불러오는 중이에요…</div>`; return; }
@@ -4693,6 +4711,16 @@ function renderLC(){
   let body=sumRow("신규 오픈 (시즌)",m=>C.tot.launch[M.indexOf(m)],"lcx-s")+sumRow(`<span class="ind">ㄴ 새 작품</span>`,m=>lm(m,w=>!w.cont),"")+sumRow(`<span class="ind">ㄴ 후속 시즌 (같은 작품)</span>`,m=>lm(m,w=>w.cont),"")
     +sumRow("연재 중",m=>C.tot.onair[M.indexOf(m)],"lcx-s")
     +`<tr class="lcx-s"><td class="tl">연재 목표</td>${Ms.map(m=>{ const t=T[m]; const a=C.tot.onair[M.indexOf(m)]; return `<td class="${yb(m)}${t!=null?(a>=t?" okc":" badc"):" z"}">${t!=null?t:""}</td>`; }).join("")}</tr>`;
+  // 작품 한 줄: 시즌 1 → 시즌 2 … 를 같은 줄에
+  const titleRow=(x,ss)=>{ const cls=ss[0].G.line==="ext"?"ext":"int"; const t0=ss[0];
+    const cells=Ms.map(m=>{ const w=ss.find(z=>z.epm[m]); 
+      if(!w){ const pw=ss.find(z=>m>=key(z.start).slice(0,7)&&m<key(z.launch).slice(0,7)); return `<td class="${yb(m)}${pw?" lcp":""}"${pw?` title="시즌 ${pw.sno} 제작 중"`:""}></td>`; }
+      const n=w.epm[m], fm=key(w.launch).slice(0,7), cum=Object.entries(w.epm).filter(([kk])=>kk<=m).reduce((a,[,v])=>a+v,0);
+      if(m===fm) return `<td class="${yb(m)} lc1 ${cls}${w.voice==="ai"?" ai":""}" title="시즌 ${w.sno} · ${key(w.launch)} 런칭"><b>${+key(w.launch).slice(8)}일</b><small>${ss.length>1?`S${w.sno}·`:""}${n}화</small></td>`;
+      if(cum>=N) return `<td class="${yb(m)} lce ${cls}"><b>${N}화</b><small>${n}화</small></td>`;
+      return `<td class="${yb(m)} lcm ${cls}">${n}</td>`; }).join("");
+    return `<tr class="lcx-w"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 마지막 S${ss.length} ${key(ss[ss.length-1].launch).slice(2,7).replace("-",".")}`:""}</span></td>${cells}</tr>`; };
+  const titlesOf=(ws)=>{ const mp=new Map(); ws.slice().sort((a,b)=>a.launch-b.launch).forEach(w=>{ if(!mp.has(w.title)) mp.set(w.title,[]); mp.get(w.title).push(w); }); return [...mp.values()]; };
   const workRow=(x,w,k)=>{ const fm=key(w.launch).slice(0,7), lmk=key(w.last).slice(0,7), cls=w.G.line==="ext"?"ext":"int";
     let cum=0; const cells=Ms.map(m=>{ const n=w.epm[m]||0; const before=Object.entries(w.epm).filter(([kk])=>kk<m).reduce((a,[,v])=>a+v,0); cum=before+n;
       if(!n){ const prod=m>=key(w.start).slice(0,7)&&m<fm; return `<td class="${yb(m)}${prod?" lcp":""}"${prod?` title="제작 중"`:""}></td>`; }
@@ -4706,12 +4734,12 @@ function renderLC(){
       <span class="lcbd">작품 ${new Set(x.ws.map(w=>w.title)).size}개 · 시즌 ${x.ws.length}개</span>${x.gaps.length?`<span class="lcbd bad">휴재 ${x.gaps.length}개월</span>`:`<span class="lcbd ok">쉬지 않고 이어짐</span>`}</td>${cells}</tr>`; };
   let rowsN=0, LIM=700; const vis=(w)=>key(w.start).slice(0,7)<=Ms[Ms.length-1]&&key(w.last).slice(0,7)>=Ms[0];
   P.groups.forEach(G=>{ const ps=pipes.filter(x=>x.G.id===G.id); if(!ps.length) return;
-    if(G.line==="int"){ ps.forEach(x=>{ const id=x.p.id, open=LCV.open[id]!=null?LCV.open[id]:true; body+=pipeRow(x,`${G.id}${G.id==="내부3"?" (일본)":" (한국)"}`,open,id,1); if(open) x.ws.forEach((w,k)=>{ if(vis(w)&&rowsN++<LIM) body+=workRow(x,w,k+1); }); }); return; }
+    if(G.line==="int"){ ps.forEach(x=>{ const id=x.p.id, open=LCV.open[id]!=null?LCV.open[id]:true; body+=pipeRow(x,`${G.id}${G.id==="내부3"?" (일본)":" (한국)"}`,open,id,1); if(open) titlesOf(x.ws).forEach(ss=>{ if(ss.some(vis)&&rowsN++<LIM) body+=titleRow(x,ss); }); }); return; }
     // 외주 팀: 팀 요약 → 제작사별 → 시즌
     const gx={G,ws:ps.flatMap(x=>x.ws),gaps:[]}; const gopen=LCV.open[G.id]!=null?LCV.open[G.id]:false;
     body+=`<tr class="lcpipe ext lv0"><td class="tl"><button type="button" class="lptog" data-lco="${esc(G.id)}">${gopen?"▾":"▸"}</button><b>${esc(G.id)}</b><span class="lcbd">제작사 ${ps.length}곳 · 작품 ${new Set(gx.ws.map(w=>w.title)).size}개 · 시즌 ${gx.ws.length}개</span>${ps.some(x=>x.gaps.length)?`<span class="lcbd bad">쉬는 제작사 ${ps.filter(x=>x.gaps.length).length}곳</span>`:""}</td>${Ms.map(m=>{ const n=gx.ws.filter(w=>w.epm[m]).length; return `<td class="${yb(m)}${n?" lcon":" z"}">${n||""}</td>`; }).join("")}</tr>`;
     if(!gopen) return;
-    ps.forEach(x=>{ const id=x.p.id, open=!!LCV.open[id]; body+=pipeRow(x,x.p.name||"제작사",open,id,2); if(open) x.ws.forEach((w,k)=>{ if(vis(w)&&rowsN++<LIM) body+=workRow(x,w,k+1); }); }); });
+    ps.forEach(x=>{ const id=x.p.id, open=!!LCV.open[id]; body+=pipeRow(x,x.p.name||"제작사",open,id,2); if(open) titlesOf(x.ws).forEach(ss=>{ if(ss.some(vis)&&rowsN++<LIM) body+=titleRow(x,ss); }); }); });
   h+=`<div class="card" style="padding:0;overflow:auto;max-height:78vh"><table class="lct" style="width:${320+44*Ms.length}px"><colgroup><col style="width:320px">${Ms.map(()=>`<col style="width:44px">`).join("")}</colgroup><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <div class="legend" style="margin-top:6px"><span><i style="background:#2F7FC1"></i>내부 시즌 첫 달 (런칭일 · 그 달 화수)</span><span><i style="background:#E07B39"></i>외주 시즌 첫 달</span><span><i style="background:#D6E8F7"></i>연재 중 (그 달 나가는 화수)</span><span><i style="background:repeating-linear-gradient(135deg,#eef3f8 0 4px,#fff 4px 8px)"></i>제작 중</span><span><i style="background:#FBE1DD"></i>휴재 (파이프라인에 연재 없음)</span><span>${N}화 = 시즌 마지막 달 · 런칭 ${+g.openK||3}화 동시 공개 후 주 ${+g.cad===2?"격주":"1회"}</span></div>`;
   $("v-lc").innerHTML=h; lcBind(P);
