@@ -2128,8 +2128,21 @@ function covLine(){
    설정 순서: 런칭일 → 런칭 때 오픈 회차 → 총 회차 → 공개 주기 → 시즌제 → 시즌 쉼 → 프리뷰 후 쉼
    '전체' 줄에서 고른 값만 [일괄 적용]으로 덮어씀                                                         */
 let SIM=null;
-const SIM_R0=(w)=>{ const T=typeof CONF!=="undefined"&&CONF.teaser, d=T&&T.dates&&T.dates[w.n];
-  const r=SIM_R00(w); if(d) Object.assign(r,{launchMode:"fixed",launch:d,openK:1,pgap:"auto"}); return r; };   // 티저 날짜가 정해진 작품: 그 날 1화 먼저 → 휴재 없이 이어지게 쉬는 주 자동
+const SIM_R0=(w)=>{ const r=SIM_R00(w); simTzApply(w,r,true); return r; };
+/* 티저: 1화만 먼저 공개 → 2화부터 휴재 없이 이어지도록 쉬는 주를 자동 계산 (티저 순서 작품) */
+function simTzApply(w,r,init){ const T=typeof CONF!=="undefined"&&CONF.teaser; if(!T||!(T.order||[]).includes(w.n)) return false;
+  const d=T.dates&&T.dates[w.n];
+  if(d&&(init||!(r.launchMode==="fixed"&&r.launch))){ r.launchMode="fixed"; r.launch=d; }
+  else if(!(r.launchMode==="fixed"&&r.launch)) r.launchMode="auto";   // 날짜가 없으면 1화가 준비되는 가장 빠른 날
+  r.openK=1; r.pgap="auto"; r.inc=true; return true; }
+/* 티저 순서대로: 날짜가 없는 작품은 '앞 순서 티저 다음 주 이후 · 1화가 준비되는 가장 빠른 날'로 고정 */
+function simTzAll(keepFixed){ const T=CONF.teaser; if(!T||!SIM) return 0; let prev=null, n=0;
+  (T.order||[]).forEach(nm=>{ const w=WORKS.find(x=>x.n===nm); if(!w||!SIM.rows[w.id]) return; const r=SIM.rows[w.id]; simTzApply(w,r,false); n++;
+    const d=T.dates&&T.dates[nm];
+    if(!d&&!(keepFixed&&r.launchMode==="fixed"&&r.launch)){ const S=schedule(simX(w,r)); if(S.held) return;
+      let t=dowOnOrAfter(prev?addDays(prev,7):addDays(TODAY,1),S.dow!=null?S.dow:1); while(S.eps[1].need>t) t=addDays(t,7); r.launchMode="fixed"; r.launch=key(t); }
+    if(r.launchMode==="fixed"&&r.launch) prev=D(r.launch); });
+  return n; }   // 티저 날짜가 정해진 작품: 그 날 1화 먼저 → 휴재 없이 이어지게 쉬는 주 자동
 const SIM_R00=(w)=>({inc:true,launchMode:"auto",launch:"2026-12-28",openK:3,total:+w.total||SEASON_N,cad:7,voice:"keep",rate:"",len:"",mode:"regular",seasonN:10,rest:"auto",pgap:""});
 const SIM_A0=()=>({launchMode:"",launch:"2026-12-28",openK:"",total:"",cad:"",voice:"",rate:"",len:"",mode:"",seasonN:"",rest:"",pgap:"",scope:"all"});
 function simInit(){ SIM={all:SIM_A0(),rows:{},extra:[]}; WORKS.forEach(w=>SIM.rows[w.id]=SIM_R0(w)); }
@@ -2195,6 +2208,7 @@ function renderSim(){
   if(!SIM&&!SIM_BASE_TRIED){ SIM_BASE_TRIED=true; const b=simBaseVer(); if(b){ SIM=clone(b.data); SIM.extra=(SIM.extra||[]).map(normW); SIM._from=b.id; } }
   if(!SIM) simInit();
   if(!SIM.extra) SIM.extra=[];
+  if(!SIM.tzv){ simTzAll(true); SIM.tzv=1; }   // 10/19: 티저 작품은 1화 선공개 + 휴재 없이 이어가기
   if(SIMSAVES==null){ SIMSAVES=[]; simVerLoad().then(()=>{ if(TAB==="sim") safeRender(); }); }
   const WL=SIM_WL();
   WL.forEach(w=>{ if(!SIM.rows[w.id]) SIM.rows[w.id]=SIM_R0(w); });
@@ -2224,7 +2238,8 @@ function renderSim(){
     <div class="card simpre"><b>연말 프리뷰 해보기</b>
       <span>${ymd(YE)} 런칭 · <select class="in" id="preK">${opt([[1,"1화"],[2,"2화"]],SIM.preK||2)}</select> 먼저 오픈 → 휴재 없이 이어가려면 몇 주 쉬어야 하는지 계산</span>
       <select class="in" id="preScope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],SIM.preScope||"all")}</select>
-      <button type="button" class="btn pri" id="preGo">적용</button></div>`;
+      <button type="button" class="btn pri" id="preGo">적용</button>
+      <button type="button" class="btn" id="tzGo" title="티저 순서 작품(${esc(((CONF.teaser||{}).order||[]).join(" → "))}): 1화만 먼저 공개하고, 2화부터 휴재 없이 이어지도록 쉬는 주를 자동으로 맞춰요">티저 1화 → 휴재 없이 자동 설정</button></div>`;
   const keepIf=(all,a)=>(all?KEEP:[]).concat(a);
   const seasonCells=(id,r,all)=>{ const k=all?"data-sa":"data-sr", idA=all?"":` data-id="${id}"`, on=r.mode==="season";
     return `<td><select class="in" ${k}="mode"${idA}>${opt(keepIf(all,MODE),r.mode)}</select>${on||(all&&r.mode==="")?` <input class="in n" type="number" min="1" max="100" ${k}="seasonN"${idA} value="${r.seasonN}" placeholder="${all?"그대로":""}">화씩`:""}</td>
@@ -2316,6 +2331,7 @@ function renderSim(){
   document.querySelectorAll("#v-sim [data-sdel]").forEach(b=>b.onclick=()=>{ SIM.extra=SIM.extra.filter(w=>w.id!==b.dataset.sdel); delete SIM.rows[b.dataset.sdel]; render(); });
   document.querySelectorAll("#v-sim [data-lw]").forEach(b=>b.onclick=()=>{ const r=SIM.rows[b.dataset.id]; r.launchMode="fixed"; r.launch=key(addDays(D(b.dataset.base),7*(+b.dataset.lw))); render(); });
   document.querySelectorAll("#v-sim [data-lauto]").forEach(b=>b.onclick=()=>{ SIM.rows[b.dataset.lauto].launchMode="auto"; render(); });
+  if($("tzGo")) $("tzGo").onclick=()=>{ const n=simTzAll(false); toast(`티저 ${n}작품: 순서대로 1화 선공개 → 2화부터 휴재 없이 이어지게 맞췄어요`); render(); };
   $("preK").onchange=(e)=>{ SIM.preK=+e.target.value; }; $("preScope").onchange=(e)=>{ SIM.preScope=e.target.value; };
   $("preGo").onclick=()=>{ const sc=SIM.preScope||"all", K=SIM.preK||2, YE=yearEndMon(); let n=0;
     WL.forEach(w=>{ if(sc!=="all"&&lineOf(w)!==sc) return; const r=SIM.rows[w.id]; r.launchMode="fixed"; r.launch=key(YE); r.openK=K; r.pgap="auto"; n++; });
