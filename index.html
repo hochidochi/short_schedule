@@ -531,6 +531,8 @@ table.lct td.lcp{background:repeating-linear-gradient(135deg,#eef3f8 0 4px,#fff 
 table.lct tr.lcsub td{font-weight:700;background:#F7F8FB}
 .gb.prod.thin{top:8px;height:6px} .gsn{position:absolute;top:4px;font-style:normal;font-size:9.5px;font-weight:800;color:#fff;pointer-events:none}
 table.lct td.lch{background:repeating-linear-gradient(135deg,#FBE1DD 0 4px,#fff 4px 8px);color:var(--bad);font-size:10px;font-weight:700}
+.lpbase{margin-top:6px;font-size:12.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#FFF7E0;border:1px solid #F1D79A;border-radius:10px;padding:5px 10px;width:max-content;max-width:100%}
+.tag.tz{background:#FCE7F3;color:#9D174D;border:1px solid #F5B5D3}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1320,6 +1322,10 @@ function runMigrations0(){
     const r=CONF.stages.find(x=>x.k==="rating"); if(r){ r.v={ih:15,ia:15,eh:15,ea:15}; r.h=15; r.from="2027-10-01"; }
     CONF.migr.push("rating-2710"); dirty=true;
   }
+  if(!has("teaser-order-1019")){   // 10/19 티저 런칭 순서: 나이트런 → 냐한 남자 → 용사가 돌아왔다 → 소녀바둑 · 일본 우선
+    CONF.teaser={order:["나이트런","냐한 남자","용사가 돌아왔다","소녀바둑"],first:"일본",dates:{"나이트런":"2026-12-28"}};
+    CONF.migr.push("teaser-order-1019"); dirty=true;
+  }
   if(!has("nightrun-tease-1019")){   // 10/19: 나이트런 1화 — 12/21 성우사무소 납품 → 12/28 티징 (연휴 무관 · 무리 일정)
     const w=WORKS.find(x=>x.n==="나이트런");
     if(w){ const l=clone(w.cev||[]).filter(e=>!/티징|성우사무소/.test(e.text||""));
@@ -1546,7 +1552,11 @@ const AGE_OPTS=[["","미정"],["all","전체 이용가"],["12","12세 이용가"
 const ageBadge=(w)=>w.age?`<span class="age a${w.age}" title="${AGE_OPTS.find(a=>a[0]===w.age)[1]}">${w.age==="all"?"전체":w.age}</span>`:"";
 const ageSel=(id,v,attr)=>`<select class="in" ${attr||""} id="${id||""}">${AGE_OPTS.map(([k,t])=>`<option value="${k}"${(v||"")===k?" selected":""}>${t}</option>`).join("")}</select>`;
 /* 담당 미정 · 제작 중단 표시 */
-const tbdTag=(w,sm)=>w.tbd?`<span class="tag tbd"${sm?' style="font-size:10px;padding:0 5px"':""}>담당 미정</span>`:"";
+/* 티저 런칭 순서 (CONF.teaser) — 작품명 옆 배지 */
+const teaserTag=(w,sm)=>{ const T=typeof CONF!=="undefined"&&CONF&&CONF.teaser; if(!T||!w) return ""; const i=(T.order||[]).indexOf(w.n); if(i<0) return ""; const d=(T.dates||{})[w.n];
+  return `<span class="tag tz"${sm?' style="font-size:10px;padding:0 5px"':""} title="티저 런칭 ${i+1}순위${T.first?` · ${T.first} 우선`:""}${d?` · ${d}`:" · 일정 미정"}">티저 ${"①②③④⑤⑥⑦⑧⑨"[i]||i+1}${T.first?` · ${T.first} 우선`:""}${d?` ${+d.slice(5,7)}/${+d.slice(8)}`:""}</span>`; };
+const tbdTag0=(w,sm)=>w.tbd?`<span class="tag tbd"${sm?' style="font-size:10px;padding:0 5px"':""}>담당 미정</span>`:"";
+const tbdTag=(w,sm)=>teaserTag(w,sm)+tbdTag0(w,sm);
 const pauseOf=(w)=>(w.pauses||[]).filter(p=>p.ep>(+w.done||0)||p.resume).sort((a,b)=>a.ep-b.ep)[0]||null;
 const isHire=(p)=>p&&p.reason==="hire";   // 신규 인력 충원 대기 (1화부터 착수 전)
 const pauseTxt=(w)=>{const p=pauseOf(w); if(!p) return "";
@@ -3824,10 +3834,12 @@ function lpCompute(P){
 /* 저장: 현재 버전은 자동 저장 · 기록은 따로 쌓임 */
 const lpWho=()=>(ME&&(ME.name||ME.email))||"";
 function lpOp(op){ LP=lpApply(LP,op); if(SB.on){ LP_OPS.push(op); clearTimeout(LP_TIMER); LP_TIMER=setTimeout(lpPush,700); } else lsSet("anime_lp_local",LP); }
+function lpSig(P){ try{ return JSON.stringify({g:P.g,groups:P.groups,targets:P.targets,lplan:P.lplan,cost:P.cost,ms:P.milestones}); }catch(e){ return ""; } }
 function lpApply(L,op){ L={...L,hist:[...(L.hist||[])]};
   if(op.op==="cur"){ L.cur=op.v; L.at=new Date().toISOString(); L.by=lpWho(); }
   else if(op.op==="hadd"){ if(!L.hist.some(h=>h.id===op.v.id)) L.hist.unshift(op.v); }
   else if(op.op==="hdel"){ L.hist=L.hist.filter(h=>h.id!==op.id); }
+  else if(op.op==="base"){ L.base=op.v; }   // 확정 기본 버전 (기록은 따로 계속 남김)
   return L; }
 async function lpPush(){ const ops=LP_OPS; if(!ops.length) return; LP_OPS=[];
   try{ const r=await sb("GET",T_CONF,"?id=eq.leverplan&select=data"); let base=r&&r.length&&r[0].data?r[0].data:LP;
@@ -4778,7 +4790,9 @@ function lcBind(P){
 }
 function renderLP2(){
   if(SB.on&&!LP_LOADED){ $("v-lp").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">런칭 플랜을 불러오는 중이에요…</div>`; return; }
-  lp2Ensure(); LPV.peek=null; const PK=null;   // 기록 보기 없이 항상 현재 버전 (바꾸면 바로 공유 저장)
+  lp2Ensure(); LPV.peek=null; const PK=null;
+  for(let k=0,sg=lpSig(LP.cur);k<12;k++){ lp2Ensure(); const s2=lpSig(LP.cur); if(s2===sg) break; sg=s2; }   // 이어지는 마이그레이션을 한 번에 끝까지
+  if(LP&&LP.cur&&!LP.base){ lpOp({op:"base",v:{name:"기본 버전 (10/19 확정 · AOP 반영 · 판권 계약금+인센티브)",by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}}); }   // 기록 보기 없이 항상 현재 버전 (바꾸면 바로 공유 저장)
   const P=PK?PK.plan:LP.cur, g=P.g, C=lp2Compute(P), M=LP2_M, ro=!!PK;
   const yb=(i)=>M[i].endsWith("-01")?" yb":"";
   const mh=`<tr><th class="tl"></th>${M.map((m,i)=>`<th class="${yb(i)}${m===key(TODAY).slice(0,7)?" now":""}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}</tr>`;
@@ -4799,7 +4813,11 @@ function renderLP2(){
   const rowR=(lab,arr,cls,dec)=>`<tr class="${cls||""}${STOCK.has(arr)?" stock":""}"><td class="tl"${tipOf(lab)?` data-tip="${esc(tipOf(lab))}"`:""}>${lab}${tipOf(lab)?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmt(v,dec)}</td>`).join("")}${totCell(arr)}</tr>`;
   const tg=P.targets.onair||{};
   let h=`<div class="lphead"><div><p class="lead" style="margin:0">런칭 플랜 계산기</p>
-      <div class="lpst"><span id="lpSt">${lpStatTxt()}</span> <button type="button" class="lpundo" id="lpUndo">↶ 이전 상태로</button> <button type="button" class="lpundo" id="lpBase" title="엑셀 시뮬레이터 값으로 처음부터 다시 (지금 값은 자동 보관)">엑셀 기본값으로</button></div></div>
+      <div class="lpst"><span id="lpSt">${lpStatTxt()}</span> <button type="button" class="lpundo" id="lpUndo">↶ 이전 상태로</button> <button type="button" class="lpundo" id="lpBase" title="엑셀 시뮬레이터 값으로 처음부터 다시 (지금 값은 자동 보관)">엑셀 기본값으로</button></div>
+      ${(()=>{ const B=LP.base; if(!B) return `<div class="lpbase">★ 확정된 기본 버전이 없어요 <button type="button" class="lpundo" id="lpBaseSet">현재를 기본 버전으로 확정</button></div>`;
+        const same=lpSig(B.plan)===lpSig(LP.cur);
+        return `<div class="lpbase">★ 기본 버전 <b>${esc(B.name)}</b> <span class="hint">${esc(B.by||"")} · ${md(new Date(B.at))}</span> ${same?`<span class="lcbd ok">지금과 같아요</span>`:`<span class="lcbd bad">지금 값은 기본 버전과 달라요</span>`}
+          <button type="button" class="lpundo" id="lpBaseSet">현재를 기본 버전으로 확정</button>${same?"":`<button type="button" class="lpundo" id="lpBaseGo">기본 버전으로 되돌리기</button>`}</div>`; })()}</div>
     </div>`;
   // 목표 카드
   h+=`<div class="lpkgrid">${Object.entries(tg).map(([m,t])=>{ const i=M.indexOf(m); if(i<0) return ""; const a=C.tot.onair[i], d=a-t; return `<div class="lpk ${d>=0?"ok":"bad"}"><div class="lpkl">${m.slice(2,4)}.${+m.slice(5)} 연재 작품 수</div><div class="lpkv">${a}<span>목표 ${t} · ${d>=0?"+":""}${d}</span></div></div>`; }).join("")}
@@ -5032,6 +5050,12 @@ function renderLP2(){
     lpOp({op:"cur",v:r.P}); toast(`착수 ${r.moved}건을 옮겼어요`); render(); };
   const costBase=(P)=>{ P.cost=P.cost&&P.cost.v===2?P.cost:clone(LP2_COST0); return P.cost; };
   const pnum=(v)=>{ const n=parseFloat(String(v).replace(/[,\s]/g,"")); return isFinite(n)?n:0; };
+  if($("lpBaseSet")) $("lpBaseSet").onclick=()=>{ const nm=prompt("기본 버전 이름 (예: 10/19 AOP 기준)",`${md(TODAY)} 확정`); if(!nm) return;
+    if(LP.base) lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`이전 기본 버전: ${LP.base.name}`,by:LP.base.by,at:LP.base.at,plan:clone(LP.base.plan)}});
+    lpOp({op:"base",v:{name:nm.trim(),by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}}); toast("기본 버전으로 확정했어요"); render(); };
+  if($("lpBaseGo")) $("lpBaseGo").onclick=()=>{ if(!confirm(`기본 버전 '${LP.base.name}'으로 되돌릴까요? 지금 값은 기록으로 먼저 남겨둘게요.`)) return;
+    lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`기본 버전으로 되돌리기 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
+    lpOp({op:"cur",v:clone(LP.base.plan)}); toast("기본 버전으로 되돌렸어요"); render(); };
   document.querySelectorAll("#v-lp [data-rview]").forEach(b=>b.onclick=()=>{ LP2V.rview=b.dataset.rview; render(); });
   if($("lpStratTog")) $("lpStratTog").onclick=()=>{ LP2V.strat=LP2V.strat===false?true:false; render(); };
   const msd=document.querySelector("#v-lp .msed"); if(msd) msd.ontoggle=()=>{ LP2V.msOpen=msd.open; };
