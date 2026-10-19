@@ -530,6 +530,7 @@ table.lct td.lce.int{background:#D6E8F7;color:#1F4E79;line-height:1.1} table.lct
 table.lct td.lcp{background:repeating-linear-gradient(135deg,#eef3f8 0 4px,#fff 4px 8px)}
 table.lct tr.lcsub td{font-weight:700;background:#F7F8FB}
 .gb.prod.thin{top:8px;height:6px} .gsn{position:absolute;top:4px;font-style:normal;font-size:9.5px;font-weight:800;color:#fff;pointer-events:none}
+table.lct td.lch{background:repeating-linear-gradient(135deg,#FBE1DD 0 4px,#fff 4px 8px);color:var(--bad);font-size:10px;font-weight:700}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -4040,6 +4041,9 @@ function lp2Compute(P){
         const st=lp2MStart(m); const L=lp2Launch(G.line,voice,bd,g,m);
         works.push({G,p,start:st,launch:L,voice,bd}); } }); R.start[G.id][i]+=n; tot.start[i]+=n; }); }); });
   const SM=lp2Smooth(works,g,P.lplan);
+  // 시즌제: 끝난 작품 중 후속 시즌 비율만큼 같은 작품으로 이어감 (후속 시즌은 원래 작품의 성우 방식을 따름 → 성우 비용·AI 회차에 반영)
+  works.forEach(w=>{ w.last=addDays(w.launch,7*runW); });
+  lcTitles(works,g.contRate!=null?+g.contRate:0.5,{gapW:g.contGapW!=null?+g.contGapW:12,inherit:g.contInherit!==false});
   // 빠른 집계: 월 경계·영업일 누적표를 한 번만 만들고, 작품마다 해당 달만 계산
   const MS=M.map(lp2MStart), ME=M.map(lp2MEnd), D0=MS[0], DAY=86400000, ND=Math.round((addDays(ME[NM-1],400)-D0)/DAY)+1;
   const pre=new Int32Array(ND+1); for(let d=0;d<ND;d++){ pre[d+1]=pre[d]+(isBD(addDays(D0,d))?1:0); }
@@ -4103,7 +4107,7 @@ function lp2BdSteps(p){ const out=[]; let last=null; LP2_M.forEach((m,i)=>{ cons
             · turnkey 영상(외주, 그 달 · 납품 기준) · AI 툴(구독 갱신월) · 시댄스(내부 인원 × 인당 월 사용료)
    총 제작비 = 집행비용 + 내부 영상 제작비(그 달) − 시댄스 × 70% · 매출 = 외부 유통(입력) + 웹툰 원작 유입(런칭 편수 기준) */
 const LP2_COST0={v:2,min:5,rights:15000000,rightsMul:2,rightsMul2:1.5,rightsFrom:"2027-07",voiceEp:4000000,voiceJpy:440000,fxJpy:8.4636,dlg:50000,sub:20000,langKr:7,langEtc:8,turnkey:2500000,intVideo:1000000,
-  fx:1336.4,rsRate:0.1,rightsByTitle:true,rightsContMul:1,mkt:{kr:{"2027-04":100000000,"2027-07":100000000,"2027-08":100000000,"2027-11":100000000,"2027-12":100000000},jp:{"2027-02":11633133,"2027-04":11633133,"2027-07":52349100,"2027-08":52349100,"2027-11":17449700,"2027-12":17449700},gw:{"2027-04":222222,"2027-07":222222,"2027-08":222222,"2027-11":222222,"2027-12":222222}},sdUsd:3396.5,sdDisc:0.7,wkRev:5000000,wkN:10,wkMul:2,wkRate:0.2,
+  fx:1336.4,rsRate:0.1,rightsByTitle:true,rightsContMul:1,rightsMode:"v2",rightsBase:10000000,rightsInc:5000000,incEp:20,incPay:"q",incCap:0,mkt:{kr:{"2027-04":100000000,"2027-07":100000000,"2027-08":100000000,"2027-11":100000000,"2027-12":100000000},jp:{"2027-02":11633133,"2027-04":11633133,"2027-07":52349100,"2027-08":52349100,"2027-11":17449700,"2027-12":17449700},gw:{"2027-04":222222,"2027-07":222222,"2027-08":222222,"2027-11":222222,"2027-12":222222}},sdUsd:3396.5,sdDisc:0.7,wkRev:5000000,wkN:10,wkMul:2,wkRate:0.2,
   kr:{"내부1":1,"내부2":1,"내부3":0,"외부 일본":0,"외부 일본 외":0.5},
   tools:[{n:"Topaz",m:2,usd:399,from:"2027-02"},{n:"Elevenlabs·Midjourney·Higgsfield",m:5,usd:242+96*12+938,from:"2027-05"},{n:"Suno",m:11,usd:342,from:"2026-11"}],
   sdFix:{"2026-07":1757},
@@ -4118,7 +4122,8 @@ function lp2Cost(P,C){ const k0=P.cost&&P.cost.v===2?P.cost:{}; const k={...LP2_
   for(let i=0;i<n;i++){
     const mulAt=(m)=>(k.rightsFrom&&m&&m>=k.rightsFrom&&k.rightsMul2!=null&&k.rightsMul2!=="")?+k.rightsMul2:+k.rightsMul;   // 착수월 기준 배수 (27년 하반기부터 1.5배)
     let nx, x0;
-    if(k.rightsByTitle!==false&&C.works){ const RS=lp2RightSplit(P,C), cm=k.rightsContMul!=null?+k.rightsContMul:1, sum=(o,j)=>Object.values(o).reduce((a,arr)=>a+(arr[j]||0),0);
+    if(k.rightsMode==="v2"&&C.works){ R.rights[i]=0; }   // 아래에서 한 번에 계산
+    else if(k.rightsByTitle!==false&&C.works){ const RS=lp2RightSplit(P,C), cm=k.rightsContMul!=null?+k.rightsContMul:1, sum=(o,j)=>Object.values(o).reduce((a,arr)=>a+(arr[j]||0),0);
       nx=sum(RS.nb,i+1)*mulAt(M[i+1])+sum(RS.cb,i+1)*cm; x0=i===0?sum(RS.nb,0)*mulAt(M[0])+sum(RS.cb,0)*cm:0; R.rights[i]=(nx+x0)*k.rights; }   // 새 작품은 후보 배수 · 후속 시즌은 배수 없이
     else { nx=C.tot.start[i+1]||0; R.rights[i]=(nx*mulAt(M[i+1])+(i===0?(C.tot.start[0]||0)*mulAt(M[0]):0))*k.rights; }   // 착수 1달 전 (시즌당 · 후보 배수)
     let hu=0, dl=0, sk=0, so=0, ext=0, iv=0, extNow=0;
@@ -4131,6 +4136,7 @@ function lp2Cost(P,C){ const k0=P.cost&&P.cost.v===2?P.cost:{}; const k={...LP2_
     R.dist[i]=+((k.dist||{})[M[i]]||0); R.web[i]=(C.tot.launch[i]||0)*k.wkRev*k.wkN*k.wkMul*k.wkRate;
     const mk=k.mkt||{}; R.mkr[i]=+((mk.kr||{})[M[i]]||0); R.mjp[i]=+((mk.jp||{})[M[i]]||0); R.mgw[i]=+((mk.gw||{})[M[i]]||0);
     R.mk[i]=R.mkr[i]+R.mjp[i]*(+k.fxJpy||8.4636)+R.mgw[i]*k.fx; R.rs[i]=R.dist[i]*(+k.rsRate||0); }
+  if(k.rightsMode==="v2"&&C.works){ const RC=lp2RightsCalc(P,C,k); for(let i=0;i<n;i++) R.rights[i]=RC.T.base[i]+RC.T.incFee[i]; }
   // AOP 2026 Forecast 형식: 7~11월 판권·성우·번역·자막을 12월에 합산
   if(k.lumpTo){ const li=M.indexOf(k.lumpTo); if(li>0) ["rights","voice","dlg","sub"].forEach(key=>{ let t=0; for(let i=0;i<li;i++){ t+=R[key][i]; R[key][i]=0; } R[key][li]+=t; }); }
   const exe=M.map((_,i)=>R.rights[i]+R.voice[i]+R.dlg[i]+R.sub[i]+R.turn[i]+R.tools[i]+R.sd[i]);
@@ -4145,6 +4151,8 @@ function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop2&&!LP.cur.afv){   // 10/16: 목표 자동 맞춤 기본 켜기 (지금 값은 보관)
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`자동 맞춤 켜기 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     const P=clone(LP.cur); P.afv=1; P.g={...P.g,autoFit:true}; lpOp({op:"cur",v:lp2AutoFit(P)}); }
+  if(LP.cur&&LP.cur.v===2&&!LP.cur.rt2){   // 10/19 판권료 구조: 새 작품 계약 1천만 원 × 후보 배수 + 시즌마다 20화 넘으면 인센티브 500만 원 (분기 정산)
+    const P=clone(LP.cur); P.cost={...(P.cost||clone(LP2_COST0)),rightsMode:"v2",rightsBase:10000000,rightsInc:5000000,incEp:20,incPay:"q",incCap:0}; P.rt2=1; lpOp({op:"cur",v:P}); }
   if(LP.cur&&LP.cur.v===2&&!LP.cur.ms3){ const P=clone(LP.cur); if(P.milestones) P.milestones=P.milestones.map(x=>/나이트런 1화/.test(x.t)?{...x,m:"2026-12",t:"12/28 나이트런 1화 티징 (12/21 성우 납품)"}:x); P.ms3=1; lpOp({op:"cur",v:P}); }
   if(LP.cur&&LP.cur.v===2&&!LP.cur.ms2){ const P=clone(LP.cur); if(P.milestones) P.milestones=P.milestones.filter(x=>!/판권 배수/.test(x.t)); P.ms2=1; lpOp({op:"cur",v:P}); }   // 판권 1.5배 마일스톤 제거
   if(LP.cur&&LP.cur.v===2&&LP.cur.aop4&&!LP.cur.aop5){   // 10/19: 판권 후보 배수 2027년 확보분부터 1.5배 (= 27.2 착수분부터)
@@ -4568,7 +4576,7 @@ function lp2Gantt(P,C,g){ const M=LP2_M, MW=40, MS=M.map(lp2MStart), D0=MS[0], D
       <span class="glg"><i class="gb prod"></i>제작 (착수~30화 영상 1차) <i class="gb wait"></i>런칭 대기 <i class="gb air"></i>연재 (사람 성우) <i class="gb air ai"></i>연재 (AI 성우) <b class="gt0"></b>오늘 <b class="gm0"></b>마일스톤</span></div>
     <div class="gwrap"><div class="ghead"><div class="gl">작품</div><div class="gtl" style="width:${W}px">${Ms.map((m,i)=>`<span style="width:${MW}px" class="${m.endsWith("-01")?"y":""}">${m.endsWith("-01")||i===0?`<b>${m.slice(2,4)}.</b>`:""}${+m.slice(5)}</span>`).join("")}</div></div>
       <div class="gms"><div class="gl">마일스톤</div><div class="gtl" style="width:${W}px;position:relative">${grid}${MSs.slice().sort((a,b)=>a.m.localeCompare(b.m)).map((x,ii)=>{ const kk=LP2_MSK[x.k]||LP2_MSK.etc; const l=X(lp2MStart(x.m))-off; return `<em class="gmt" style="left:${l}px;top:${3+(ii%4)*17}px;--c:${kk[1]}" title="${esc(x.m.slice(2,4)+"."+(+x.m.slice(5))+" "+x.t)}">${+x.m.slice(5)}월 ${esc(x.t)}</em>`; }).join("")}</div></div>`;
-  const WT=C.works.map(w=>({...w,last:addDays(w.launch,7*runW)})); lcTitles(WT,g.contRate!=null?+g.contRate:0.5);
+  const WT=C.works;
   gs.forEach(G=>{ const ws=WT.filter(w=>w.G.id===G.id&&w.launch<=lp2MEnd(M[i1])&&w.last>=MS[i0]).sort((a,b)=>a.launch-b.launch);
     const open=LP2V.gopen2&&LP2V.gopen2[G.id]!=null?LP2V.gopen2[G.id]:G.line!=="ext";
     // 팀 요약 줄: 달마다 연재 중 편수 막대
@@ -4593,40 +4601,33 @@ function lcEpsByMonth(L,g){ const N=+g.season||30, K=Math.min(N,+g.openK||3), ca
   for(let j=1;j<=N;j++){ const d=j<=K?L:addDays(L,7*cad*(j-K)); const k=key(d).slice(0,7); out[k]=(out[k]||0)+1; }
   return out; }
 /* 판권 확보 수: 착수 한 달 전에 (다음 달 착수 편수 × 후보 배수)만큼 판권 확보 — 런칭 플랜 비용과 같은 배수·시점 */
-function lcRights(P,C,g,Ms,Y,y0,y1,curM,W){ const M=LP2_M, K=lp2Cost(P,C).k, NM=M.length;
-  const mul=(m)=>(K.rightsFrom&&m&&m>=K.rightsFrom&&K.rightsMul2!=null&&K.rightsMul2!=="")?+K.rightsMul2:+K.rightsMul;
-  const st=(gid,i)=>i<NM?((C.R.start[gid]||[])[i]||0):0;
-  const G=P.groups, rows={}, tot=Array(NM).fill(0), base=Array(NM).fill(0), muls=Array(NM).fill(0), fee=Array(NM).fill(0);
-  const byT=K.rightsByTitle!==false, RS=lp2RightSplit(P,C), cm=K.rightsContMul!=null?+K.rightsContMul:1;
-  const nw=(id,j)=>j<NM?(byT?RS.nb[id][j]:st(id,j)):0, cw=(id,j)=>j<NM&&byT?RS.cb[id][j]:0;
-  const newR=Array(NM).fill(0), contR=Array(NM).fill(0);
-  G.forEach(x=>{ rows[x.id]=M.map((m,i)=>{ const mm=mul(M[i+1]||M[i]); return (nw(x.id,i+1)+(i===0?nw(x.id,0):0))*mm+(cw(x.id,i+1)+(i===0?cw(x.id,0):0))*cm; }); });
-  M.forEach((m,i)=>{ const n1=G.reduce((a,x)=>a+nw(x.id,i+1)+(i===0?nw(x.id,0):0),0), c1=G.reduce((a,x)=>a+cw(x.id,i+1)+(i===0?cw(x.id,0):0),0), mm=mul(M[i+1]||m);
-    base[i]=n1+c1; muls[i]=n1?mm:0; newR[i]=n1*mm; contR[i]=c1*cm; tot[i]=newR[i]+contR[i]; fee[i]=tot[i]*K.rights; });
-  let c=0; const cum=tot.map(v=>c+=v);
-  const f1=(v)=>v?(Math.round(v*10)/10).toLocaleString("ko-KR"):"–";
-  const ix=(y)=>M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0), ys=(arr,y)=>ix(y).reduce((a,i)=>a+arr[i],0);
-  const intIds=G.filter(x=>x.line==="int").map(x=>x.id), extIds=G.filter(x=>x.line==="ext").map(x=>x.id);
-  let h=`<div class="lckg">${["2026","2027","2028","2029","2030"].map(y=>{ const a=ys(tot,y), n=ys(base,y); const ii=ix(y).reduce((s0,i)=>s0+intIds.reduce((q,id)=>q+rows[id][i],0),0);
-      return `<div class="lpk" style="border-left-color:#B26B00"><div class="lpkl">${y}년 판권 확보</div><div class="lpkv">${f1(a)}<span>편</span></div><div class="lckk">착수 ${f1(n)}편 · 내부 ${f1(ii)} · 외부 ${f1(a-ii)} · ${(ys(fee,y)/1e8).toFixed(1)}억</div></div>`; }).join("")}</div>
-    <p class="hint" style="margin:-4px 0 8px">착수 한 달 전에 판권을 확보한다고 보고, ${byT?`<b>새 작품 × 후보 배수 + 후속 시즌 × ${cm}</b> (후속 시즌 비율 ${Math.round((g.contRate!=null?+g.contRate:0.5)*100)}% 기준) · 후보 배수는 `:""}<b>다음 달 착수 편수 × 후보 배수</b>(${K.rightsMul}배 → ${K.rightsFrom?`${K.rightsFrom.slice(2,4)}.${+K.rightsFrom.slice(5)} 착수분부터 `:""}${K.rightsMul2}배)로 계산해요. ${K.rightsFrom?`즉 <b>${(()=>{ const [y,m]=K.rightsFrom.split("-").map(Number); const t=y*12+m-2; return `${String(Math.floor(t/12)).slice(2)}.${t%12+1}`; })()} 확보분부터 ${K.rightsMul2}배</b>예요. `:""}배수·단가는 런칭 플랜 제작비 칸과 같아요.</p>`;
+function lcRights(P,C,g,Ms,Y,y0,y1,curM,W){ const M=LP2_M, CO=lp2Cost(P,C), K=CO.k, NM=M.length, G=P.groups;
+  if(K.rightsMode!=="v2") K.rightsBase=K.rights;
+  const RC=lp2RightsCalc(P,C,{...K,rightsBase:K.rightsMode==="v2"?K.rightsBase:K.rights,rightsInc:K.rightsMode==="v2"?K.rightsInc:0}), T=RC.T;
+  const fee=M.map((m,i)=>T.base[i]+T.incFee[i]); let c=0; const cum=T.cnt.map(v=>c+=v);
+  const f1=(v)=>v?(Math.round(v*10)/10).toLocaleString("ko-KR"):"–", fm=(v)=>v?Math.round(v/1e6).toLocaleString("ko-KR"):"–";
+  const ix=(y)=>M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0), ys=(arr,y)=>ix(y).reduce((a,i)=>a+(arr[i]||0),0);
+  const intIds=G.filter(x=>x.line==="int").map(x=>x.id);
+  let h=`<div class="lckg">${["2026","2027","2028","2029","2030"].map(y=>{ const a=ys(T.cnt,y), ii=ix(y).reduce((q,i)=>q+intIds.reduce((s0,id)=>s0+RC.by[id].cnt[i],0),0);
+      return `<div class="lpk" style="border-left-color:#B26B00"><div class="lpkl">${y}년 판권 계약</div><div class="lpkv">${f1(a)}<span>편</span></div><div class="lckk">새 작품 착수 ${ys(T.newN,y)}편 × 배수 · 내부 ${f1(ii)} · 외부 ${f1(a-ii)}</div><div class="lckk">계약금 ${(ys(T.base,y)/1e8).toFixed(1)}억 + 인센티브 ${ys(T.inc,y)}건 ${(ys(T.incFee,y)/1e8).toFixed(1)}억 = <b>${(ys(fee,y)/1e8).toFixed(1)}억</b></div></div>`; }).join("")}</div>
+    <p class="hint" style="margin:-4px 0 8px">${K.rightsMode==="v2"?`<b>새 작품</b>은 착수 한 달 전에 계약금 ${(+K.rightsBase/1e4).toLocaleString()}만 원 × 후보 배수(${K.rightsMul}배 → ${K.rightsFrom?`${K.rightsFrom.slice(2,4)}.${+K.rightsFrom.slice(5)} 착수분부터 `:""}${K.rightsMul2}배), <b>모든 시즌</b>(새 작품·후속 시즌)은 ${K.incEp}화를 넘기면 인센티브 ${(+K.rightsInc/1e4).toLocaleString()}만 원을 ${K.incPay==="m"?"그 달에":"분기 정산(다음 분기 첫 달)으로"} 지급해요. 후속 시즌은 계약금이 없어요. 후속 시즌 비율 ${Math.round((g.contRate!=null?+g.contRate:0.5)*100)}% 기준 · 단가는 런칭 플랜 제작비 칸과 같아요.`:`시즌당 판권료 × 후보 배수 (AOP 시트 방식)`}</p>`;
   const yb=(m)=>m.endsWith("-01")?" yb":"";
-  const head=`<tr class="lcy"><th class="tl" rowspan="2">판권 확보</th>${Y.filter(y=>y>=y0&&y<=y1).map(y=>`<th colspan="${Ms.filter(m=>m.startsWith(y)).length}" class="yb">${y}년</th>`).join("")}</tr>
+  const head=`<tr class="lcy"><th class="tl" rowspan="2">판권</th>${Y.filter(y=>y>=y0&&y<=y1).map(y=>`<th colspan="${Ms.filter(m=>m.startsWith(y)).length}" class="yb">${y}년</th>`).join("")}</tr>
     <tr>${Ms.map(m=>`<th class="${yb(m)}${m===curM?" now":""}">${+m.slice(5)}월</th>`).join("")}</tr>`;
   const row=(lab,arr,cls,fmt,tip,stock)=>`<tr class="${cls||""}${stock?" stock":""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${Ms.map(m=>{ const v=arr[M.indexOf(m)]; return `<td class="${yb(m)}${v?"":" z"}">${(fmt||f1)(v)}</td>`; }).join("")}</tr>`;
-  let body=row("판권 확보 수",tot,"lcx-s",null,"그 달에 확보해야 하는 판권(작품) 수 = 다음 달 착수 편수 × 후보 배수")
-    +G.map(x=>row(`<span class="ind">ㄴ ${esc(x.id)}</span>`,rows[x.id],"")).join("")
-    +row("ㄴ 새 작품 판권 (× 후보 배수)",newR,"",null,"다음 달 착수하는 새 작품 × 후보 배수")
-    +row("ㄴ 후속 시즌 판권 (× "+cm+")",contR,"",null,"같은 작품의 다음 시즌 — 작품이 이미 정해져 있어 후보 배수 없이 시즌당 판권만")
-    +row("그중 실제 착수분",base,"",null,"다음 달 실제로 착수하는 작품(시즌) 수")
-    +row("후보 추가분",tot.map((v,i)=>v-base[i]),"",null,"착수하지 않을 수 있는 새 작품 후보 몫 (배수 − 1)")
-    +row(`<span class="ind">ㄴ 새 작품 / 후속 시즌 착수</span>`,M.map((m,i)=>i),"",(i)=>{ const nm=M[i+1]; if(!nm) return "–"; const a=(W||[]).filter(w=>key(w.start).slice(0,7)===nm); const nn=a.filter(w=>!w.cont).length, cc=a.filter(w=>w.cont).length; return nn||cc?`${nn}<span class="hint">/${cc}</span>`:"–"; },"다음 달 착수분 중 새 작품 / 같은 작품의 후속 시즌. 지금 판권 확보 수는 시즌마다 후보 배수를 적용해요 (후속 시즌도 시즌당 판권료).")
-    +row("적용 배수",muls,"",(v)=>v?v+"배":"–")
-    +row("판권료 (백만 원)",fee,"lcx-s",(v)=>v?Math.round(v/1e6).toLocaleString("ko-KR"):"–","판권 확보 수 × 시즌당 판권료 (백만 원). 제작비 표는 AOP 형식에 따라 26년 7~11월분을 12월에 합산해 보여줄 수 있어요.")
-    +row("누적 확보 수",cum,"",null,null,true);
+  let body=row("판권 계약 수",T.cnt,"lcx-s",null,"그 달에 계약해야 하는 판권(작품) 수 = 다음 달 착수하는 새 작품 × 후보 배수")
+    +G.map(x=>row(`<span class="ind">ㄴ ${esc(x.id)}</span>`,RC.by[x.id].cnt,"")).join("")
+    +row("새 작품 착수 (다음 달)",T.newN,"",null,"다음 달 착수하는 새 작품 수")
+    +row("후보 추가분",T.cnt.map((v,i)=>v-T.newN[i]),"",null,"착수하지 않을 수 있는 후보 몫 (배수 − 1)")
+    +row("적용 배수",T.mul,"",(v)=>v?v+"배":"–")
+    +row("후속 시즌 착수 (다음 달)",T.contN,"",null,"같은 작품의 다음 시즌 — 계약금 없음 (인센티브만)")
+    +row(`인센티브 건수 (${K.incEp}화 돌파)`,T.inc,"",null,`시즌이 ${K.incEp}화를 넘긴 건수 (${K.incPay==="m"?"발생 달":"분기 정산 — 다음 분기 첫 달"} 기준)`)
+    +row("계약금 (백만 원)",T.base,"",fm)
+    +row("인센티브 (백만 원)",T.incFee,"",fm)
+    +row("판권료 합계 (백만 원)",fee,"lcx-s",fm,"계약금 + 인센티브. 제작비 표는 AOP 형식에 따라 26년 7~11월분을 12월에 합산해 보여줄 수 있어요.")
+    +row("누적 계약 수",cum,"",null,null,true);
   h+=`<div class="card" style="padding:0;overflow:auto;max-height:78vh"><table class="lct lcr" style="width:${320+44*Ms.length}px"><colgroup><col style="width:320px">${Ms.map(()=>`<col style="width:44px">`).join("")}</colgroup><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
   return h; }
-/* 제작 착수 작품 수: 팀별 · 성우별 · 제작 중 작품 수 · 외주 신규 제작사 */
 function lcStarts(P,C,g,Ms,Y,y0,y1,curM,W){ const M=LP2_M, NM=M.length, G=P.groups, N=+g.season||30;
   const st=(gid)=>C.R.start[gid]||Array(NM).fill(0);
   const tot=C.tot.start, ai=Array(NM).fill(0), hu=Array(NM).fill(0), inprod=Array(NM).fill(0), vNew=Array(NM).fill(0), bdS=Array(NM).fill(0);
@@ -4661,19 +4662,38 @@ function lcStarts(P,C,g,Ms,Y,y0,y1,curM,W){ const M=LP2_M, NM=M.length, G=P.grou
 let lp2YearCols2=null;
 /* 30화 시즌이 끝난 뒤 같은 작품을 이어 만들지(후속 시즌) / 새 작품을 할지 — 비율대로 나눠 '작품 수'로 보기
    같은 파이프라인(팀·제작사)에서 앞 시즌 연재가 끝난 작품만 후속 대상 · 오래 기다린 작품부터 이어감 */
+/* 판권료 구조 (2026.9 사업실 합의): 새 작품 계약 고정금(숏폼 1천만 원) × 후보 배수 — 착수 한 달 전
+   + 시즌마다 일정 회차(기본 20화)를 넘기면 추가 인센티브(500만 원) — 실제 발생 시 분기 정산 (다음 분기 첫 달) · 작품당 상한(선택) */
+function lp2RightsCalc(P,C,k){ const g=P.g, M=LP2_M, NM=M.length, N=+g.season||30, K0=Math.min(N,+g.openK||3), cad=+g.cad||1;
+  const mul=(m)=>(k.rightsFrom&&m&&m>=k.rightsFrom&&k.rightsMul2!=null&&k.rightsMul2!=="")?+k.rightsMul2:+k.rightsMul;
+  const G=P.groups, z=()=>Array(NM).fill(0), by={}; G.forEach(x=>by[x.id]={newN:z(),contN:z(),cnt:z(),inc:z()});
+  const T={newN:z(),contN:z(),cnt:z(),inc:z(),mul:z(),base:z(),incFee:z()};
+  const sIdx=(w)=>M.indexOf(key(w.start).slice(0,7));
+  (C.works||[]).forEach(w=>{ const i=sIdx(w); if(i<0) return; const pi=Math.max(0,i-1);   // 착수 한 달 전에 계약
+    if(w.cont){ by[w.G.id].contN[pi]++; T.contN[pi]++; } else { const mm=mul(M[i]); by[w.G.id].newN[pi]++; by[w.G.id].cnt[pi]+=mm; T.newN[pi]++; T.cnt[pi]+=mm; T.mul[pi]=mm; } });
+  // 인센티브: 시즌마다 incEp화 공개 시점 → 지급월
+  const incEp=+k.incEp||20, cap=+k.incCap||0, used=new Map();
+  (C.works||[]).slice().sort((a,b)=>a.launch-b.launch).forEach(w=>{ if(!(+k.rightsInc>0)||incEp>N) return; const tk=w.title||w; const u=used.get(tk)||0; if(cap&&u>=cap) return;
+    const d=incEp<=K0?w.launch:addDays(w.launch,7*cad*(incEp-K0)); let m=key(d).slice(0,7);
+    if(k.incPay!=="m"){ const y=+m.slice(0,4), mo=+m.slice(5); const q=Math.floor((mo-1)/3); let ny=y, nm=(q+1)*3+1; if(nm>12){ nm-=12; ny++; } m=`${ny}-${String(nm).padStart(2,"0")}`; }
+    const i=M.indexOf(m); if(i<0) return; used.set(tk,u+1); by[w.G.id].inc[i]++; T.inc[i]++; });
+  for(let i=0;i<NM;i++){ T.base[i]=T.cnt[i]*(+k.rightsBase||0); T.incFee[i]=T.inc[i]*(+k.rightsInc||0); }
+  return {by,T}; }
 /* 착수월별 새 작품 / 후속 시즌 편수 (후속 시즌 비율 기준) — 판권 확보 수·판권료에 사용 */
 const LP2_RS_CACHE=new WeakMap();
 function lp2RightSplit(P,C){ if(LP2_RS_CACHE.has(C)) return LP2_RS_CACHE.get(C); const g=P.g, M=LP2_M, NM=M.length, N=+g.season||30, runW=Math.max(0,N-(+g.openK||3))*(+g.cad||1);
-  const W=C.works.map(w=>({...w,last:addDays(w.launch,7*runW)})); lcTitles(W,g.contRate!=null?+g.contRate:0.5);
+  const W=C.works;
   const nb={}, cb={}; P.groups.forEach(G=>{ nb[G.id]=Array(NM).fill(0); cb[G.id]=Array(NM).fill(0); });
   W.forEach(w=>{ const i=M.indexOf(key(w.start).slice(0,7)); if(i<0) return; (w.cont?cb:nb)[w.G.id][i]++; });
   const r={nb,cb}; LP2_RS_CACHE.set(C,r); return r; }
-function lcTitles(W,rate){ rate=Math.max(0,Math.min(1,+rate||0)); const byPipe=new Map(); let nT=0, acc=0, dec=0;
+function lcTitles(W,rate,opt){ rate=Math.max(0,Math.min(1,+rate||0)); opt=opt||{}; const maxGap=(opt.gapW!=null?+opt.gapW:12)*7*86400000, inherit=opt.inherit!==false;
+  const byPipe=new Map(); let nT=0, acc=0, dec=0;
   W.slice().sort((a,b)=>a.launch-b.launch||a.start-b.start).forEach(w=>{ const pk=w.p.id; if(!byPipe.has(pk)) byPipe.set(pk,[]); const pool=byPipe.get(pk);
-    const elig=pool.filter(t=>!t.busy&&t.end<=w.launch&&t.voice===w.voice).sort((a,b)=>a.end-b.end);   // 같은 작품은 성우 방식(AI/사람)을 바꿀 수 없음
+    // 후속 대상: 같은 팀·제작사 · 앞 시즌 연재가 끝났고 · 쉬는 기간이 최대 휴재 이내 · (성우 방식 유지 시 같은 방식만) — 가장 최근에 끝난 작품부터
+    const elig=pool.filter(t=>t.end<=w.launch&&(w.launch-t.end)<=maxGap&&(inherit||t.voice===w.voice)).sort((a,b)=>b.end-a.end);
     let t=null; if(elig.length){ dec++; if((acc+1)/dec<=rate+1e-9){ acc++; t=elig[0]; } }
-    if(t){ t.n++; w.title=t.id; w.tno=t.no; w.sno=t.n; w.cont=true; t.end=w.last; }
-    else { nT++; const nt={id:pk+":"+(pool.length+1),no:pool.length+1,n:1,end:w.last,voice:w.voice}; pool.push(nt); w.title=nt.id; w.tno=nt.no; w.sno=1; w.cont=false; } });
+    if(t){ t.n++; w.title=t.id; w.tno=t.no; w.sno=t.n; w.cont=true; w.gapW=Math.round((w.launch-t.end)/86400000/7); if(inherit&&w.voice!==t.voice){ w.voiceOrig=w.voice; w.voice=t.voice; } t.end=w.last; }
+    else { nT++; const nt={id:pk+":"+(pool.length+1),no:pool.length+1,n:1,end:w.last,voice:w.voice}; pool.push(nt); w.title=nt.id; w.tno=nt.no; w.sno=1; w.cont=false; w.gapW=0; } });
   return nT; }
 function renderLC(){
   lp2Ensure(); if(SB.on&&!LP_LOADED){ $("v-lc").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">런칭 플랜을 불러오는 중이에요…</div>`; return; }
@@ -4682,7 +4702,7 @@ function renderLC(){
   const curM=key(TODAY).slice(0,7), T=P.targets.onair||{};
   // 작품(시즌) 목록: 파이프라인별
   const W=C.works.map(w=>{ const last=addDays(w.launch,7*runW); return {...w,last,epm:lcEpsByMonth(w.launch,g)}; }).filter(w=>key(w.launch)<"2031");
-  const CR=g.contRate!=null?+g.contRate:0.5; const nTitles=lcTitles(W,CR); LCV._W=W;
+  const CR=g.contRate!=null?+g.contRate:0.5; const nTitles=new Set(W.map(w=>w.title)).size; LCV._W=W;
   const pipes=[]; P.groups.forEach(G=>G.pipes.forEach(p=>{ const ws=W.filter(w=>w.p.id===p.id).sort((a,b)=>a.launch-b.launch); if(!ws.length) return;
     // 휴재: 첫 런칭 ~ 마지막 연재 사이에 이 파이프라인 작품이 하나도 안 나가는 달 · 이어짐: 앞 시즌 끝나고 2주 안에 다음 시즌 시작(또는 겹침)
     const air=new Set(); ws.forEach(w=>Object.keys(w.epm).forEach(k=>air.add(k)));
@@ -4696,6 +4716,8 @@ function renderLC(){
   let h=`<div class="lphead"><div><p class="lead" style="margin:0">연재 캘린더 <span class="hint" style="font-size:13px;font-weight:400">런칭 플랜 기준 · 30화 시즌이 파이프라인마다 언제 생기고, 매달 몇 화 나가고, 이어지는지</span></p></div>
     <div class="lpbtns"><span class="seg sm">${[["cal","연재 캘린더"],["starts","제작 착수"],["rights","판권 확보"]].map(([v,l])=>`<button type="button" data-lcv="${v}" aria-pressed="${(LCV.view||"cal")===v}">${l}</button>`).join("")}</span>
       <label class="hint" data-tip="30화 시즌이 끝난 작품 중 같은 작품으로 다음 시즌을 이어 만드는 비율이에요. 나머지는 새 작품으로 봐요. 같은 팀·제작사에서 앞 시즌 연재가 끝난 작품만 이어갈 수 있어요. 착수·연재 편수는 그대로고, 작품 수만 달라져요.">후속 시즌 비율 <input class="in n" id="lcCR" type="number" min="0" max="100" step="10" style="width:60px" value="${Math.round(CR*100)}"${LPV.peek?" disabled":""}> %</label>
+      <label class="hint" data-tip="앞 시즌이 끝나고 이 기간 안에 다음 시즌을 시작할 수 있을 때만 같은 작품으로 이어가요. 넘으면 새 작품으로 봐요.">최대 휴재 <input class="in n" id="lcGap" type="number" min="0" max="104" step="1" style="width:56px" value="${g.contGapW!=null?+g.contGapW:12}"${LPV.peek?" disabled":""}> 주</label>
+      <label class="hint" data-tip="켜면 후속 시즌은 원래 작품의 성우 방식(AI/사람)을 그대로 따라가요 — 레버의 AI 성우 편수는 새 작품에만 적용. 성우 녹음비에도 반영돼요."><input type="checkbox" id="lcInh"${g.contInherit!==false?" checked":""}${LPV.peek?" disabled":""}> 후속은 원래 성우 방식</label>
       <label class="hint">기간 <select class="in" id="lcY0">${Y.map(y=>`<option${y===y0?" selected":""}>${y}</option>`).join("")}</select> ~ <select class="in" id="lcY1">${Y.map(y=>`<option${y===y1?" selected":""}>${y}</option>`).join("")}</select></label></div></div>`;
   if(LCV.view==="starts"){ h+=lcStarts(P,C,g,Ms,Y,y0,y1,curM,W); $("v-lc").innerHTML=h; lcBind(P); return; }
   if(LCV.view==="rights"){ h+=lcRights(P,C,g,Ms,Y,y0,y1,curM,W); $("v-lc").innerHTML=h; lcBind(P); lp2YearCols2&&lp2YearCols2(); return; }
@@ -4714,12 +4736,13 @@ function renderLC(){
   // 작품 한 줄: 시즌 1 → 시즌 2 … 를 같은 줄에
   const titleRow=(x,ss)=>{ const cls=ss[0].G.line==="ext"?"ext":"int"; const t0=ss[0];
     const cells=Ms.map(m=>{ const w=ss.find(z=>z.epm[m]); 
-      if(!w){ const pw=ss.find(z=>m>=key(z.start).slice(0,7)&&m<key(z.launch).slice(0,7)); return `<td class="${yb(m)}${pw?" lcp":""}"${pw?` title="시즌 ${pw.sno} 제작 중"`:""}></td>`; }
+      if(!w){ const pw=ss.find(z=>m>=key(z.start).slice(0,7)&&m<key(z.launch).slice(0,7)); const gapM=ss.some((z,k)=>k>0&&m>key(ss[k-1].last).slice(0,7)&&m<key(z.launch).slice(0,7));
+        return `<td class="${yb(m)}${gapM?" lch":pw?" lcp":""}"${gapM?` title="시즌 사이 휴재"`:pw?` title="시즌 ${pw.sno} 제작 중"`:""}>${gapM?"휴재":""}</td>`; }
       const n=w.epm[m], fm=key(w.launch).slice(0,7), cum=Object.entries(w.epm).filter(([kk])=>kk<=m).reduce((a,[,v])=>a+v,0);
       if(m===fm) return `<td class="${yb(m)} lc1 ${cls}${w.voice==="ai"?" ai":""}" title="시즌 ${w.sno} · ${key(w.launch)} 런칭"><b>${+key(w.launch).slice(8)}일</b><small>${ss.length>1?`S${w.sno}·`:""}${n}화</small></td>`;
       if(cum>=N) return `<td class="${yb(m)} lce ${cls}"><b>${N}화</b><small>${n}화</small></td>`;
       return `<td class="${yb(m)} lcm ${cls}">${n}</td>`; }).join("");
-    return `<tr class="lcx-w"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 마지막 S${ss.length} ${key(ss[ss.length-1].launch).slice(2,7).replace("-",".")}`:""}</span></td>${cells}</tr>`; };
+    return `<tr class="lcx-w"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 휴재 ${ss.slice(1).map(w=>w.gapW+"주").join("·")}`:""}${ss.some(w=>w.voiceOrig)?" · 성우 유지":""}</span></td>${cells}</tr>`; };
   const titlesOf=(ws)=>{ const mp=new Map(); ws.slice().sort((a,b)=>a.launch-b.launch).forEach(w=>{ if(!mp.has(w.title)) mp.set(w.title,[]); mp.get(w.title).push(w); }); return [...mp.values()]; };
   const workRow=(x,w,k)=>{ const fm=key(w.launch).slice(0,7), lmk=key(w.last).slice(0,7), cls=w.G.line==="ext"?"ext":"int";
     let cum=0; const cells=Ms.map(m=>{ const n=w.epm[m]||0; const before=Object.entries(w.epm).filter(([kk])=>kk<m).reduce((a,[,v])=>a+v,0); cum=before+n;
@@ -4745,6 +4768,8 @@ function renderLC(){
   $("v-lc").innerHTML=h; lcBind(P);
 }
 function lcBind(P){
+  if($("lcGap")) $("lcGap").onchange=(e)=>{ const v=Math.max(0,Math.min(104,+e.target.value||0)); lpSet(Q=>{ Q.g={...Q.g,contGapW:v}; }); };
+  if($("lcInh")) $("lcInh").onchange=(e)=>{ lpSet(Q=>{ Q.g={...Q.g,contInherit:e.target.checked}; }); };
   if($("lcCR")) $("lcCR").onchange=(e)=>{ const v=Math.max(0,Math.min(100,+e.target.value||0))/100; lpSet(Q=>{ Q.g={...Q.g,contRate:v}; }); };
   document.querySelectorAll("#v-lc [data-lcv]").forEach(b=>b.onclick=()=>{ LCV.view=b.dataset.lcv; render(); });
   $("lcY0").onchange=(e)=>{ LCV.y0=e.target.value; if(LCV.y1<LCV.y0) LCV.y1=LCV.y0; render(); };
@@ -4884,7 +4909,7 @@ function renderLP2(){
   const fmtW=(v)=>v?Math.round(v/U).toLocaleString("ko-KR"):"–";
   const fmtN=(v)=>{ const n=+v; if(!isFinite(n)) return ""; return n.toLocaleString("ko-KR",{maximumFractionDigits:2}); };
   const ci=(f,lab,unit,w,step)=>`<label>${lab}<span><input class="in n lpi cnum" style="width:${(w||96)+10}px" type="text" inputmode="decimal" data-cost="${f}" value="${fmtN(k[f])}"${ro?" disabled":""}> ${unit||""}</span></label>`;
-  const TIPC={"(공통) 판권료":`${k.rightsByTitle!==false?`(새 작품 × 후보 배수 + 후속 시즌 × ${k.rightsContMul??1}) — 후속 시즌 비율은 연재 캘린더 탭 · `:"착수 편수 × "}시즌당 ${k.rights.toLocaleString()}원 × 후보 배수 (${k.rightsMul}배${k.rightsFrom?` → ${k.rightsFrom.slice(2,4)}.${+k.rightsFrom.slice(5)} 착수부터 ${k.rightsMul2}배`:""}) · 착수 한 달 전에 잡아요.`,"(공통) 성우 녹음비":`사람 성우 회차 × 회차당 ${Math.round(k.voiceEpW).toLocaleString()}원${k.voiceMode==="jpy"?` (¥${(+k.voiceJpy).toLocaleString()} × ${k.fxJpy}원/엔)`:""} · 외주 작품은 × ${k.extVoiceMul||1} · 제작 다음 달 (AI 성우 회차는 0원).`,
+  const TIPC={"(공통) 판권료":k.rightsMode==="v2"?`새 작품 계약금 ${(+k.rightsBase).toLocaleString()}원 × 후보 배수 (${k.rightsMul}배 → ${k.rightsFrom?k.rightsFrom.slice(2,4)+"."+(+k.rightsFrom.slice(5))+" 착수분부터 ":""}${k.rightsMul2}배 · 착수 한 달 전) + 시즌마다 ${k.incEp}화 넘으면 인센티브 ${(+k.rightsInc).toLocaleString()}원 (${k.incPay==="m"?"발생 달":"분기 정산"}${+k.incCap?` · 작품당 최대 ${k.incCap}회`:""}). 후속 시즌은 계약금 없이 인센티브만.`:`${k.rightsByTitle!==false?`(새 작품 × 후보 배수 + 후속 시즌 × ${k.rightsContMul??1}) — 후속 시즌 비율은 연재 캘린더 탭 · `:"착수 편수 × "}시즌당 ${k.rights.toLocaleString()}원 × 후보 배수 (${k.rightsMul}배${k.rightsFrom?` → ${k.rightsFrom.slice(2,4)}.${+k.rightsFrom.slice(5)} 착수부터 ${k.rightsMul2}배`:""}) · 착수 한 달 전에 잡아요.`,"(공통) 성우 녹음비":`사람 성우 회차 × 회차당 ${Math.round(k.voiceEpW).toLocaleString()}원${k.voiceMode==="jpy"?` (¥${(+k.voiceJpy).toLocaleString()} × ${k.fxJpy}원/엔)`:""} · 외주 작품은 × ${k.extVoiceMul||1} · 제작 다음 달 (AI 성우 회차는 0원).`,
     "창작자 R/S":`외부 유통 매출 × ${Math.round((+k.rsRate||0)*100)}% (Net 10% R/S · 보수적으로 Gross 10%).`,"마케팅 합계 (원 환산)":`KR(원) + JP(엔 × ${k.fxJpy}) + GW(USD × ${k.fx})`,"총 비용 (제작비 + 마케팅 + R/S)":"총 제작비 + 마케팅 합계 + 창작자 R/S",
     "(내부) 대사 번역비 (한→일)":`내부 한국 작품 회차 × ${k.min}분 × 분당 ${k.dlg.toLocaleString()}원 · 다음 달.`,"(공통) 자막 번역비":`회차 × ${k.min}분 × 분당 ${k.sub.toLocaleString()}원 × 언어 수 (한국 작품 ${k.langKr}개 · 기타 ${k.langEtc}개) · 다음 달.`,
     "(turnkey) 영상 제작비":`외주 회차 × ${k.min}분 × 분당 ${k.turnkey.toLocaleString()}원 · 그 달 (납품 기준).`,"(내부) AI tool - 시댄스 외":"구독 갱신월에 연간(또는 12개월) 요금 × 환율.","(내부) AI tool - 시댄스":`내부 제작 인원 × 인당 월 $${k.sdUsd} × 환율 ${k.fx}.`,
@@ -4896,7 +4921,8 @@ function renderLP2(){
       <span class="seg sm" title="비율: 집행비용 항목은 그 달 총 집행비용 대비 · 내부 영상 제작비는 총 제작비 대비 · 매출 항목은 총 매출 대비">${[["amt","금액"],["pct","비율 %"]].map(([v,l])=>`<button type="button" data-cview="${v}" aria-pressed="${(LP2V.cview||"amt")===v}">${l}</button>`).join("")}</span>
       <button type="button" class="btn" id="lpCopy" style="padding:3px 10px;font-size:12px">엑셀로 복사</button></div>
     <div class="card lpg"><div class="lpops" style="margin:0">
-      ${ci("min","회차 길이","분",56,0.5)}${ci("rights","판권료 (시즌당)","원",110,1000000)}${ci("rightsMul","판권 배수","배",50,0.5)}<label>· 이 달 착수부터<span><input class="in t lpi" type="month" data-costm="rightsFrom" value="${esc(k.rightsFrom||"")}"${ro?" disabled":""}></span></label>${ci("rightsMul2","· 배수","배",50,0.5)}<label class="lpyn" title="연재 캘린더의 후속 시즌 비율로 새 작품/후속 시즌을 나눠, 후보 배수는 새 작품에만 적용해요"><input type="checkbox" data-costb2="rightsByTitle"${k.rightsByTitle!==false?" checked":""}${ro?" disabled":""}> 후보 배수는 새 작품만</label>${k.rightsByTitle!==false?ci("rightsContMul","· 후속 시즌","배",44,0.5):""}<label>성우 녹음 단가<select class="in lpi" data-costs="voiceMode"${ro?" disabled":""}><option value="krw"${k.voiceMode!=="jpy"?" selected":""}>원화 (AOP 시트)</option><option value="jpy"${k.voiceMode==="jpy"?" selected":""}>엔화 × 환율</option></select></label>
+      ${ci("min","회차 길이","분",56,0.5)}${k.rightsMode==="v2"?`${ci("rightsBase","판권 계약금 (새 작품)","원",110,1000000)}`:`${ci("rights","판권료 (시즌당)","원",110,1000000)}`}${ci("rightsMul","후보 배수","배",50,0.5)}<label>· 이 달 착수부터<span><input class="in t lpi" type="month" data-costm="rightsFrom" value="${esc(k.rightsFrom||"")}"${ro?" disabled":""}></span></label>${ci("rightsMul2","· 배수","배",50,0.5)}${k.rightsMode==="v2"?`${ci("rightsInc","· 추가 인센티브 (시즌당)","원",100,1000000)}${ci("incEp","· 기준","화 넘으면",44,1)}<label>· 지급<select class="in lpi" data-costs="incPay"${ro?" disabled":""}><option value="q"${k.incPay!=="m"?" selected":""}>분기 정산 (다음 분기 첫 달)</option><option value="m"${k.incPay==="m"?" selected":""}>발생 달</option></select></label>${ci("incCap","· 작품당 최대","회 (0=제한 없음)",44,1)}`:`<label class="lpyn" title="연재 캘린더의 후속 시즌 비율로 새 작품/후속 시즌을 나눠, 후보 배수는 새 작품에만 적용해요"><input type="checkbox" data-costb2="rightsByTitle"${k.rightsByTitle!==false?" checked":""}${ro?" disabled":""}> 후보 배수는 새 작품만</label>${k.rightsByTitle!==false?ci("rightsContMul","· 후속 시즌","배",44,0.5):""}`}
+      <label class="lpyn" title="켜면: 새 작품 계약금 × 후보 배수 + 시즌별 인센티브 (2026.9 사업실 합의 구조) · 끄면: AOP 시트처럼 시즌당 판권료 × 배수"><input type="checkbox" data-costv2="1"${k.rightsMode==="v2"?" checked":""}${ro?" disabled":""}> 계약금 + 인센티브 구조</label><label>성우 녹음 단가<select class="in lpi" data-costs="voiceMode"${ro?" disabled":""}><option value="krw"${k.voiceMode!=="jpy"?" selected":""}>원화 (AOP 시트)</option><option value="jpy"${k.voiceMode==="jpy"?" selected":""}>엔화 × 환율</option></select></label>
       ${k.voiceMode==="jpy"?`${ci("voiceJpy","· 회차당","엔",90,10000)}`:`${ci("voiceEp","· 회차당","원",100,100000)}`}${ci("fxJpy","· 엔화 환율","원/엔",60,0.01)}<label>· 적용 단가<span class="hint" style="font-weight:700;color:var(--ink)">${Math.round(k.voiceEpW||0).toLocaleString("ko-KR")}원 (≈¥${Math.round((k.voiceEpW||0)/(+k.fxJpy||8.5)).toLocaleString("ko-KR")})</span></label>${ci("extVoiceMul","· 외주 작품 할증","배",50,0.01)}
       <label class="lpyn"><input type="checkbox" data-costb="lumpTo"${k.lumpTo?" checked":""}${ro?" disabled":""}> 26.7~11월 판권·성우·번역·자막은 26.12에 합산 (AOP 형식)</label>
       ${ci("dlg","대사 번역 (한→일)","원/분",80,1000)}${ci("sub","자막 번역","원/분",80,1000)}${ci("langKr","언어 수 · 한국 작품","개",48)}${ci("langEtc","· 기타","개",48)}
@@ -5027,6 +5053,7 @@ function renderLP2(){
       if(kind==="dist"){ c.dist={...(c.dist||LP2_COST0.dist)}; if(!v) delete c.dist[m]; else c.dist[m]=v; return; }
       const cc=kind.split(":")[1]; c.mkt=clone(c.mkt||LP2_COST0.mkt); c.mkt[cc]=c.mkt[cc]||{}; if(!v) delete c.mkt[cc][m]; else c.mkt[cc][m]=v; }); });
   document.querySelectorAll("#v-lp [data-costs]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P)[el.dataset.costs]=el.value; }));
+  document.querySelectorAll("#v-lp [data-costv2]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P).rightsMode=el.checked?"v2":""; }));
   document.querySelectorAll("#v-lp [data-costb2]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P)[el.dataset.costb2]=el.checked; }));
   document.querySelectorAll("#v-lp [data-costb]").forEach(el=>el.onchange=()=>set(P=>{ costBase(P).lumpTo=el.checked?"2026-12":""; }));
   document.querySelectorAll("#v-lp [data-ckr]").forEach(el=>el.onchange=()=>set(P=>{ const c=costBase(P); c.kr={...LP2_COST0.kr,...(c.kr||{})}; c.kr[el.dataset.ckr]=Math.max(0,Math.min(100,+el.value||0))/100; }));
