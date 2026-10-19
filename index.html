@@ -32,7 +32,12 @@ button,input,select{font:inherit;color:inherit}
 .brand{padding-bottom:10px}
 .brand h1{margin:0;font-size:17px;font-weight:700;letter-spacing:-.02em}
 .brand p{margin:0;font-size:12px;color:var(--muted)}
-.tabs{display:flex;gap:2px;margin-right:auto}
+.tabs{display:flex;gap:6px;margin-right:auto;align-items:stretch}
+.tgrp{display:flex;gap:2px;border-radius:10px 10px 0 0;padding:0 4px}
+.tgrp.tga{background:#EEF4FD} .tgrp.tgb{background:#EEF8F1} .tgrp.tgc{background:#F5F1FA}
+.tgrp.tga button[aria-selected="true"]{color:#1F5FBF!important;border-bottom-color:#2F7FC1!important}
+.tgrp.tgb button[aria-selected="true"]{color:#1F7A4D!important;border-bottom-color:#2E9B6A!important}
+.tgrp.tgc button[aria-selected="true"]{color:#6B3FA0!important;border-bottom-color:#7F56C2!important}
 .tabs button{border:0;background:none;padding:10px 14px 11px;font-size:14px;font-weight:600;color:var(--muted);
   cursor:pointer;border-bottom:2px solid transparent}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
@@ -535,6 +540,9 @@ table.lct td.lch{background:repeating-linear-gradient(135deg,#FBE1DD 0 4px,#fff 
 .tag.tz{background:#FCE7F3;color:#9D174D;border:1px solid #F5B5D3}
 .simbase{font-size:12.5px;margin:4px 0 8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#FFF7E0;border:1px solid #F1D79A;border-radius:10px;padding:6px 10px}
 .badge.tz{background:#FCE7F3;color:#9D174D;border:1px solid #F5B5D3} td.opc.tzc{background:#FFF1F7}
+.simfold>summary{cursor:pointer;list-style:none;margin:18px 0 8px} .simfold>summary::-webkit-details-marker{display:none} .simfold>summary::before{content:"▸ ";color:var(--ink2)} .simfold[open]>summary::before{content:"▾ "}
+.cal td.srest{background:repeating-linear-gradient(90deg,#F4F4F0 0 3px,#fff 3px 6px);color:var(--muted);font-size:10.5px}
+.seg.simreg button[aria-pressed="true"]{background:#1F5FBF;color:#fff}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -809,14 +817,14 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
 <header class="top"><div class="top-in">
   <div class="brand"><h1>애니메이션 오픈 일정</h1><p id="today"></p></div>
   <nav class="tabs" role="tablist">
-    <button type="button" role="tab" data-tab="open">오픈 일정</button>
-    <button type="button" role="tab" data-tab="prod">제작 일정</button>
-    <button type="button" role="tab" data-tab="std">공정 기준</button>
-    <button type="button" role="tab" data-tab="lp">런칭 플랜</button>
-    <button type="button" role="tab" data-tab="lc">연재 캘린더</button>
+    <span class="tgrp tga"><button type="button" role="tab" data-tab="open">오픈 일정</button>
     <button type="button" role="tab" data-tab="sim">시뮬레이션</button>
-    <button type="button" role="tab" data-tab="vendors">외주사 관리</button>
-    <button type="button" role="tab" data-tab="users" id="tabUsers" hidden>사용자 승인</button>
+    <button type="button" role="tab" data-tab="prod">제작 일정</button>
+    <button type="button" role="tab" data-tab="std">공정 기준</button></span>
+    <span class="tgrp tgb"><button type="button" role="tab" data-tab="lp">런칭 플랜</button>
+    <button type="button" role="tab" data-tab="lc">연재 캘린더</button></span>
+    <span class="tgrp tgc"><button type="button" role="tab" data-tab="vendors">외주사 관리</button>
+    <button type="button" role="tab" data-tab="users" id="tabUsers" hidden>사용자 승인</button></span>
   </nav>
   <span class="seg sm" id="langSw" data-notr role="group" aria-label="Language"><button type="button" data-lang="ko">한국어</button><button type="button" data-lang="ja">日本語</button></span>
   <button type="button" class="btn" id="txSw" data-notr></button>
@@ -1940,7 +1948,20 @@ function render0(){
 const Y0=2026, NY=3, NM=NY*12, YEND=Y0+NY-1;
 /* 런칭 시나리오 — 날짜를 정해 두고 휴재를 허용했을 때 운영 비교 (각 달 마지막 월요일) */
 const SCENARIOS=[["2026-12-21","12/21 런칭"],["2027-01-25","1월 말 런칭 (1/25)"],["2027-02-22","2월 말 런칭 (2/22)"]];
-let FORCE=null;   // null = 휴재 없는 일정, 아니면 시나리오 런칭일
+let FORCE=null;   // null = 휴재 없는 일정 (시나리오 버튼은 없앰 — 시뮬레이터 일정으로 대체)
+let OPEN_SIM=false, OPEN_SREG="KR";   // 오픈 일정 탭: 시뮬레이션 일정 보기 · 지역
+function simEnsure(reg){   // 시뮬레이션 탭을 안 열었어도 지역별 기본 설정으로 준비 → 그 지역 상태를 돌려줌
+  if(SIMS===null){ SIMS=undefined; simRegLoad().then(()=>safeRender()); return null; }
+  if(SIMS===undefined) return null;
+  const cur=SIMREG, curSim=SIM; if(!SIMS[reg]){ simUse(reg); if(cur!==reg){ SIMS[reg]=SIM; SIMREG=cur; SIM=curSim; } }
+  return SIMS[reg]; }
+function simViewOf(w,S0,ST){ const st=ST||SIM; const r=st&&st.rows[w.id]; if(!r||r.inc===false) return null;
+  const S=schedule(simX(w,r)); if(S.held) return null; const P=planOpens(S,r); if(!P||!P.opens) return null;
+  const op=[null]; const rs=new Set((P.restW||[]).map(key));
+  for(let k=1;k<=S.N;k++){ const o=P.opens[k]; const prev=k>1?P.opens[k-1]:null; let gap=0, rest=0, slot=o;
+    if(prev){ slot=addDays(prev,7); for(let x=slot;x<o;x=addDays(x,7)){ if(rs.has(key(x))) rest++; else gap++; } }
+    op.push({open:o,slot,gap,rest}); }
+  return {S,V:{L:P.opens[1],ok:true,op,hiatus:P.hiatus,first:null,run:S.N,end:P.end,sim:true,base:S0.L}}; }
 const mi=(d)=>(d.getUTCFullYear()-Y0)*12+d.getUTCMonth();
 /* 런칭일을 F로 고정했을 때: 최종본이 없는 주는 휴재, 준비되는 대로 다음 주 공개 */
 function forced(S,F){
@@ -1967,20 +1988,21 @@ const lineOk=(w)=>OPEN_LINE==="all"||lineOf(w)===OPEN_LINE;
 function renderOpen(){
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1}));
   const nowM=mi(TODAY), dataM=mi(D("2026-09-01"));   // 제작 현황 데이터 시작 월
-  const allAct=ACT(), rows=allAct.filter(lineOk).map(w=>{const S=schedule(w);return {w,S,V:viewOf(S)};}).sort((a,b)=>a.V.L-b.V.L||a.w.pos-b.w.pos);
+  const simST=OPEN_SIM?simEnsure(OPEN_SREG):null;
+  const allAct=ACT(), rows=allAct.filter(lineOk).map(w=>{const S=schedule(w); if(simST){ const x=simViewOf(w,S,simST); if(x) return {w,S:x.S,V:x.V}; } return {w,S,V:viewOf(S)};}).sort((a,b)=>a.V.L-b.V.L||a.w.pos-b.w.pos);
   const lnCnt=(l)=>WORKS.filter(w=>l==="all"||lineOf(w)===l).length, LNLAB={all:"전체",int:"내부 제작",ext:"외부 제작"};
   const FD=D(FORCE||SCENARIOS[0][0]);
 
   const launchBy=months.map(()=>[]), onAir=months.map(()=>0), after=[];
   const cellsOf=rows.map(({w,S,V})=>{
-    const c=months.map(()=>({n:0,g:0,st:""}));
+    const c=months.map(()=>({n:0,g:0,r:0,st:""}));
     const lm=mi(V.L), em=mi(V.end);
     const pf=S.done>0?dataM:Math.max(0,mi(S.start0));
     for(let i=pf;i<Math.min(lm,NM);i++) c[i].st="prod";
     const pz=pauseOf(w); if(pz&&pz.resume) for(let i=Math.max(pf,mi(D(pz.from)));i<Math.min(mi(D(pz.resume)),lm,NM);i++) c[i].st="pz";
     for(let k=1;k<=S.N;k++){
       const x=V.op[k], i=mi(x.open); if(i>=0&&i<NM) c[i].n++;
-      for(let g=0;g<x.gap;g++){ const j=mi(addDays(x.slot,7*g)); if(j>=0&&j<NM) c[j].g++; }
+      for(let g=0;g<(x.rest||0)+x.gap;g++){ const j=mi(addDays(x.slot,7*g)); if(j>=0&&j<NM){ if(g<(x.rest||0)) c[j].r++; else c[j].g++; } }
     }
     for(let i=Math.max(0,lm);i<=Math.min(em,NM-1);i++){ c[i].st= i===lm?"launch": i===em?"end":"serial"; onAir[i]++; }
     if(lm>=0&&lm<NM) launchBy[lm].push({w,V}); else if(lm>=NM) after.push({w,V});
@@ -2002,10 +2024,11 @@ function renderOpen(){
         return `${hi?` · <b>착수 대기(인력 충원 시) ${hi}작품</b>`:""}${pz?` · <b>제작 중단(재개 미정) ${pz}작품</b>`:""}`;})()} · 모든 작품 주 1회, 휴재 없이 완결까지 이어지는 날짜 기준</p>`;
   }
   h+=`</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="seg lnseg" role="group" aria-label="제작 라인 보기">${["all","int","ext"].map(l=>`<button type="button" data-ln="${l}" aria-pressed="${OPEN_LINE===l}">${l!=="all"?`<span class="lnd ${l}"></span>`:""}${LNLAB[l]} <span class="hint">${lnCnt(l)}</span></button>`).join("")}</div>
-    <div class="seg" role="group" aria-label="런칭 시나리오">
-      <button type="button" data-sc="" aria-pressed="${!FORCE}">휴재 없는 일정</button>
-      ${SCENARIOS.map(([d,t])=>`<button type="button" data-sc="${d}" aria-pressed="${FORCE===d}">${t}</button>`).join("")}
-    </div></div></div>`;
+    <div class="seg" role="group" aria-label="일정 버전">
+      <button type="button" data-osim="0" aria-pressed="${!OPEN_SIM}">휴재 없는 일정</button>
+      <button type="button" data-osim="1" aria-pressed="${OPEN_SIM}" title="시뮬레이션 탭의 지역별 기본 설정 기준 — 티저·쉼·런칭 회차 반영">시뮬레이션 일정</button>
+    </div>${OPEN_SIM?`<div class="seg simreg" role="group" aria-label="지역">${SIMREGS.map(([k,l])=>`<button type="button" data-osreg="${k}" aria-pressed="${OPEN_SREG===k}">${l}</button>`).join("")}</div>`:""}</div></div>
+    ${OPEN_SIM?`<p class="hint" style="margin:6px 0 0;background:#EEF4FD;border-radius:8px;padding:5px 10px">${simST?`시뮬레이션 일정 — <b>${esc((SIMREGS.find(x=>x[0]===OPEN_SREG)||[])[1])}</b> 기본 설정 기준이에요 (시뮬레이션 탭에서 바꾸면 바로 반영). 실제 일정(제작 일정 탭)엔 반영되지 않아요. 작품 옆 '(확정 ○/○)'는 휴재 없는 일정의 런칭일이에요.`:"시뮬레이션 기본 설정을 불러오는 중이에요…"}</p>`:""}`;
 
   if(FORCE){
     h+=`<h2>${md(FD)} 런칭 시 작품별 운영</h2><div class="calwrap" style="max-height:none"><table class="std cmp">
@@ -2045,13 +2068,13 @@ function renderOpen(){
   rows.forEach(({w,S,V},ri)=>{
     const far=mi(V.L)>=NM;
     h+=`<tr class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>
-      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${far?ymd(V.L).slice(2):md(V.L)} 런칭${FORCE&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
+      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${far?ymd(V.L).slice(2):md(V.L)} 런칭${V.sim&&key(V.L)!==key(V.base)?` <span class="hint">(확정 ${md(V.base)})</span>`:""}${(FORCE||V.sim)&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE||V.sim?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
     cellsOf[ri].forEach((c,i)=>{
       const cl=(i===nowM?" now":"")+yb(i)+(c.g&&c.n?" gap":"");
       const gt=c.g?` · 휴재 ${c.g}주`:"";
       if(c.st==="launch") h+=`<td class="c launch${cl}" title="${esc(w.n)} 런칭 ${ymd(V.L)} · ${S.K}화 동시 오픈${gt}">${V.L.getUTCDate()}일<small>${c.n}화</small></td>`;
       else if(c.st==="end") h+=`<td class="c end${cl}" title="${S.N}화 공개 ${ymd(V.end)}${gt}">${S.N}화<small>${c.n}화</small></td>`;
-      else if(c.st==="serial") h+= c.n?`<td class="c serial${cl}" title="${c.n}화 공개${gt}">${c.n}</td>`:`<td class="c gaponly${cl}" title="휴재${gt}">휴재</td>`;
+      else if(c.st==="serial") h+= c.n?`<td class="c serial${cl}" title="${c.n}화 공개${gt}">${c.n}</td>`:c.r&&!c.g?`<td class="c srest${cl}" title="쉼 (티저·프리뷰 후 계획된 쉼 ${c.r}주)">쉼</td>`:`<td class="c gaponly${cl}" title="휴재${gt}">휴재</td>`;
       else if(c.st==="pz") h+=`<td class="c pz${cl}" title="${esc(pauseTxt(w))}">중단</td>`;
       else if(c.st==="prod") h+=`<td class="c prod${cl}" title="${far&&i===NM-1?`제작 중 — ${ymd(V.L)} 런칭`:"제작 중"}">${far&&i===NM-1?`<span class="far">→</span>`:""}</td>`;
       else h+=`<td class="c${cl}"></td>`;
@@ -2093,7 +2116,8 @@ function renderOpen(){
     const msg=[...P.removed.map(w=>`− ${w.n} (이전 자동 편성 삭제)`),...P.changes.filter(c=>key(c.from)!==key(c.to)).map(c=>`· ${c.w.n}: 런칭 ${ymd(c.from)} → ${ymd(c.to)}`),...P.added.map(w=>`+ ${w.n}: ${ymd(D(w.start))} 착수 → ${ymd(D(w.launch))} 런칭`)].join("\n");
     if(confirm(`최소 ${MIN_ON_AIR}작품 연재 유지를 위해 아래처럼 바꿉니다. 모든 사람 화면에 적용됩니다.\n\n${msg}`)) applyPlan(P);
   };
-  document.querySelectorAll(".seg [data-sc]").forEach(b=>b.onclick=()=>{FORCE=b.dataset.sc||null;render();});
+  document.querySelectorAll("#v-open [data-osim]").forEach(b=>b.onclick=()=>{ OPEN_SIM=b.dataset.osim==="1"; FORCE=null; render(); });
+  document.querySelectorAll("#v-open [data-osreg]").forEach(b=>b.onclick=()=>{ OPEN_SREG=b.dataset.osreg; render(); });
   document.querySelectorAll(".seg [data-ln]").forEach(b=>b.onclick=()=>{ OPEN_LINE=b.dataset.ln; try{ localStorage.setItem("anime_open_line",OPEN_LINE); }catch(e){} render(); });
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{SEL=b.dataset.go;setTab("prod");});
 }
@@ -2130,7 +2154,7 @@ function covLine(){
 let SIM=null;
 const SIM_R0=(w)=>{ const r=SIM_R00(w); simTzApply(w,r,true); return r; };
 /* 티저: 1화만 먼저 공개 → 2화부터 휴재 없이 이어지도록 쉬는 주를 자동 계산 (티저 순서 작품) */
-function simTzApply(w,r,init){ const T=typeof CONF!=="undefined"&&CONF.teaser; if(!T||!(T.order||[]).includes(w.n)) return false;
+function simTzApply(w,r,init){ const T=typeof CONF!=="undefined"&&CONF.teaser; if(!T||!(T.order||[]).includes(w.n)) return false; if(typeof SIMREG!=="undefined"&&SIMREG!=="JP") return false;   // 티저는 일본 우선
   const d=T.dates&&T.dates[w.n];
   if(d&&(init||!(r.launchMode==="fixed"&&r.launch))){ r.launchMode="fixed"; r.launch=d; }
   else if(!(r.launchMode==="fixed"&&r.launch)) r.launchMode="auto";   // 날짜가 없으면 1화가 준비되는 가장 빠른 날
@@ -2203,13 +2227,10 @@ function planOpens(S,c){
   return earliest(r0,pw0,N);
 }
 function renderSim(){
-  if(SIMSAVES==null&&!SIM){ SIMSAVES=undefined; simVerLoad().then(()=>{ if(SIMSAVES===undefined) SIMSAVES=[]; if(TAB==="sim") safeRender(); }); }
-  if(SIMSAVES===undefined){ $("v-sim").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">시뮬레이션 기본 버전을 불러오는 중이에요…</div>`; return; }
-  if(!SIM&&!SIM_BASE_TRIED){ SIM_BASE_TRIED=true; const b=simBaseVer(); if(b){ SIM=clone(b.data); SIM.extra=(SIM.extra||[]).map(normW); SIM._from=b.id; } }
-  if(!SIM) simInit();
-  if(!SIM.extra) SIM.extra=[];
-  if(!SIM.tzv){ simTzAll(true); SIM.tzv=1; }   // 10/19: 티저 작품은 1화 선공개 + 휴재 없이 이어가기
-  if(SIMSAVES==null){ SIMSAVES=[]; simVerLoad().then(()=>{ if(TAB==="sim") safeRender(); }); }
+  if(SIMS===null){ SIMS=undefined; simRegLoad().then(()=>{ if(TAB==="sim"||TAB==="open") safeRender(); }); }
+  if(SIMS===undefined){ $("v-sim").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">시뮬레이션 기본 설정을 불러오는 중이에요…</div>`; return; }
+  if(!SIM||SIMS[SIMREG]!==SIM) simUse(SIMREG);
+  simRegSaveSoon();   // 바꾼 값은 지역별 기본 설정으로 자동 저장
   const WL=SIM_WL();
   WL.forEach(w=>{ if(!SIM.rows[w.id]) SIM.rows[w.id]=SIM_R0(w); });
   Object.values(SIM.rows).forEach(r=>{ if(+r.len>0&&+r.len<=6) r.len="";   // 예전 '분' 값은 버림
@@ -2227,13 +2248,10 @@ function renderSim(){
   const CAD=[[7,"주간"],[10,"10일 간격"],[14,"격주"]], VOI=[["human","인간 성우"],["ai","AI 성우"]], LEN=[[-30,"30% 짧게 · 빨라짐"],[-20,"20% 짧게 · 빨라짐"],[-10,"10% 짧게 · 빨라짐"],[10,"10% 길게 · 늦어짐"],[20,"20% 길게 · 늦어짐"],[30,"30% 길게 · 늦어짐"]], MODE=[["regular","없음"],["season","시즌제"]], REST=[["auto","자동"],...[1,2,3,4,6,8,12].map(n=>[n,`${n}주`])],
     PG=[["","없음"],["auto","자동"],...[1,2,3,4,5,6,8,10,12].map(n=>[n,`${n}주`])], LM=[["auto","자동"],["fixed","날짜"]], KEEP=[["","그대로"]];
   let h=`<div class="simhd"><div><p class="lead">시뮬레이션</p><p class="lead-sub">제작 일정 탭 기준으로 공개 운영과 제작 가정을 바꿔 보는 화면이에요. 여기서 바꾼 값은 실제 일정에 반영되지 않아요.</p></div>
-      <span class="simver">${SIMSAVES&&SIMSAVES.length?`<select class="in" id="simVer"><option value="">저장된 버전 ${SIMSAVES.length}개</option>${SIMSAVES.slice().reverse().map(x=>`<option value="${esc(x.id)}"${x.id===SIMBASE?' style="font-weight:700"':""}>${x.id===SIMBASE?"★ ":""}${esc(x.name)} · ${esc((x.at||"").slice(5,16).replace("T"," "))}${x.by?` · ${esc(x.by)}`:""}</option>`).join("")}</select>
-        <button type="button" class="btn" id="simLoad">불러오기</button><button type="button" class="btn danger" id="simDelV" title="고른 버전 삭제">삭제</button><button type="button" class="btn" id="simBaseMk" title="고른 버전을 모두에게 기본으로 열리는 확정 버전으로">★ 기본 버전으로 확정</button>`:""}
-        <button type="button" class="btn pri" id="simSave">현재 버전 저장</button><button type="button" class="btn" id="simReset">처음으로</button></span></div>
-    <div class="simbase">${(()=>{ const b=simBaseVer(); if(!b) return `★ 확정된 기본 버전이 없어요 · 저장된 버전을 고르고 <b>[★ 기본 버전으로 확정]</b>을 누르면, 시뮬레이션 탭을 열 때 모두에게 그 버전이 먼저 열려요.`;
-      const same=SIM&&JSON.stringify({a:SIM.all,r:SIM.rows,e:SIM.extra,k:SIM.preK,s:SIM.preScope})===JSON.stringify({a:b.data.all,r:b.data.rows,e:(b.data.extra||[]),k:b.data.preK,s:b.data.preScope});
-      return `★ 기본 버전 <b>${esc(b.name)}</b> <span class="hint">${esc((b.at||"").slice(0,10))}${b.by?` · ${esc(b.by)}`:""}</span> ${same?`<span class="lcbd ok">지금 화면 = 기본 버전</span>`:`<span class="lcbd bad">지금 화면은 기본 버전과 달라요</span> <button type="button" class="btn" id="simBaseGo">기본 버전으로 되돌리기</button>`}`; })()}</div>
-    <div class="simv">${yv(2026)} · ${yv(2027)} · ${yv(2028)} 작품 오픈${hia?` · 휴재 합계 <b style="color:var(--hia)">${hia}주</b>`:" · 휴재 없음"}
+      <span class="simver"><span class="seg simreg" role="group" aria-label="지역">${SIMREGS.map(([k,l])=>`<button type="button" data-sreg="${k}" aria-pressed="${SIMREG===k}">${l}</button>`).join("")}</span>
+        <span class="hint" id="simSaved">${SIMS_AT?`저장됨 · ${SIMS_AT.slice(5,16).replace("T"," ")}`:"바꾸면 자동 저장"}</span><button type="button" class="btn" id="simReset">처음으로</button></span></div>
+    <div class="simbase">지역별 기본 설정 — <b>${esc((SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG)}</b> 값을 바꾸면 모두에게 공유되는 기본값으로 바로 저장돼요. 오픈 일정 탭 [시뮬레이션 일정]에서 KR · JP · GW를 바로 비교할 수 있어요.${SIMREG==="JP"?" · 티저(1화 선공개)는 일본 우선이라 JP에만 적용돼요.":""}</div>
+        <div class="simv">${yv(2026)} · ${yv(2027)} · ${yv(2028)} 작품 오픈${hia?` · 휴재 합계 <b style="color:var(--hia)">${hia}주</b>`:" · 휴재 없음"}
       <span class="hint" style="font-size:12px">괄호 = 확정 일정 대비</span></div>
     <div class="card simpre"><b>연말 프리뷰 해보기</b>
       <span>${ymd(YE)} 런칭 · <select class="in" id="preK">${opt([[1,"1화"],[2,"2화"]],SIM.preK||2)}</select> 먼저 오픈 → 휴재 없이 이어가려면 몇 주 쉬어야 하는지 계산</span>
@@ -2245,7 +2263,7 @@ function renderSim(){
     return `<td><select class="in" ${k}="mode"${idA}>${opt(keepIf(all,MODE),r.mode)}</select>${on||(all&&r.mode==="")?` <input class="in n" type="number" min="1" max="100" ${k}="seasonN"${idA} value="${r.seasonN}" placeholder="${all?"그대로":""}">화씩`:""}</td>
       <td>${on||(all&&r.mode==="")?`<select class="in" ${k}="rest"${idA}>${opt(keepIf(all,REST),r.rest)}</select>`:`<span class="hint">–</span>`}</td>`; };
   const TH=(t,sub,cls)=>`<th${cls?` class="${cls}"`:""}>${t}<small>${sub||"&nbsp;"}</small></th>`;
-  h+=`<h2>작품별 운영</h2><div class="simtw"><table class="simt"><thead><tr><th class="sc0"></th>${TH("작품","이름 클릭해서 수정","sc1")}
+  h+=`<details class="simfold"${SIMOPS_OPEN?" open":""}><summary><h2 style="display:inline">작품별 운영</h2> <span class="hint">${WORKS.length+(SIM.extra||[]).length}작품 · 펼쳐서 런칭일·런칭 회차·쉼 등을 고쳐요</span></summary><div class="simtw"><table class="simt"><thead><tr><th class="sc0"></th>${TH("작품","이름 클릭해서 수정","sc1")}
     ${TH("런칭일","◀▶ 1주씩 · 날짜 직접 입력")}${TH("런칭 회차","런칭 때 오픈")}${TH("성우","인간 · AI")}${TH("시즌 회차","총 회차")}${TH("공개 주기","주간 · 10일 · 격주")}
     ${TH("회차당 제작","영업일 · 목표 7일")}${TH("회차 길이","현재 대비 ±30%까지")}${TH("시즌제","○화씩 나눠 공개")}${TH("시즌 쉼","시즌 사이")}${TH("프리뷰 후 쉼","런칭 회차 뒤")}
     ${TH("완결","마지막 회차","rs rs1")}${TH("휴재","제작 지연","rs rs2")}</tr></thead><tbody>
@@ -2280,7 +2298,7 @@ function renderSim(){
         ${seasonCells(id,r,false)}
         <td><select class="in" data-sr="pgap" data-id="${id}">${opt(PG,r.pgap)}</select>${r.pgap!==""&&P.K<z.S.N?`<div class="pgr">${P.pw?`${P.pw}주 쉬고`:"쉬지 않고"} ${md(P.opens[P.K+1])}부터 연재</div>`:""}</td>
         <td class="rs rs1 hint">${ymd(P.end)}${r.mode==="season"?`<div>시즌마다 ${P.rest}주 쉼</div>`:""}</td><td class="rs rs2 r">${P.hiatus?`<b style="color:var(--hia)">${P.hiatus}주</b>`:"–"}</td></tr>`; }); });
-  h+=`</tbody></table></div>`;
+  h+=`</tbody></table></div></details>`;
   // 월간표
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1})), nowM=mi(TODAY), yb=(i)=>months[i].m===1?" y1":"";
   const lb=months.map(()=>0), on=months.map(()=>0), rb=months.map(()=>0);
@@ -2317,11 +2335,12 @@ function renderSim(){
     <span><i style="background:repeating-linear-gradient(90deg,#E9EAE5 0 3px,#F6F6F3 3px 6px)"></i>쉼 (프리뷰 후·시즌 사이)</span><span><i style="background:var(--hia-bg)"></i>휴재 (제작이 못 따라옴)</span></div>`;
   $("v-sim").innerHTML=h;
   // 이벤트
-  $("simReset").onclick=()=>{ if(confirm("시뮬레이션 값을 모두 처음으로(제작 일정 그대로) 되돌릴까요?")){ SIM=null; SIM_BASE_TRIED=true; render(); } };
+  $("simReset").onclick=()=>{ const rl=(SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG; if(confirm(`${rl} 시뮬레이션 값을 처음으로(제작 일정 그대로${SIMREG==="JP"?" + 티저 기본":""}) 되돌릴까요? 모두에게 공유되는 기본값이 바뀌어요.`)){ SIMS[SIMREG]=null; SIM=null; simUse(SIMREG); render(); } };
   if($("simBaseGo")) $("simBaseGo").onclick=()=>{ const b=simBaseVer(); if(!b) return; if(!confirm(`기본 버전 '${b.name}'으로 되돌릴까요? 지금 화면 값은 저장하지 않았다면 사라져요.`)) return; SIM=clone(b.data); SIM.extra=(SIM.extra||[]).map(normW); toast("기본 버전으로 되돌렸어요"); render(); };
   if($("simBaseMk")) $("simBaseMk").onclick=()=>{ const v=(SIMSAVES||[]).find(x=>x.id===$("simVer").value); if(!v){ toast("기본으로 정할 저장 버전을 골라 주세요 (지금 화면은 먼저 [현재 버전 저장])"); return; }
     if(confirm(`'${v.name}'을 기본 버전으로 확정할까요? 시뮬레이션 탭을 열면 모두에게 이 버전이 먼저 열려요.`)) simBaseSet(v.id).then(()=>toast("기본 버전으로 확정했어요")); };
-  $("simSave").onclick=simSaveVer;
+  if($("simSave")) $("simSave").onclick=simSaveVer;
+  document.querySelectorAll("#v-sim [data-sreg]").forEach(b=>b.onclick=()=>{ if(b.dataset.sreg===SIMREG) return; simRegSave(); simUse(b.dataset.sreg); render(); });
   if($("simLoad")) $("simLoad").onclick=()=>{ const v=(SIMSAVES||[]).find(x=>x.id===$("simVer").value); if(!v){ toast("불러올 버전을 골라 주세요"); return; }
     SIM=clone(v.data); SIM.extra=(SIM.extra||[]).map(normW); toast(`'${esc(v.name)}' 버전을 불러왔어요`); render(); };
   if($("simDelV")) $("simDelV").onclick=()=>{ const v=(SIMSAVES||[]).find(x=>x.id===$("simVer").value); if(!v){ toast("삭제할 버전을 골라 주세요"); return; }
@@ -2331,6 +2350,7 @@ function renderSim(){
   document.querySelectorAll("#v-sim [data-sdel]").forEach(b=>b.onclick=()=>{ SIM.extra=SIM.extra.filter(w=>w.id!==b.dataset.sdel); delete SIM.rows[b.dataset.sdel]; render(); });
   document.querySelectorAll("#v-sim [data-lw]").forEach(b=>b.onclick=()=>{ const r=SIM.rows[b.dataset.id]; r.launchMode="fixed"; r.launch=key(addDays(D(b.dataset.base),7*(+b.dataset.lw))); render(); });
   document.querySelectorAll("#v-sim [data-lauto]").forEach(b=>b.onclick=()=>{ SIM.rows[b.dataset.lauto].launchMode="auto"; render(); });
+  const sf=document.querySelector("#v-sim .simfold"); if(sf) sf.ontoggle=()=>{ SIMOPS_OPEN=sf.open; };
   if($("tzGo")) $("tzGo").onclick=()=>{ const n=simTzAll(false); toast(`티저 ${n}작품: 순서대로 1화 선공개 → 2화부터 휴재 없이 이어지게 맞췄어요`); render(); };
   $("preK").onchange=(e)=>{ SIM.preK=+e.target.value; }; $("preScope").onchange=(e)=>{ SIM.preScope=e.target.value; };
   $("preGo").onclick=()=>{ const sc=SIM.preScope||"all", K=SIM.preK||2, YE=yearEndMon(); let n=0;
@@ -2369,7 +2389,28 @@ async function simVerLoad(){
   if(!SB.on){ SIMSAVES=lsGet("anime_simsaves")||[]; SIMBASE=lsGet("anime_simbase")||null; return; }
   try{ const r=await sb("GET",T_CONF,"?id=eq.simsaves&select=data"); const d=r&&r.length&&r[0].data||{}; SIMSAVES=d.list||[]; SIMBASE=d.baseId||null; }catch(e){ SIMSAVES=SIMSAVES||[]; }
 }
-let SIMBASE=null, SIM_BASE_TRIED=false;   // 확정 기본 버전 id (모두에게 같은 기본값)
+let SIMBASE=null, SIM_BASE_TRIED=false, SIMOPS_OPEN=false;
+/* 지역별 시뮬레이션 (KR · JP · GW) — 버전 불러오기 대신 지역마다 '기본 설정값' 하나를 공유 저장 (바꾸면 자동 저장) */
+const SIMREGS=[["KR","한국 KR"],["JP","일본 JP"],["GW","글로벌 GW"]];
+let SIMREG=(()=>{ try{ return localStorage.getItem("anime_simreg")||"KR"; }catch(e){ return "KR"; } })();
+let SIMS=null, SIMS_SIG="", SIMS_T=0, SIMS_AT=null;
+async function simRegLoad(){ let d=null;
+  try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.simregion&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_simregion"); }catch(e){}
+  if(d&&d.states){ SIMS={KR:null,JP:null,GW:null,...d.states}; SIMS_AT=d.at||null; }
+  else {   // 처음: 일본은 지금까지 쓰던 시뮬레이션(기본 버전 → 없으면 현재 화면), 한국·글로벌은 처음 값
+    SIMS={KR:null,JP:null,GW:null};
+    try{ await simVerLoad(); }catch(e){} const b=simBaseVer(); if(b) SIMS.JP=clone(b.data); else if(SIM) SIMS.JP=clone(SIM);
+    if(SIMS.JP) delete SIMS.JP.tzv; SIM=null; }   // 일본에 티저 기본값을 다시 맞춤 (직접 정한 날짜는 유지)
+  Object.values(SIMS).forEach(x=>{ if(x&&x.extra) x.extra=x.extra.map(normW); });
+  SIMS_SIG=JSON.stringify(SIMS); }
+function simUse(reg){ if(SIMS&&SIM&&SIMS[SIMREG]!==SIM&&SIMREG) SIMS[SIMREG]=SIM; SIMREG=reg; try{ localStorage.setItem("anime_simreg",reg); }catch(e){}
+  SIM=SIMS[reg]||null; if(!SIM){ simInit(); SIMS[reg]=SIM; }
+  if(!SIM.extra) SIM.extra=[]; if(!SIM.tzv){ if(reg==="JP") simTzAll(true); SIM.tzv=1; } }
+function simRegSaveSoon(){ clearTimeout(SIMS_T); SIMS_T=setTimeout(simRegSave,900); }
+async function simRegSave(){ if(!SIMS) return; if(SIM) SIMS[SIMREG]=SIM; const sig=JSON.stringify(SIMS); if(sig===SIMS_SIG) return;
+  try{ const data={states:SIMS,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")};
+    if(!SB.on) lsSet("anime_simregion",data); else await sb("POST",T_CONF,"",[{id:"simregion",data,updated_at:data.at}],"resolution=merge-duplicates");
+    SIMS_SIG=sig; SIMS_AT=data.at; const el=$("simSaved"); if(el) el.textContent=`저장됨 · ${data.at.slice(11,16)}`; }catch(e){ const el=$("simSaved"); if(el) el.textContent="저장 실패 — 다시 시도해요"; setTimeout(simRegSave,5000); } }   // 작품별 운영 표: 기본 접힘   // 확정 기본 버전 id (모두에게 같은 기본값)
 const simBaseVer=()=>(SIMSAVES||[]).find(x=>x.id===SIMBASE)||null;
 async function simBaseSet(id){
   try{ if(!SB.on){ SIMBASE=id; lsSet("anime_simbase",id); render(); return; }
