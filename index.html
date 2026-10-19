@@ -1323,6 +1323,13 @@ function runMigrations0(){
     const r=CONF.stages.find(x=>x.k==="rating"); if(r){ r.v={ih:15,ia:15,eh:15,ea:15}; r.h=15; r.from="2027-10-01"; }
     CONF.migr.push("rating-2710"); dirty=true;
   }
+  if(!has("nightrun-tz-pin-1019")){   // 나이트런 1화 티저 12/28: 1화만 첫 더빙 묶음 · 12/21 성우사무소 납품(믹싱) · 12/22 자막 최종본 · 오픈 여유 예외
+    const w=WORKS.find(x=>x.n==="나이트런");
+    if(w){ const m="티저: 12/21 성우사무소 납품 기준 (무리 일정 · 연휴 무관)";
+      edit(w.id,[{p:["b1"],v:1},{p:["tzLock"],v:{ep:1,bd:0}},
+        {p:["ov","1:dub"],v:{f:"2026-12-18",lock:true,m}},{p:["ov","1:mix"],v:{f:"2026-12-21",lock:true,m}},{p:["ov","1:burn"],v:{f:"2026-12-22",lock:true,m}}],true); }
+    CONF.migr.push("nightrun-tz-pin-1019"); dirty=true;
+  }
   if(!has("teaser-order-1019")){   // 10/19 티저 런칭 순서: 나이트런 → 냐한 남자 → 용사가 돌아왔다 → 소녀바둑 · 일본 우선
     CONF.teaser={order:["나이트런","냐한 남자","용사가 돌아왔다","소녀바둑"],first:"일본",dates:{"나이트런":"2026-12-28"}};
     CONF.migr.push("teaser-order-1019"); dirty=true;
@@ -1505,7 +1512,7 @@ function scheduleCore(w,useOv=true){
       else{ bump(k,e); markMain(s,k,eps[k].cells[s.k]); }
     }
   });
-  for(let k=1;k<=N;k++){ eps[k].ready=prev[k]; eps[k].need=addBD(prev[k],+CONF.lockBD||0); }
+  for(let k=1;k<=N;k++){ eps[k].ready=prev[k]; const tl=w.tzLock&&+w.tzLock.ep===k?+w.tzLock.bd:null; eps[k].need=addBD(prev[k],tl!=null?tl:(+CONF.lockBD||0)); }   // 티저 회차는 최종본→오픈 여유 예외(무리 일정)
 
   /* 휴재 없는 최단 런칭: open_k = L + 7·max(0,k-3) 이 모든 회차에서 need_k 이상 + 런칭 전 조건 */
   const K=Math.min(OPEN_K,N), T=w.launchAuto?D("2026-01-05"):D(w.launch||"2026-12-21");   // launchAuto: 목표일 없이 가장 빠른 날
@@ -2108,7 +2115,9 @@ function covLine(){
    설정 순서: 런칭일 → 런칭 때 오픈 회차 → 총 회차 → 공개 주기 → 시즌제 → 시즌 쉼 → 프리뷰 후 쉼
    '전체' 줄에서 고른 값만 [일괄 적용]으로 덮어씀                                                         */
 let SIM=null;
-const SIM_R0=(w)=>({inc:true,launchMode:"auto",launch:"2026-12-28",openK:3,total:+w.total||SEASON_N,cad:7,voice:"keep",rate:"",len:"",mode:"regular",seasonN:10,rest:"auto",pgap:""});
+const SIM_R0=(w)=>{ const T=typeof CONF!=="undefined"&&CONF.teaser, d=T&&T.dates&&T.dates[w.n];
+  const r=SIM_R00(w); if(d) Object.assign(r,{launchMode:"fixed",launch:d,openK:1,pgap:"auto"}); return r; };   // 티저 날짜가 정해진 작품: 그 날 1화 먼저 → 휴재 없이 이어지게 쉬는 주 자동
+const SIM_R00=(w)=>({inc:true,launchMode:"auto",launch:"2026-12-28",openK:3,total:+w.total||SEASON_N,cad:7,voice:"keep",rate:"",len:"",mode:"regular",seasonN:10,rest:"auto",pgap:""});
 const SIM_A0=()=>({launchMode:"",launch:"2026-12-28",openK:"",total:"",cad:"",voice:"",rate:"",len:"",mode:"",seasonN:"",rest:"",pgap:"",scope:"all"});
 function simInit(){ SIM={all:SIM_A0(),rows:{},extra:[]}; WORKS.forEach(w=>SIM.rows[w.id]=SIM_R0(w)); }
 const SIM_WL=()=>WORKS.concat(SIM&&SIM.extra||[]);   // 실제 작품 + 시뮬레이션에서만 추가한 작품
