@@ -545,6 +545,10 @@ table.lct td.lch{background:repeating-linear-gradient(135deg,#FBE1DD 0 4px,#fff 
 .seg.simreg button[aria-pressed="true"]{background:#1F5FBF;color:#fff}
 table.lct td.ysum,table.lct th.ysum{background:#EEF2FA;font-weight:800;color:#1F2A44;border-left:1px solid #C9D2E6;border-right:2px solid #9AA3B2;white-space:nowrap}
 table.lct th.ysum{background:#33415F;color:#fff;font-size:11px} table.lct td.ysum small{font-size:9px;color:var(--muted);margin-left:2px;font-weight:600}
+table.lp2.sx tr.sxh td{background:#2E3A55;color:#fff;font-weight:800;font-size:12.5px;text-align:left;padding:6px 10px} table.lp2.sx tr.sxh td .hint{color:#C9CED8;font-weight:500}
+table.lp2.sx tr.b td{font-weight:700} table.lp2.sx tr.tot td{font-weight:800} table.lp2.sx tr.sxin td{background:#FFF9E6}
+.sxt{font-size:11px;font-weight:600;color:var(--ink2);background:#EEF0EB;border-radius:8px;padding:0 6px;margin-left:4px;border:0;cursor:pointer}
+table.lp2.sx .sxc{width:100%;text-align:center;border:0;background:transparent;font-weight:700;color:#2B4FA8}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -820,13 +824,11 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   <div class="brand"><h1>애니메이션 오픈 일정</h1><p id="today"></p></div>
   <nav class="tabs" role="tablist">
     <span class="tgrp tga"><button type="button" role="tab" data-tab="open">오픈 일정</button>
-    <button type="button" role="tab" data-tab="sim">시뮬레이션</button>
     <button type="button" role="tab" data-tab="prod">제작 일정</button>
-    <button type="button" role="tab" data-tab="std">공정 기준</button></span>
+    <button type="button" role="tab" data-tab="sim">시뮬레이션 설정</button></span>
     <span class="tgrp tgb"><button type="button" role="tab" data-tab="lp">런칭 플랜</button>
     <button type="button" role="tab" data-tab="lc">연재 캘린더</button></span>
-    <span class="tgrp tgc"><button type="button" role="tab" data-tab="vendors">외주사 관리</button>
-    <button type="button" role="tab" data-tab="users" id="tabUsers" hidden>사용자 승인</button></span>
+    <span class="tgrp tgc"><button type="button" role="tab" data-tab="vendors">외주사 관리</button></span>
   </nav>
   <span class="seg sm" id="langSw" data-notr role="group" aria-label="Language"><button type="button" data-lang="ko">한국어</button><button type="button" data-lang="ja">日本語</button></span>
   <button type="button" class="btn" id="txSw" data-notr></button>
@@ -1527,6 +1529,9 @@ function scheduleCore(w,useOv=true){
       else{ bump(k,e); markMain(s,k,eps[k].cells[s.k]); }
     }
   });
+  // 실제 제작 시작 = 회차 중 가장 이른 영상 1차 시작 (지정 완료일이 착수일보다 앞서면 그 기준) → 계약 체결 마감도 그 10영업일 전
+  let prodStart=start0; for(let k=1;k<=N;k++){ const c=eps[k].cells&&eps[k].cells.prod1; if(c){ const x=c.s||(c.e?subBD(c.e,Math.max(0,(+c.base||+c.d||1)-1)):null); if(x&&x<prodStart) prodStart=x; } }
+  { const cc=eps[1]&&eps[1].cells&&eps[1].cells.contract, oc=ov["w:contract"]||ov["1:contract"]; if(cc&&cc.due&&!(oc&&oc.f)) cc.e=subBD(prodStart,cc.base); }
   for(let k=1;k<=N;k++){ eps[k].ready=prev[k]; const tl=w.tzLock&&+w.tzLock.ep===k?+w.tzLock.bd:null; eps[k].need=addBD(prev[k],tl!=null?tl:(+CONF.lockBD||0)); }   // 티저 회차는 최종본→오픈 여유 예외(무리 일정)
 
   /* 휴재 없는 최단 런칭: open_k = L + 7·max(0,k-3) 이 모든 회차에서 need_k 이상 + 런칭 전 조건 */
@@ -1553,7 +1558,7 @@ function scheduleCore(w,useOv=true){
     if(tzc.mode==="fixed"&&tzc.date) t=D(tzc.date);
     else { const d0=tzc.date?D(tzc.date):TODAY; t=tzc.dow!=null&&tzc.dow!==""?dowOnOrAfter(d0,+tzc.dow):d0; while(E.need>t) t=addDays(t,7); }   // 티저: 입력한 날(또는 고른 요일)부터 매주 같은 요일로
     if(t<E.open){ TZ={ep:k,date:t,regular:E.open,late:E.need>t,mode:tzc.mode}; E.open=t; E.tz=true; E.slack=bdDiff(E.need,t); } }
-  return {eps,N,K,L,T,TZ,dow:L.getUTCDay(),delayW:weeks(T,L),crit,critGate,end:eps[N].open,start0,done,ST,BT,bOf};
+  return {eps,N,K,L,T,TZ,dow:L.getUTCDay(),delayW:weeks(T,L),crit,critGate,end:eps[N].open,start0,prodStart,done,ST,BT,bOf};
 }
 /* ---------- 내부 제작 인력 ----------
    tbd(담당 미정) 작품은 인턴 전환 인원(CONF.staff.n)만큼 우선순위(CONF.staff.order) 순서대로 배정.
@@ -1938,10 +1943,11 @@ function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); 
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]})`;
-  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===TAB)));
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===TAB||(TAB==="std"&&b.dataset.tab==="prod"))));
   ["open","prod","std","lp","lc","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
   try{
-    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors") renderVendors(); else if(TAB==="lp") renderLP2(); else if(TAB==="lc") renderLC(); else renderStd();
+    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors"){ renderVendors(); lp2SrcInto(); } else if(TAB==="lp") renderLP2(); else if(TAB==="lc") renderLC(); else renderStd();
+    if(TAB==="prod"||TAB==="std"){ const v=$("v-"+TAB); if(v&&!v.querySelector(".subnav")) v.insertAdjacentHTML("afterbegin",`<div class="subnav"><span class="seg sm"><button type="button" data-subt="prod" aria-pressed="${TAB==="prod"}">작품별 공정</button><button type="button" data-subt="std" aria-pressed="${TAB==="std"}">공정 기준 (설정)</button></span></div>`); v.querySelectorAll("[data-subt]").forEach(b=>b.onclick=()=>setTab(b.dataset.subt)); }
   }catch(e){
     console.error(e);
     $("v-"+TAB).innerHTML=`<div class="card"><b>화면을 그리지 못했습니다.</b><p class="hint">${esc(e.message)} — 공정 기준 탭에서 JSON을 내보내 확인하거나, 새로고침해 주세요.</p></div>`;
@@ -2001,7 +2007,7 @@ function renderOpen(){
   const cellsOf=rows.map(({w,S,V})=>{
     const c=months.map(()=>({n:0,g:0,r:0,st:""}));
     const lm=mi(V.L), em=mi(V.end);
-    const pf=S.done>0?dataM:Math.max(0,mi(S.start0));
+    const pf=S.done>0?dataM:Math.max(0,mi(S.prodStart||S.start0));   // 제작 중 = 실제 영상 1차 시작부터
     for(let i=pf;i<Math.min(lm,NM);i++) c[i].st="prod";
     const pz=pauseOf(w); if(pz&&pz.resume) for(let i=Math.max(pf,mi(D(pz.from)));i<Math.min(mi(D(pz.resume)),lm,NM);i++) c[i].st="pz";
     for(let k=1;k<=S.N;k++){
@@ -2268,11 +2274,11 @@ function renderSim(){
     <div class="simbase">지역별 기본 설정 — <b>${esc((SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG)}</b> 값을 바꾸면 모두에게 공유되는 기본값으로 바로 저장돼요. 오픈 일정 탭 [시뮬레이션 일정]에서 KR · JP · GW를 바로 비교할 수 있어요.${SIMREG==="JP"?" · 티저: 12/28 나이트런부터 작품 순서대로 1주일마다 1화 선공개":SIMREG==="KR"?" · 티저: 1/25(1월 말) 나이트런부터 일본과 같은 순서로 1주일마다 1화 선공개":" · 글로벌은 티저 없이 정규 런칭"}</div>
         <div class="simv">${yv(2026)} · ${yv(2027)} · ${yv(2028)} 작품 오픈${hia?` · 휴재 합계 <b style="color:var(--hia)">${hia}주</b>`:" · 휴재 없음"}
       <span class="hint" style="font-size:12px">괄호 = 확정 일정 대비</span></div>
-    <div class="card simpre"><b>연말 프리뷰 해보기</b>
+    <div class="card simpre"><span hidden><b>연말 프리뷰 해보기</b>
       <span>${ymd(YE)} 런칭 · <select class="in" id="preK">${opt([[1,"1화"],[2,"2화"]],SIM.preK||2)}</select> 먼저 오픈 → 휴재 없이 이어가려면 몇 주 쉬어야 하는지 계산</span>
       <select class="in" id="preScope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],SIM.preScope||"all")}</select>
-      <button type="button" class="btn pri" id="preGo">적용</button>
-      <button type="button" class="btn" id="tzGo" title="티저 순서 작품(${esc((TZC().order||[]).join(" → "))})은 1화만 먼저 공개(일본·한국)하고, 모든 작품이 휴재 없이 이어지도록 런칭 뒤 쉬는 주를 자동으로 맞춰요">기본 방식으로 (${SIMREG!=="GW"?"티저 1화 → 3화 재개 · ":""}3화 동시 런칭 · 휴재 없음)</button></div>`;
+      <button type="button" class="btn pri" id="preGo">적용</button></span>
+      <button type="button" class="btn pri" id="tzGo" title="티저 순서 작품(${esc((TZC().order||[]).join(" → "))})은 1화만 먼저 공개(일본·한국)하고, 모든 작품이 휴재 없이 이어지도록 런칭 뒤 쉬는 주를 자동으로 맞춰요">기본 방식으로 (${SIMREG!=="GW"?"티저 1화 → 3화 재개 · ":""}3화 동시 런칭 · 휴재 없음)</button></div>`;
   const keepIf=(all,a)=>(all?KEEP:[]).concat(a);
   const seasonCells=(id,r,all)=>{ const k=all?"data-sa":"data-sr", idA=all?"":` data-id="${id}"`, on=r.mode==="season";
     return `<td><select class="in" ${k}="mode"${idA}>${opt(keepIf(all,MODE),r.mode)}</select>${on||(all&&r.mode==="")?` <input class="in n" type="number" min="1" max="100" ${k}="seasonN"${idA} value="${r.seasonN}" placeholder="${all?"그대로":""}">화씩`:""}</td>
@@ -2318,7 +2324,7 @@ function renderSim(){
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1})), nowM=mi(TODAY), yb=(i)=>months[i].m===1?" y1":"";
   const lb=months.map(()=>0), on=months.map(()=>0), rb=months.map(()=>0);
   const cellsOf=(z)=>{ const {S,P}=z, c=months.map(()=>({n:0,st:"",hia:0,rest:0})), lm=mi(P.L), em=mi(P.end);
-    const pf=Math.max(0,S.done>0?Math.min(mi(S.start0),mi(D("2026-09-01"))):mi(S.start0));
+    const pf=Math.max(0,S.done>0?Math.min(mi(S.start0),mi(D("2026-09-01"))):mi(S.prodStart||S.start0));
     for(let i=pf;i<Math.min(lm,NM);i++) c[i].st="prod";
     for(let k=1;k<=S.N;k++){ const i=mi(P.opens[k]); if(i>=0&&i<NM) c[i].n++; }
     P.hiaW.forEach(t=>{ const i=mi(t); if(i>=0&&i<NM) c[i].hia++; }); P.restW.forEach(t=>{ const i=mi(t); if(i>=0&&i<NM) c[i].rest++; });
@@ -2339,7 +2345,8 @@ function renderSim(){
           :x.st==="rest"?`<td class="c srest${cl}">쉼</td>`
           :x.st==="prod"?`<td class="c prod${cl}"></td>`:`<td class="c${cl}"></td>`; });
       body.push(tr+`</tr>`); }); });
-  h+=`<h2>월간 오픈 일정</h2><div class="calwrap fit"><table class="cal fit"><colgroup><col class="rlc">${months.map(()=>`<col>`).join("")}</colgroup>
+  h+=`<p class="hint" style="margin:14px 0">월간 오픈 일정은 <b>오픈 일정 탭 → [시뮬레이션 일정]</b>에서 지역별로 봐요. <button type="button" class="btn" id="simGoOpen" style="padding:2px 10px;font-size:12px">오픈 일정에서 보기 →</button></p>`;
+  if(false) h+=`<h2>월간 오픈 일정</h2><div class="calwrap fit"><table class="cal fit"><colgroup><col class="rlc">${months.map(()=>`<col>`).join("")}</colgroup>
     <thead><tr><th class="rl yr" rowspan="2" style="vertical-align:bottom;padding-bottom:6px">작품</th>${[...Array(NY)].map((_,i)=>`<th class="yr y1" colspan="12">${Y0+i}년</th>`).join("")}</tr><tr>`
     +months.map(({m},i)=>`<th class="mh${i===nowM?" now":""}${m===1?" y1":""}">${m}월</th>`).join("")+`</tr></thead><tbody>`;
   const bodyHtml=body.join("");   // (cellsOf 실행 후 합계가 채워짐)
@@ -2349,6 +2356,7 @@ function renderSim(){
     <div class="legend"><span><i style="background:var(--int)"></i>내부 런칭</span><span><i style="background:var(--ext)"></i>외부 런칭</span><span><i style="background:var(--int-bg)"></i>공개 (숫자 = 그 달 회차)</span>
     <span><i style="background:repeating-linear-gradient(90deg,#E9EAE5 0 3px,#F6F6F3 3px 6px)"></i>쉼 (프리뷰 후·시즌 사이)</span><span><i style="background:var(--hia-bg)"></i>휴재 (제작이 못 따라옴)</span></div>`;
   $("v-sim").innerHTML=h;
+  if($("simGoOpen")) $("simGoOpen").onclick=()=>{ OPEN_SIM=true; OPEN_SREG=SIMREG; setTab("open"); };
   // 이벤트
   $("simReset").onclick=()=>{ const rl=(SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG; if(confirm(`${rl} 시뮬레이션 값을 처음으로(제작 일정 그대로${SIMREG!=="GW"?" + 티저 기본":""}) 되돌릴까요? 모두에게 공유되는 기본값이 바뀌어요.`)){ SIMS[SIMREG]=null; SIM=null; simUse(SIMREG); if(SIMREG!=="GW") simTzAll(false); render(); } };
   if($("simBaseGo")) $("simBaseGo").onclick=()=>{ const b=simBaseVer(); if(!b) return; if(!confirm(`기본 버전 '${b.name}'으로 되돌릴까요? 지금 화면 값은 저장하지 않았다면 사라져요.`)) return; SIM=clone(b.data); SIM.extra=(SIM.extra||[]).map(normW); toast("기본 버전으로 되돌렸어요"); render(); };
@@ -2405,7 +2413,7 @@ async function simVerLoad(){
   if(!SB.on){ SIMSAVES=lsGet("anime_simsaves")||[]; SIMBASE=lsGet("anime_simbase")||null; return; }
   try{ const r=await sb("GET",T_CONF,"?id=eq.simsaves&select=data"); const d=r&&r.length&&r[0].data||{}; SIMSAVES=d.list||[]; SIMBASE=d.baseId||null; }catch(e){ SIMSAVES=SIMSAVES||[]; }
 }
-let SIMBASE=null, SIM_BASE_TRIED=false, SIMOPS_OPEN=false;
+let SIMBASE=null, SIM_BASE_TRIED=false, SIMOPS_OPEN=true;
 /* 지역별 시뮬레이션 (KR · JP · GW) — 버전 불러오기 대신 지역마다 '기본 설정값' 하나를 공유 저장 (바꾸면 자동 저장) */
 const SIMREGS=[["JP","일본 JP"],["KR","한국 KR"],["GW","글로벌 GW"]];
 let SIMREG=(()=>{ try{ return localStorage.getItem("anime_simreg")||"JP"; }catch(e){ return "JP"; } })();
@@ -3301,9 +3309,9 @@ async function authStart(){
   }catch(e){ showGate("login",`로그인 확인 중 문제가 생겼어요: ${e.message}`); return false; }
   if(!ME.approved){ showGate("wait"); return false; }
   hideGate();
-  $("who").hidden=false; $("who").innerHTML=`${esc(ME.name||ME.email)}${ME.is_admin?' <span class="tag good">관리자</span>':""} <button type="button" class="btn" id="outB" style="padding:2px 8px;font-size:12px">로그아웃</button>`;
+  $("who").hidden=false; $("who").innerHTML=`${esc(ME.name||ME.email)}${ME.is_admin?' <span class="tag good">관리자</span>':""} ${ME.is_admin?' <button type="button" class="btn" id="tabUsers" style="padding:2px 8px;font-size:12px">사용자 승인</button>':""} <button type="button" class="btn" id="outB" style="padding:2px 8px;font-size:12px">로그아웃</button>`;
   $("outB").onclick=signOut;
-  if(ME.is_admin) $("tabUsers").hidden=false;
+  if($("tabUsers")) $("tabUsers").onclick=()=>setTab("users");   // 관리자 메뉴 (탭에서 뺌)
   setInterval(()=>refreshSession(),45*60*1000);   // 로그인 유지
   return true;
 }
@@ -4183,7 +4191,7 @@ function lp2Compute(P){
   const SM=lp2Smooth(works,g,P.lplan);
   // 시즌제: 끝난 작품 중 후속 시즌 비율만큼 같은 작품으로 이어감 (후속 시즌은 원래 작품의 성우 방식을 따름 → 성우 비용·AI 회차에 반영)
   works.forEach(w=>{ w.last=addDays(w.launch,7*runW); });
-  lcTitles(works,g.contRate!=null?+g.contRate:0.5,{gapW:g.contGapW!=null?+g.contGapW:12,inherit:g.contInherit!==false});
+  lcTitles(works,g.contRate!=null?+g.contRate:0.5,{gapW:g.contGapW!=null?+g.contGapW:12,minW:g.contMinGapW!=null?+g.contMinGapW:4,inherit:g.contInherit!==false});
   // 빠른 집계: 월 경계·영업일 누적표를 한 번만 만들고, 작품마다 해당 달만 계산
   const MS=M.map(lp2MStart), ME=M.map(lp2MEnd), D0=MS[0], DAY=86400000, ND=Math.round((addDays(ME[NM-1],400)-D0)/DAY)+1;
   const pre=new Int32Array(ND+1); for(let d=0;d<ND;d++){ pre[d+1]=pre[d]+(isBD(addDays(D0,d))?1:0); }
@@ -4224,7 +4232,9 @@ function lp2Repack(P0){ const P=clone(P0), g=P.g; let no=0;
     W.sort((a,b)=>a.m.localeCompare(b.m)); const pipes=[], loads=[], cap=lp2Cap(g), NM=LP2_M.length, spanC=new Map();
     const span=(m,bd)=>{ const ck=m+"|"+bd; if(spanC.has(ck)) return spanC.get(ck); const i=LP2_M.indexOf(m), e=lp2ProdEnd(m,bd,g); let j=i; while(j+1<NM&&lp2MStart(LP2_M[j+1])<=e) j++; const r=[i,j]; spanC.set(ck,r); return r; };
     const pm=[];
-    W.forEach(w=>{ const [i0,i1]=span(w.m,w.bd); let qi=loads.findIndex((L,ix)=>{ if(!lp2RampOK(pm[ix],i0)) return false; for(let x=i0;x<=i1;x++) if(L[x]+1>cap) return false; return true; });
+    W.forEach(w=>{ const [i0,i1]=span(w.m,w.bd);
+      // 들어갈 수 있는 제작사 중 '가장 오래전에 착수한' 곳에 배정 → 제작사마다 착수 간격이 고르게 (앞 제작사부터 꽉 채우지 않음)
+      let qi=-1, best=Infinity; loads.forEach((L,ix)=>{ if(!lp2RampOK(pm[ix],i0)) return; for(let x=i0;x<=i1;x++) if(L[x]+1>cap) return; const ls=pm[ix].length?pm[ix][pm[ix].length-1]:-1; if(ls<best){ best=ls; qi=ix; } });
       if(qi<0){ no++; pipes.push({id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}}); loads.push(new Int16Array(NM)); pm.push([]); qi=pipes.length-1; }
       const q=pipes[qi], L=loads[qi]; for(let x=i0;x<=i1;x++) L[x]++; pm[qi].push(i0);
       q.start[w.m]=(+q.start[w.m]||0)+1; q.aiN[w.m]=(q.aiN[w.m]||0)+(w.ai?1:0); if(q.bd[w.m]==null) q.bd[w.m]=w.bd; });
@@ -4308,6 +4318,11 @@ function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`AOP 제출 자료 반영 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     lpOp({op:"cur",v:lp2AutoFit(lp2ApplyAOP(clone(LP.cur)))}); }
   if(LP.cur&&LP.cur.v===2&&(LP.cur.g.noAI5||!LP.cur.ai5off)){ const P=clone(LP.cur); P.ai5off=1; P.g={...P.g,noAI5:false}; lpOp({op:"cur",v:lp2AutoFit(P)}); }   // 10/16: 5영업일 이하도 AI 성우 그대로 (AI 성우 공정은 제작 영업일에 포함)
+  if(LP.cur&&LP.cur.v===2&&LP.cur.afv&&LP.cur.aop5&&LP.cur.rt2&&!LP.cur.real30){   // 10/20 현실 버전: 27년 말 연재 30편 · 자동 맞춤 끄고(외부 착수 직접 조정) · 내부 고정
+    lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`현실 버전(27말 30편) 전환 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
+    const P=clone(LP.cur); const T={}; Object.entries(P.targets.onair||{}).forEach(([m,v])=>{ if(!m.startsWith("2027")) T[m]=v; }); T["2027-12"]=30; P.targets={...P.targets,onair:T};
+    P.g={...P.g,autoFit:false,contMinGapW:4,smooth:"off"}; P.real30=1; lpOp({op:"cur",v:P}); }   // 준비되는 대로 런칭 → 착수를 바꾸면 바로 결과에 보임
+  if(LP.cur&&LP.cur.v===2&&LP.cur.rampv&&!LP.cur.lru1){ const P=clone(LP.cur); P.lru1=1; lpOp({op:"cur",v:lp2Repack(P)}); }   // 10/20 제작사 균등 배정으로 다시
   if(LP.cur&&LP.cur.v===2&&!LP.cur.rampv){ const P=clone(LP.cur); P.rampv=1; lpOp({op:"cur",v:lp2Repack(P)}); }   // 외주 신규 셋업 규칙(3개월 뒤 · 1개월 뒤)으로 다시 배정
   if(LP.cur&&LP.cur.v===2&&LP.cur.afv&&!LP.cur.ext30&&LP.cur.g.autoFit!==false){ lpOp({op:"cur",v:lp2AutoFit(clone(LP.cur))}); }   // 2029~30년 팀별 착수 이어가기 + 정확한 월 런칭 계획
   if(LP.cur&&LP.cur.v===2&&!LP.cur.aop2){   // 10/16 팀 AOP 시트 반영: 월별 런칭 계획 · 29/30년 목표 · AOP 구조
@@ -4586,7 +4601,7 @@ let LP2_FHRAF=0;
 function lp2FloatUpdate(){ if(LP2_FHRAF) return; LP2_FHRAF=requestAnimationFrame(()=>{ LP2_FHRAF=0; lp2FloatUpdate0(); }); }
 window.addEventListener("resize",()=>{ LP2_FH.forEach(x=>{ x.measured=false; }); });
 function lp2FloatUpdate0(){ if(TAB!=="lp"){ LP2_FH.forEach(x=>x.box.style.display="none"); return; }
-  const top=(document.querySelector("header.top")||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom;
+  const top=Math.max(...[document.querySelector("header.top"),document.querySelector("header.top .tabs"),...document.querySelectorAll("header.top .tgrp")].filter(Boolean).map(e=>e.getBoundingClientRect().bottom),0);
   LP2_FH.forEach(x=>{ const r=x.wrap.getBoundingClientRect(), th=x.t.tHead, hh=th.getBoundingClientRect().height;
     const show=th.getBoundingClientRect().top<top&&r.bottom-hh>top;
     if(!show){ if(x.box.style.display!=="none") x.box.style.display="none"; x.measured=false; return; }
@@ -4873,11 +4888,11 @@ function lp2RightSplit(P,C){ if(LP2_RS_CACHE.has(C)) return LP2_RS_CACHE.get(C);
   const nb={}, cb={}; P.groups.forEach(G=>{ nb[G.id]=Array(NM).fill(0); cb[G.id]=Array(NM).fill(0); });
   W.forEach(w=>{ const i=M.indexOf(key(w.start).slice(0,7)); if(i<0) return; (w.cont?cb:nb)[w.G.id][i]++; });
   const r={nb,cb}; LP2_RS_CACHE.set(C,r); return r; }
-function lcTitles(W,rate,opt){ rate=Math.max(0,Math.min(1,+rate||0)); opt=opt||{}; const maxGap=(opt.gapW!=null?+opt.gapW:12)*7*86400000, inherit=opt.inherit!==false;
+function lcTitles(W,rate,opt){ rate=Math.max(0,Math.min(1,+rate||0)); opt=opt||{}; const maxGap=(opt.gapW!=null?+opt.gapW:12)*7*86400000, minGap=(opt.minW!=null?+opt.minW:4)*7*86400000, inherit=opt.inherit!==false;
   const byPipe=new Map(); let nT=0, acc=0, dec=0;
   W.slice().sort((a,b)=>a.launch-b.launch||a.start-b.start).forEach(w=>{ const pk=w.p.id; if(!byPipe.has(pk)) byPipe.set(pk,[]); const pool=byPipe.get(pk);
     // 후속 대상: 같은 팀·제작사 · 앞 시즌 연재가 끝났고 · 쉬는 기간이 최대 휴재 이내 · (성우 방식 유지 시 같은 방식만) — 가장 최근에 끝난 작품부터
-    const elig=pool.filter(t=>t.end<=w.launch&&(w.launch-t.end)<=maxGap&&(inherit||t.voice===w.voice)).sort((a,b)=>b.end-a.end);
+    const elig=pool.filter(t=>t.end<=w.launch&&(w.launch-t.end)>=minGap&&(w.launch-t.end)<=maxGap&&(inherit||t.voice===w.voice)).sort((a,b)=>b.end-a.end);   // 시즌 1 뒤 최소 휴재(기본 1달=4주)
     let t=null; if(elig.length){ dec++; if((acc+1)/dec<=rate+1e-9){ acc++; t=elig[0]; } }
     if(t){ t.n++; w.title=t.id; w.tno=t.no; w.sno=t.n; w.cont=true; w.gapW=Math.round((w.launch-t.end)/86400000/7); if(inherit&&w.voice!==t.voice){ w.voiceOrig=w.voice; w.voice=t.voice; } t.end=w.last; }
     else { nT++; const nt={id:pk+":"+(pool.length+1),no:pool.length+1,n:1,end:w.last,voice:w.voice}; pool.push(nt); w.title=nt.id; w.tno=nt.no; w.sno=1; w.cont=false; w.gapW=0; } });
@@ -4901,7 +4916,7 @@ function renderLC(){
   const yearEndOn=(y)=>C.tot.onair[M.indexOf(`${y}-12`)]||0;
   const gapP=pipes.filter(x=>x.gaps.length).length, gapM=pipes.reduce((a,x)=>a+x.gaps.length,0);
   let h=`<div class="lphead"><div><p class="lead" style="margin:0">연재 캘린더 <span class="hint" style="font-size:13px;font-weight:400">런칭 플랜 기준 · 30화 시즌이 파이프라인마다 언제 생기고, 매달 몇 화 나가고, 이어지는지</span></p></div>
-    <div class="lpbtns"><span class="seg sm">${[["cal","연재 캘린더"],["starts","제작 착수"],["staff","제작 인력"],["rights","판권 확보"]].map(([v,l])=>`<button type="button" data-lcv="${v}" aria-pressed="${(LCV.view||"cal")===v}">${l}</button>`).join("")}</span>
+    <div class="lpbtns"><span class="seg sm">${(LCV.view==="starts"?(LCV.view="cal"):0,[["cal","연재 캘린더"],["staff","제작 인력"],["rights","판권 확보"]]).map(([v,l])=>`<button type="button" data-lcv="${v}" aria-pressed="${(LCV.view||"cal")===v}">${l}</button>`).join("")}</span>
       <label class="hint" data-tip="30화 시즌이 끝난 작품 중 같은 작품으로 다음 시즌을 이어 만드는 비율이에요. 나머지는 새 작품으로 봐요. 같은 팀·제작사에서 앞 시즌 연재가 끝난 작품만 이어갈 수 있어요. 착수·연재 편수는 그대로고, 작품 수만 달라져요.">후속 시즌 비율 <input class="in n" id="lcCR" type="number" min="0" max="100" step="10" style="width:60px" value="${Math.round(CR*100)}"${LPV.peek?" disabled":""}> %</label>
       <label class="hint" data-tip="앞 시즌이 끝나고 이 기간 안에 다음 시즌을 시작할 수 있을 때만 같은 작품으로 이어가요. 넘으면 새 작품으로 봐요.">최대 휴재 <input class="in n" id="lcGap" type="number" min="0" max="104" step="1" style="width:56px" value="${g.contGapW!=null?+g.contGapW:12}"${LPV.peek?" disabled":""}> 주</label>
       <label class="hint" data-tip="켜면 후속 시즌은 원래 작품의 성우 방식(AI/사람)을 그대로 따라가요 — 레버의 AI 성우 편수는 새 작품에만 적용. 성우 녹음비에도 반영돼요."><input type="checkbox" id="lcInh"${g.contInherit!==false?" checked":""}${LPV.peek?" disabled":""}> 후속은 원래 성우 방식</label>
@@ -4964,6 +4979,54 @@ function lcBind(P){
   $("lcY1").onchange=(e)=>{ LCV.y1=e.target.value; if(LCV.y1<LCV.y0) LCV.y0=LCV.y1; render(); };
   document.querySelectorAll("#v-lc [data-lco]").forEach(b=>b.onclick=()=>{ const k=b.dataset.lco; const isInt=P.groups.some(G=>G.line==="int"&&G.pipes.some(p=>p.id===k)); const cur=LCV.open[k]!=null?LCV.open[k]:isInt; LCV.open[k]=!cur; render(); });
 }
+/* 간단 보기 (엑셀처럼): 제작 착수(입력) → 1.연재 작품 수 · 2.런칭 작품 수 · 3.제작 회차 수 — 내부/외부 큰 줄 · [자세히]로 팀별 */
+function lp2Simple(P,C,g,ro){ const M=LP2_M, NM=M.length, G=P.groups, SX=LP2V.sx||(LP2V.sx={});
+  const ints=G.filter(x=>x.line==="int").map(x=>x.id), exts=G.filter(x=>x.line==="ext").map(x=>x.id);
+  const sum=(key2,ids)=>M.map((m,i)=>ids.reduce((a,id)=>a+((C.R[key2][id]||[])[i]||0),0));
+  const yb=(i)=>M[i].endsWith("-01")?" yb":"", cur=key(TODAY).slice(0,7);
+  const n=(v)=>v?Math.round(v).toLocaleString("ko-KR"):"–";
+  // 착수: 새 작품 / 후속 시즌
+  const nw={}, cw={}; G.forEach(x=>{ nw[x.id]=Array(NM).fill(0); cw[x.id]=Array(NM).fill(0); });
+  (C.works||[]).forEach(w=>{ const i=M.indexOf(key(w.start).slice(0,7)); if(i>=0) (w.cont?cw:nw)[w.G.id][i]++; });
+  const sA=(o,ids)=>M.map((m,i)=>ids.reduce((a,id)=>a+o[id][i],0));
+  const tog=(k,lab)=>`<button type="button" class="lptog sxt" data-sx="${k}">${SX[k]?"▾":"▸"} ${lab}</button>`;
+  const row=(lab,arr,cls,opt={})=>`<tr class="${cls||""}${opt.stock?" stock":""}"><td class="tl"${opt.tip?` data-tip="${esc(opt.tip)}"`:""}>${lab}${opt.tip?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${n(v)}</td>`).join("")}${(()=>{ const t=opt.stock?arr[NM-1]:arr.reduce((a,b)=>a+(+b||0),0); return `<td class="tsum">${n(t)}${opt.stock&&t?"<small>말</small>":""}</td>`; })()}</tr>`;
+  const inRow=(lab,gid,cls)=>{ const arr=C.R.start[gid]||[]; return `<tr class="${cls||""} sxin"><td class="tl">${lab} <span class="hint">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)} yc"><input class="lp2c sxc" data-sxg="${esc(gid)}" data-sxm="${m}" value="${arr[i]||""}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum">${n(arr.reduce((a,b)=>a+b,0))}</td></tr>`; };
+  const T=P.targets.onair||{};
+  let b=`<tr class="sxh"><td class="tl" colspan="${NM+2}">제작 착수 <span class="hint">외부(일본 · 일본 외)는 칸에 바로 입력 → 아래 연재·런칭·회차가 바로 바뀌어요 · 내부는 고정</span></td></tr>`;
+  b+=row("착수 합계",C.tot.start,"lcx-s tot");
+  b+=row(`내부 <span class="hint">고정</span> ${tog("si","팀별")}`,sum("start",ints),"sub b");
+  if(SX.si) ints.forEach(id=>{ b+=row(`<span class="ind">ㄴ ${esc(id)}</span>`,C.R.start[id],"sub"); });
+  b+=row(`외부 ${tog("se","팀별 입력")}`,sum("start",exts),"sub b");
+  if(SX.se!==false) exts.forEach(id=>{ b+=inRow(`<span class="ind">ㄴ ${esc(id)}</span>`,id,"sub"); });
+  b+=row(`${tog("sa","자동 착수")} <span class="hint">후속 시즌 + 내부 신규</span>`,M.map((m,i)=>sA(cw,G.map(x=>x.id))[i]+sA(nw,ints)[i]),"sub",{tip:"내 손으로 넣지 않아도 생기는 착수예요: 같은 작품의 후속 시즌(후속 비율 · 시즌 1 뒤 최소 1달 휴재) + 내부 팀이 매달 시작하는 새 작품."});
+  if(SX.sa){ b+=row(`<span class="ind">ㄴ 후속 시즌 (전체)</span>`,sA(cw,G.map(x=>x.id)),"sub"); b+=row(`<span class="ind">ㄴ 내부 새 작품</span>`,sA(nw,ints),"sub"); b+=row(`<span class="ind">ㄴ 외부 새 작품</span>`,sA(nw,exts),"sub"); }
+  // 1. 연재
+  b+=`<tr class="sxh"><td class="tl" colspan="${NM+2}">1. 연재 작품 수 <span class="hint">그 달 말 연재 중</span></td></tr>`;
+  b+=row("연재 합계",C.tot.onair,"lcx-s tot",{stock:true});
+  b+=`<tr class="tgr"><td class="tl">연재 목표 <span class="hint">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)} yc"><input class="lp2t" data-tg="${m}" value="${T[m]??""}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum"></td></tr>`;
+  b+=`<tr class="dif"><td class="tl">목표 대비</td>${M.map((m,i)=>{ const t=T[m]; if(t==null||t==="") return `<td class="${yb(i)}"></td>`; const d=C.tot.onair[i]-t; return `<td class="${yb(i)} ${d>=0?"okc":"badc"}">${d>=0?"+":""}${d}</td>`; }).join("")}<td class="tsum"></td></tr>`;
+  [["int","내부",ints,"oi"],["ext","외부",exts,"oe"]].forEach(([ln,lab,ids,k])=>{ b+=row(`${lab} ${tog(k,"팀별")}`,sum("onair",ids),"sub b",{stock:true}); if(SX[k]) ids.forEach(id=>{ b+=row(`<span class="ind">ㄴ ${esc(id)}</span>`,C.R.onair[id],"sub",{stock:true}); }); });
+  // 2. 런칭
+  b+=`<tr class="sxh"><td class="tl" colspan="${NM+2}">2. 런칭 작품 수 <span class="hint">그 달 새로 여는 시즌</span></td></tr>`;
+  b+=row("런칭 합계",C.tot.launch,"lcx-s tot");
+  [["int","내부",ints,"li"],["ext","외부",exts,"le"]].forEach(([ln,lab,ids,k])=>{ b+=row(`${lab} ${tog(k,"팀별")}`,sum("launch",ids),"sub b"); if(SX[k]) ids.forEach(id=>{ b+=row(`<span class="ind">ㄴ ${esc(id)}</span>`,C.R.launch[id],"sub"); }); });
+  // 3. 제작 회차
+  b+=`<tr class="sxh"><td class="tl" colspan="${NM+2}">3. 제작 회차 수 <span class="hint">그 달 영상 1차를 만드는 회차</span></td></tr>`;
+  b+=row("제작 회차 합계",C.tot.eps.map(v=>Math.round(v)),"lcx-s tot");
+  [["int","내부",ints,"ei"],["ext","외부",exts,"ee"]].forEach(([ln,lab,ids,k])=>{ b+=row(`${lab} ${tog(k,"팀별")}`,sum("eps",ids).map(v=>Math.round(v)),"sub b"); if(SX[k]) ids.forEach(id=>{ b+=row(`<span class="ind">ㄴ ${esc(id)}</span>`,C.R.eps[id].map(v=>Math.round(v)),"sub"); }); });
+  b+=row(`${tog("ai","AI 성우 회차")}`,C.tot.epsAi.map(v=>Math.round(v)),"sub ai");
+  if(SX.ai){ b+=row(`<span class="ind ai">ㄴ 내부</span>`,sum("epsAi",ints).map(v=>Math.round(v)),"sub ai"); b+=row(`<span class="ind ai">ㄴ 외부</span>`,sum("epsAi",exts).map(v=>Math.round(v)),"sub ai"); }
+  const head=`<tr><th class="tl"></th>${M.map((m,i)=>`<th class="${yb(i)}${m===cur?" now":""}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}<th class="tsum">합계</th></tr>`;
+  return `<div class="lpsec" style="margin-top:12px">런칭 플랜 <span class="hint">엑셀처럼 — 외부 착수를 바꾸면 바로 계산 · 내부 고정 · 후속 시즌은 시즌 1 뒤 최소 1달 휴재</span></div>
+    <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res sx" style="width:${210+48*NM+76}px"><colgroup><col style="width:210px">${M.map(()=>`<col style="width:48px">`).join("")}<col style="width:76px"></colgroup><thead>${head}</thead><tbody>${b}</tbody></table></div>`; }
+let LP2_SRC_HTML="";
+/* 외주사 관리 탭 아래에 '외주 제작사 발굴 계획' (런칭 플랜 기준 · 보기 전용) */
+function lp2SrcInto(){ const v=$("v-vendors"); if(!v) return;
+  if(!LP2_SRC_HTML&&LP&&LP.cur){ const keep=TAB; try{ renderLP2(); }catch(e){} }   // 런칭 플랜을 안 열었어도 한 번 계산
+  if(!LP2_SRC_HTML) return;
+  const html=LP2_SRC_HTML.replace(/<input[^>]*id="lpSrcLead"[^>]*>/,(m)=>{ const v2=(m.match(/value="([^"]*)"/)||[])[1]||"3"; return `<b>${v2}</b>`; });
+  v.insertAdjacentHTML("beforeend",`<div style="margin-top:22px">${html}<p class="hint">런칭 플랜(외부 착수) 기준으로 자동 계산돼요. 발굴 리드타임은 런칭 플랜 상세 보기에서 바꿀 수 있어요.</p></div>`); }
 function renderLP2(){
   if(SB.on&&!LP_LOADED){ $("v-lp").innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">런칭 플랜을 불러오는 중이에요…</div>`; return; }
   lp2Ensure(); LPV.peek=null; const PK=null;
@@ -4989,11 +5052,8 @@ function renderLP2(){
   const rowR=(lab,arr,cls,dec)=>`<tr class="${cls||""}${STOCK.has(arr)?" stock":""}"><td class="tl"${tipOf(lab)?` data-tip="${esc(tipOf(lab))}"`:""}>${lab}${tipOf(lab)?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${fmt(v,dec)}</td>`).join("")}${totCell(arr)}</tr>`;
   const tg=P.targets.onair||{};
   let h=`<div class="lphead"><div><p class="lead" style="margin:0">런칭 플랜 계산기</p>
-      <div class="lpst"><span id="lpSt">${lpStatTxt()}</span> <button type="button" class="lpundo" id="lpUndo">↶ 이전 상태로</button> <button type="button" class="lpundo" id="lpBase" title="엑셀 시뮬레이터 값으로 처음부터 다시 (지금 값은 자동 보관)">엑셀 기본값으로</button></div>
-      ${(()=>{ const B=LP.base; if(!B) return `<div class="lpbase">★ 확정된 기본 버전이 없어요 <button type="button" class="lpundo" id="lpBaseSet">현재를 기본 버전으로 확정</button></div>`;
-        const same=lpSig(B.plan)===lpSig(LP.cur);
-        return `<div class="lpbase">★ 기본 버전 <b>${esc(B.name)}</b> <span class="hint">${esc(B.by||"")} · ${md(new Date(B.at))}</span> ${same?`<span class="lcbd ok">지금과 같아요</span>`:`<span class="lcbd bad">지금 값은 기본 버전과 달라요</span>`}
-          <button type="button" class="lpundo" id="lpBaseSet">현재를 기본 버전으로 확정</button>${same?"":`<button type="button" class="lpundo" id="lpBaseGo">기본 버전으로 되돌리기</button>`}</div>`; })()}</div>
+      <div class="lpst"><span id="lpSt">${lpStatTxt()}</span> <button type="button" class="lpundo" id="lpUndo">↶ 이전 상태로</button> </div>
+</div>
     </div>`;
   // 목표 카드
   h+=`<div class="lpkgrid">${Object.entries(tg).map(([m,t])=>{ const i=M.indexOf(m); if(i<0) return ""; const a=C.tot.onair[i], d=a-t; return `<div class="lpk ${d>=0?"ok":"bad"}"><div class="lpkl">${m.slice(2,4)}.${+m.slice(5)} 연재 작품 수</div><div class="lpkv">${a}<span>목표 ${t} · ${d>=0?"+":""}${d}</span></div></div>`; }).join("")}
@@ -5168,7 +5228,28 @@ function renderLP2(){
       </tbody></table></div>`; })()}
     <div class="card lpg" style="margin-top:8px"><div class="lpops" style="margin:0"><span class="hint">AI 툴 구독 (갱신월 · 연간 USD)</span>${(k.tools||[]).map((t,ti)=>`<label>${esc(t.n)}<span><input class="in n lpi" style="width:44px" type="number" min="1" max="12" data-tool="${ti}:m" value="${t.m}"${ro?" disabled":""}>월 <input class="in n lpi" style="width:70px" type="number" data-tool="${ti}:usd" value="${t.usd}"${ro?" disabled":""}> USD</span></label>`).join("")}</div></div>`;
 
+  { const a=h.indexOf('<div class="lpsec" style="margin-top:16px">결과'), lv=h.indexOf('레버 · 제작 착수 작품 수'), lvs=lv>0?h.lastIndexOf('<div class="lpsec"',lv):-1, z=h.indexOf('외주 제작사 발굴 계획'), zz=z>0?h.lastIndexOf('<div class="lpsec"',z):-1, c=h.indexOf('제작비 (AOP)'), cc=c>0?h.lastIndexOf('<div class="lpsec"',c):-1;
+    if(zz>0&&cc>zz){ LP2_SRC_HTML=h.slice(zz,cc); }   // 외주 제작사 발굴 계획 → 외주사 관리 탭으로
+    if((LP2V.mode||"simple")==="simple"){ if(a>0&&cc>a) h=h.slice(0,a)+lp2Simple(P,C,g,ro)+h.slice(cc); }
+    else { if(a>0&&lvs>a&&zz>lvs&&cc>zz) h=h.slice(0,a)+h.slice(lvs,zz)+h.slice(cc); }   // 상세 보기 = 레버(제작사별)만 }
+  }
+  h=h.replace('<div class="lphead">','<div class="lphead"><span class="seg sm" style="position:absolute;right:24px;margin-top:-4px">'+[["simple","간단 보기"],["detail","상세 보기 (레버·제작사)"]].map(([v,l])=>`<button type="button" data-lpm="${v}" aria-pressed="${(LP2V.mode||"simple")===v}">${l}</button>`).join("")+'</span>');
   $("v-lp").innerHTML=h;
+  document.querySelectorAll("#v-lp [data-lpm]").forEach(b=>b.onclick=()=>{ LP2V.mode=b.dataset.lpm; render(); });
+  document.querySelectorAll("#v-lp [data-sx]").forEach(b=>b.onclick=()=>{ LP2V.sx=LP2V.sx||{}; const k=b.dataset.sx; LP2V.sx[k]=k==="se"?LP2V.sx[k]===false:!LP2V.sx[k]; render(); });
+  const sxSet=(gid,m,v)=>lpSet(Q=>{ const Gq=Q.groups.find(x=>x.id===gid); if(!Gq) return; const i=LP2_M.indexOf(m);
+      const tot=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[m])||0),0), ai=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,m,i),0);
+      let share=tot?ai/tot:null; if(share==null){ for(let j=i-1;j>=0&&share==null;j--){ const t2=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[LP2_M[j]])||0),0); if(t2) share=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,LP2_M[j],j),0)/t2; } } if(share==null) share=1;
+      const bd=lp2ff((Gq.pipes.find(p=>Object.keys(p.bd||{}).length)||Gq.pipes[0]||{}).bd,i,7);
+      Gq.pipes.forEach(p=>{ if(p.start) delete p.start[m]; if(p.aiN) delete p.aiN[m]; });
+      if(!Gq.pipes.length) Gq.pipes.push({id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}});
+      const p0=Gq.pipes[0]; p0.start=p0.start||{}; p0.aiN=p0.aiN||{}; p0.bd=p0.bd||{};
+      if(v>0){ p0.start[m]=v; p0.aiN[m]=Math.round(v*share); if(p0.bd[m]==null) p0.bd[m]=bd; }
+      Q.groups=lp2Repack(Q).groups; });
+  document.querySelectorAll("#v-lp .sxc").forEach(el=>{ el.onchange=()=>sxSet(el.dataset.sxg,el.dataset.sxm,Math.max(0,parseInt(el.value,10)||0));
+    el.onkeydown=(e)=>{ if(e.key==="Enter"||e.key==="ArrowRight"||e.key==="ArrowLeft"){ const all=[...document.querySelectorAll(`#v-lp .sxc[data-sxg="${el.dataset.sxg}"]`)], ix=all.indexOf(el); const nx=all[ix+(e.key==="ArrowLeft"?-1:1)]; if(nx){ e.preventDefault(); el.blur(); setTimeout(()=>{ const q=document.querySelector(`#v-lp .sxc[data-sxg="${nx.dataset.sxg}"][data-sxm="${nx.dataset.sxm}"]`); if(q){ q.focus(); q.select(); } },60); } } };
+    el.onpaste=(e)=>{ const t=(e.clipboardData||window.clipboardData).getData("text"); const vals=t.split(/[\t\n,]+/).map(x=>x.trim()).filter(x=>x!==""); if(vals.length<2) return; e.preventDefault();
+      const i0=LP2_M.indexOf(el.dataset.sxm), gid=el.dataset.sxg; lpSet(Q=>{ const Gq=Q.groups.find(x=>x.id===gid); vals.forEach((v,k)=>{ const m=LP2_M[i0+k]; if(!m) return; const nv=Math.max(0,parseInt(v,10)||0); Gq.pipes.forEach(p=>{ if(p.start) delete p.start[m]; if(p.aiN) delete p.aiN[m]; }); const p0=Gq.pipes[0]; if(nv){ p0.start[m]=nv; p0.aiN=p0.aiN||{}; p0.aiN[m]=nv; } }); Q.groups=lp2Repack(Q).groups; }); toast(`${vals.length}칸 붙여넣었어요`); }; });
   // ── 이벤트 ──
   const set=(fn)=>lpSet(fn);
   document.querySelectorAll("#v-lp [data-g2]").forEach(el=>el.onchange=()=>set(P=>{ const k=el.dataset.g2; P.g[k]=k==="leadSrc"?el.value:(+el.value||0); }));
