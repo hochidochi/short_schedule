@@ -558,6 +558,15 @@ table.lp2.sx .sxc{width:100%;text-align:center;border:0;background:transparent;f
 table.lct td.lchp{position:relative;box-shadow:inset 0 -3px 0 #E5484D} table.lct .hmk{position:absolute;top:1px;right:1px;font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:#E5484D;border-radius:5px;padding:0 3px;line-height:1.35;white-space:nowrap}
 table.lct .nxt{position:absolute;bottom:1px;right:1px;font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:#7F56C2;border-radius:5px;padding:0 3px;line-height:1.35} table.lct td.lce{position:relative}
 .nxtl{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:#7F56C2;border-radius:7px;padding:0 6px;margin-left:4px}
+/* 외주사 표: 내용이 길어도 행 높이는 다른 제작사와 같게 — 칸 안에서 세로 스크롤 */
+table.vt td .ve{max-height:54px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+table.vt td .ve.vsub{max-height:22px} table.vt td .ve.vstat{max-height:40px}
+table.vt td .ve::-webkit-scrollbar{width:6px} table.vt td .ve::-webkit-scrollbar-thumb{background:#C9CCC5;border-radius:3px}
+table.vt td.c-name .vnrow{max-height:60px;overflow-y:auto}
+table.lct td.tsum,table.lct th.tsum{background:#E3E9F5;font-weight:800;color:#1F2A44;border-left:2px solid #9AA3B2;white-space:nowrap;position:sticky;right:0;z-index:2} table.lct th.tsum{background:#1F2A44;color:#fff;z-index:4}
+table.lct td.tsum small{font-size:9px;color:var(--muted);margin-left:2px;font-weight:600}
+table.lp2.sx td.sxsel{outline:2px solid #2B6FD0;outline-offset:-2px;background:#DCE8FB!important} table.lp2.sx td.sxsel input{background:#EEF4FF!important}
+table.lp2.sx tr.sxin td{user-select:none}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1949,7 +1958,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.20-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.20-F";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -4780,7 +4789,7 @@ function lcRights(P,C,g,Ms,Y,y0,y1,curM,W){ const M=LP2_M, CO=lp2Cost(P,C), K=CO
   const yb=(m)=>m.endsWith("-01")?" yb":"";
   const head=`<tr class="lcy"><th class="tl" rowspan="2">판권</th>${Y.filter(y=>y>=y0&&y<=y1).map(y=>`<th colspan="${Ms.filter(m=>m.startsWith(y)).length}" class="yb">${y}년</th>`).join("")}</tr>
     <tr>${Ms.map(m=>`<th class="${yb(m)}${m===curM?" now":""}">${+m.slice(5)}월</th>`).join("")}</tr>`;
-  const row=(lab,arr,cls,fmt,tip,stock)=>`<tr class="${cls||""}${stock?" stock":""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${Ms.map(m=>{ const v=arr[M.indexOf(m)]; return `<td class="${yb(m)}${v?"":" z"}">${(fmt||f1)(v)}</td>`; }).join("")}</tr>`;
+  const row=(lab,arr,cls,fmt,tip,stock)=>`<tr class="${cls||""}${stock?" stock":""}" data-yk="${stock?"end":fmt&&String(fmt).includes("배")?"none":"sum"}"${fmt===fm?' data-ydiv="1e6"':""}><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${Ms.map(m=>{ const v=arr[M.indexOf(m)]; return `<td class="${yb(m)}${v?"":" z"}" data-v="${+v||0}">${(fmt||f1)(v)}</td>`; }).join("")}</tr>`;
   let body=row("판권 계약 수",T.cnt,"lcx-s",null,"그 달에 계약해야 하는 판권(작품) 수 = 다음 달 착수하는 새 작품 × 후보 배수")
     +G.map(x=>row(`<span class="ind">ㄴ ${esc(x.id)}</span>`,RC.by[x.id].cnt,"")).join("")
     +row("새 작품 착수 (다음 달)",T.newN,"",null,"다음 달 착수하는 새 작품 수")
@@ -4870,7 +4879,7 @@ function lcStaff(P,C,g,Ms,Y,y0,y1,curM,W){ const M=LP2_M, NM=M.length, MS=M.map(
       const cells=Ms.map(m=>{ const i=M.indexOf(m), y=m.slice(0,4); const yt=m===lastOf(y)?`<td class="ysum" title="그해 착수 시즌 수">${n(l.items.filter(it=>key(it.s).startsWith(y)).length)}</td>`:""; const it=l.items.find(z=>z.s<=ME[i]&&z.e>=MS[i]); if(!it) return `<td class="${yb2(m)}"></td>`+yt;
         const first=key(it.s).slice(0,7)===m; return `<td class="${yb2(m)} ${first?"lc1":"lcm"} ${cls}${it.w.voice==="ai"?" ai":""}" title="작품 ${it.w.tno} 시즌 ${it.w.sno}${it.w.cont?" (후속)":" (새 작품)"} · 제작 ${key(it.s)} ~ ${key(it.e)}">${first?`<b>${it.w.tno}</b><small>S${it.w.sno}</small>`:""}</td>`+yt; }).join("");
       body+=`<tr class="lcx-w"><td class="tl"><span class="lcn">${x.line==="int"?`제작자 ${l.no}`:`${esc(l.vendor)} · 팀 ${l.no}`}</span><span class="hint"> ${l.items.length}시즌 · ${key(l.first).slice(2,7).replace("-",".")} 투입</span></td>${cells}</tr>`; }); });
-  h+=`<div class="card" style="padding:0;overflow:auto;max-height:78vh"><table class="lct lcr" style="width:${320+44*Ms.length+58*YS.length}px"><colgroup><col style="width:320px">${Ms.map(m=>`<col style="width:44px">${m===lastOf(m.slice(0,4))?`<col style="width:58px">`:""}`).join("")}</colgroup><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  h+=`<div class="card" style="padding:0;overflow:auto;max-height:78vh"><table class="lct lcr noyc" style="width:${320+44*Ms.length+58*YS.length}px"><colgroup><col style="width:320px">${Ms.map(m=>`<col style="width:44px">${m===lastOf(m.slice(0,4))?`<col style="width:58px">`:""}`).join("")}</colgroup><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
   return h; }
 let lp2YearCols2=null;
 /* 30화 시즌이 끝난 뒤 같은 작품을 이어 만들지(후속 시즌) / 새 작품을 할지 — 비율대로 나눠 '작품 수'로 보기
@@ -4942,11 +4951,12 @@ function renderLC(){
   const yb=(m)=>m.endsWith("-01")?" yb":"";
   const head=`<tr class="lcy"><th class="tl" rowspan="2">파이프라인 · 시즌</th>${Y.filter(y=>y>=y0&&y<=y1).map(y=>`<th colspan="${Ms.filter(m=>m.startsWith(y)).length}" class="yb">${y}년</th>`).join("")}</tr>
     <tr>${Ms.map(m=>`<th class="${yb(m)}${m===curM?" now":""}">${+m.slice(5)}월</th>`).join("")}</tr>`;
-  const sumRow=(lab,fn,cls)=>`<tr class="${cls||""}"><td class="tl">${lab}</td>${Ms.map(m=>{ const v=fn(m); return `<td class="${yb(m)}${v?"":" z"}">${v||"–"}</td>`; }).join("")}</tr>`;
+  const sumRow=(lab,fn,cls,kind)=>`<tr class="${cls||""}" data-yk="${kind||"sum"}"><td class="tl">${lab}</td>${Ms.map(m=>{ const v=fn(m); return `<td class="${yb(m)}${v?"":" z"}" data-v="${+v||0}">${v||"–"}</td>`; }).join("")}</tr>`;
+  const yLaunch=(ws)=>{ const o={}; ws.forEach(w=>{ const y=key(w.launch).slice(0,4); o[y]=(o[y]||0)+1; }); return esc(JSON.stringify(o)); };
   const lm=(m,f)=>W.filter(w=>key(w.launch).slice(0,7)===m&&f(w)).length;
   let body=sumRow("신규 오픈 (시즌)",m=>C.tot.launch[M.indexOf(m)],"lcx-s")+sumRow(`<span class="ind">ㄴ 새 작품</span>`,m=>lm(m,w=>!w.cont),"")+sumRow(`<span class="ind">ㄴ 후속 시즌 (같은 작품)</span>`,m=>lm(m,w=>w.cont),"")
-    +sumRow("연재 중",m=>C.tot.onair[M.indexOf(m)],"lcx-s")
-    +`<tr class="lcx-s"><td class="tl">연재 목표</td>${Ms.map(m=>{ const t=T[m]; const a=C.tot.onair[M.indexOf(m)]; return `<td class="${yb(m)}${t!=null?(a>=t?" okc":" badc"):" z"}">${t!=null?t:""}</td>`; }).join("")}</tr>`;
+    +sumRow("연재 중",m=>C.tot.onair[M.indexOf(m)],"lcx-s","end")
+    +`<tr class="lcx-s" data-yk="end"><td class="tl">연재 목표</td>${Ms.map(m=>{ const t=T[m]; const a=C.tot.onair[M.indexOf(m)]; return `<td class="${yb(m)}${t!=null?(a>=t?" okc":" badc"):" z"}" data-v="${t!=null?+t:0}">${t!=null?t:""}</td>`; }).join("")}</tr>`;
   // 제작자(팀) 이어받기: 한 시즌을 끝낸 사람이 다음에 맡는 작품 — 같은 작품 후속이 아니면 '→ 작품 N'으로 표시
   const NEXT=new Map(); { const lanesOf=(ws)=>lcLanes(ws,g).lanes; const groups=[];
     P.groups.forEach(G=>{ if(G.line==="int") groups.push(W.filter(w=>w.G.id===G.id)); else G.pipes.forEach(p=>groups.push(W.filter(w=>w.p.id===p.id))); });
@@ -4960,11 +4970,11 @@ function renderLC(){
         return `<td class="${yb(m)}${gapM?" lch":pw?" lcp":""}"${gapM?` title="시즌 사이 휴재"`:pw?` title="시즌 ${pw.sno} 제작 중"`:""}>${gapM?"휴재":""}</td>`; }
       const n=w.epm[m], fm=key(w.launch).slice(0,7), cum=Object.entries(w.epm).filter(([kk])=>kk<=m).reduce((a,[,v])=>a+v,0);
       const hx=hw[m]?" lchp":"";
-      if(m===fm) return `<td class="${yb(m)} lc1 ${cls}${w.voice==="ai"?" ai":""}${hx}" title="시즌 ${w.sno} · ${key(w.launch)} 런칭${hw[m]?` · 그 달 휴재 ${hw[m]}주`:""}"><b>${+key(w.launch).slice(8)}일</b><small>${ss.length>1?`S${w.sno}·`:""}${n}화</small>${hm(m)}</td>`;
+      if(m===fm) return `<td data-v="${n}" class="${yb(m)} lc1 ${cls}${w.voice==="ai"?" ai":""}${hx}" title="시즌 ${w.sno} · ${key(w.launch)} 런칭${hw[m]?` · 그 달 휴재 ${hw[m]}주`:""}"><b>${+key(w.launch).slice(8)}일</b><small>${ss.length>1?`S${w.sno}·`:""}${n}화</small>${hm(m)}</td>`;
       if(cum>=N){ const nx=w===ss[ss.length-1]?NEXT.get(w):null; const mv=nx&&nx.title!==w.title?`<i class="nxt" title="이 시즌 담당이 다음에 맡는 작품: 작품 ${nx.tno} 시즌 ${nx.sno} (${key(nx.start).slice(2,7).replace("-",".")} 착수)">→${nx.tno}</i>`:"";
-        return `<td class="${yb(m)} lce ${cls}${hx}"><b>${N}화</b><small>${n}화</small>${hm(m)}${mv}</td>`; }
-      return `<td class="${yb(m)} lcm ${cls}${hx}">${n}${hm(m)}</td>`; }).join("");
-    return `<tr class="lcx-w"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}${(()=>{ const nx=NEXT.get(ss[ss.length-1]); return nx&&nx.title!==ss[ss.length-1].title?`<span class="nxtl" title="이 작품을 끝낸 담당이 다음에 맡는 작품">→ 작품 ${nx.tno}</span>`:""; })()}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 휴재 ${ss.slice(1).map(w=>w.gapW+"주").join("·")}`:""}${ss.some(w=>w.voiceOrig)?" · 성우 유지":""}</span></td>${cells}</tr>`; };
+        return `<td data-v="${n}" class="${yb(m)} lce ${cls}${hx}"><b>${N}화</b><small>${n}화</small>${hm(m)}${mv}</td>`; }
+      return `<td data-v="${n}" class="${yb(m)} lcm ${cls}${hx}">${n}${hm(m)}</td>`; }).join("");
+    return `<tr class="lcx-w" data-yk="sum" data-ylab="화"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}${(()=>{ const nx=NEXT.get(ss[ss.length-1]); return nx&&nx.title!==ss[ss.length-1].title?`<span class="nxtl" title="이 작품을 끝낸 담당이 다음에 맡는 작품">→ 작품 ${nx.tno}</span>`:""; })()}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 휴재 ${ss.slice(1).map(w=>w.gapW+"주").join("·")}`:""}${ss.some(w=>w.voiceOrig)?" · 성우 유지":""}</span></td>${cells}</tr>`; };
   const titlesOf=(ws)=>{ const mp=new Map(); ws.slice().sort((a,b)=>a.launch-b.launch).forEach(w=>{ if(!mp.has(w.title)) mp.set(w.title,[]); mp.get(w.title).push(w); }); return [...mp.values()]; };
   const workRow=(x,w,k)=>{ const fm=key(w.launch).slice(0,7), lmk=key(w.last).slice(0,7), cls=w.G.line==="ext"?"ext":"int";
     let cum=0; const cells=Ms.map(m=>{ const n=w.epm[m]||0; const before=Object.entries(w.epm).filter(([kk])=>kk<m).reduce((a,[,v])=>a+v,0); cum=before+n;
@@ -4975,21 +4985,40 @@ function renderLC(){
     return `<tr class="lcx-w"><td class="tl"><span class="lcn">작품 ${w.tno} · 시즌 ${w.sno}</span><span class="lcbd ${w.cont?"ok":""}" style="margin:0 4px 0 0">${w.cont?"후속":"신규"}</span>${w.voice==="ai"?`<span class="gai">AI</span>`:""}<span class="hint"> ${key(w.start).slice(2,7).replace("-",".")} 착수 → ${key(w.launch).slice(5).replace("-","/")} 런칭</span></td>${cells}</tr>`; };
   const pipeRow=(x,label,open,tog,lvl)=>{ const cells=Ms.map(m=>{ const n=x.ws.filter(w=>w.epm[m]).length; const gap=x.gaps.includes(m);
       return `<td class="${yb(m)}${gap?" lcg":n?" lcon":" z"}"${gap?` title="이 파이프라인 연재 없음 (휴재)"`:""}>${gap?"휴재":n||""}</td>`; }).join("");
-    return `<tr class="lcpipe ${x.G.line} lv${lvl}"><td class="tl">${tog?`<button type="button" class="lptog" data-lco="${esc(tog)}">${open?"▾":"▸"}</button>`:""}<b>${esc(label)}</b>
+    return `<tr class="lcpipe ${x.G.line} lv${lvl}" data-yv="${yLaunch(x.ws)}" data-ylab="시즌"><td class="tl">${tog?`<button type="button" class="lptog" data-lco="${esc(tog)}">${open?"▾":"▸"}</button>`:""}<b>${esc(label)}</b>
       <span class="lcbd">작품 ${new Set(x.ws.map(w=>w.title)).size}개 · 시즌 ${x.ws.length}개</span>${x.gaps.length?`<span class="lcbd bad">휴재 ${x.gaps.length}개월</span>`:`<span class="lcbd ok">쉬지 않고 이어짐</span>`}</td>${cells}</tr>`; };
   let rowsN=0, LIM=700; const vis=(w)=>key(w.start).slice(0,7)<=Ms[Ms.length-1]&&key(w.last).slice(0,7)>=Ms[0];
   P.groups.forEach(G=>{ const ps=pipes.filter(x=>x.G.id===G.id); if(!ps.length) return;
     if(G.line==="int"){ ps.forEach(x=>{ const id=x.p.id, open=LCV.open[id]!=null?LCV.open[id]:true; body+=pipeRow(x,`${G.id}${G.id==="내부3"?" (일본)":" (한국)"}`,open,id,1); if(open) titlesOf(x.ws).forEach(ss=>{ if(ss.some(vis)&&rowsN++<LIM) body+=titleRow(x,ss); }); }); return; }
     // 외주 팀: 팀 요약 → 제작사별 → 시즌
     const gx={G,ws:ps.flatMap(x=>x.ws),gaps:[]}; const gopen=LCV.open[G.id]!=null?LCV.open[G.id]:false;
-    body+=`<tr class="lcpipe ext lv0"><td class="tl"><button type="button" class="lptog" data-lco="${esc(G.id)}">${gopen?"▾":"▸"}</button><b>${esc(G.id)}</b><span class="lcbd">제작사 ${ps.length}곳 · 작품 ${new Set(gx.ws.map(w=>w.title)).size}개 · 시즌 ${gx.ws.length}개</span>${ps.some(x=>x.gaps.length)?`<span class="lcbd bad">쉬는 제작사 ${ps.filter(x=>x.gaps.length).length}곳</span>`:""}</td>${Ms.map(m=>{ const n=gx.ws.filter(w=>w.epm[m]).length; return `<td class="${yb(m)}${n?" lcon":" z"}">${n||""}</td>`; }).join("")}</tr>`;
+    body+=`<tr class="lcpipe ext lv0" data-yv="${yLaunch(gx.ws)}" data-ylab="시즌"><td class="tl"><button type="button" class="lptog" data-lco="${esc(G.id)}">${gopen?"▾":"▸"}</button><b>${esc(G.id)}</b><span class="lcbd">제작사 ${ps.length}곳 · 작품 ${new Set(gx.ws.map(w=>w.title)).size}개 · 시즌 ${gx.ws.length}개</span>${ps.some(x=>x.gaps.length)?`<span class="lcbd bad">쉬는 제작사 ${ps.filter(x=>x.gaps.length).length}곳</span>`:""}</td>${Ms.map(m=>{ const n=gx.ws.filter(w=>w.epm[m]).length; return `<td class="${yb(m)}${n?" lcon":" z"}">${n||""}</td>`; }).join("")}</tr>`;
     if(!gopen) return;
     ps.forEach(x=>{ const id=x.p.id, open=!!LCV.open[id]; body+=pipeRow(x,x.p.name||"제작사",open,id,2); if(open) titlesOf(x.ws).forEach(ss=>{ if(ss.some(vis)&&rowsN++<LIM) body+=titleRow(x,ss); }); }); });
   h+=`<div class="card" style="padding:0;overflow:auto;max-height:78vh"><table class="lct" style="width:${320+44*Ms.length}px"><colgroup><col style="width:320px">${Ms.map(()=>`<col style="width:44px">`).join("")}</colgroup><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <div class="legend" style="margin-top:6px"><span><i style="background:#2F7FC1"></i>내부 시즌 첫 달 (런칭일 · 그 달 화수)</span><span><i style="background:#E07B39"></i>외주 시즌 첫 달</span><span><i style="background:#D6E8F7"></i>연재 중 (그 달 나가는 화수)</span><span><i style="background:repeating-linear-gradient(135deg,#eef3f8 0 4px,#fff 4px 8px)"></i>제작 중</span><span><i style="background:#FBE1DD"></i>휴재 (파이프라인에 연재 없음)</span><span>${N}화 = 시즌 마지막 달 · 런칭 ${+g.openK||3}화 동시 공개 후 주 ${+g.cad===2?"격주":"1회"}</span></div>`;
   $("v-lc").innerHTML=h; lcBind(P);
 }
+/* 연재 캘린더 표에 연도 계(매년 12월 뒤) + 합계(오른쪽 끝) 칸 — 행마다 data-yk(sum·end·none) · data-yv(연도별 값) */
+function lcYearCols(){ document.querySelectorAll("#v-lc table.lct:not(.noyc)").forEach(t=>{ if(t.dataset.yc) return; t.dataset.yc="1";
+  const hr=t.tHead.rows[1]; if(!hr) return; const ths=[...hr.cells]; const ms=ths.map(th=>th.textContent.trim());
+  const yr=[...t.tHead.rows[0].cells].slice(1); let yi=0, cnt=0; const yearOf=[]; yr.forEach(c=>{ const n=+c.colSpan||1; for(let k=0;k<n;k++) yearOf.push(c.textContent.trim().slice(0,4)); });
+  const lastIdx=[]; yearOf.forEach((y,i)=>{ if(yearOf[i+1]!==y) lastIdx.push(i); });
+  const NMs=yearOf.length, n=(v)=>v?(Math.round(v*10)/10).toLocaleString("ko-KR"):"–";
+  // 머리줄
+  yr.forEach(c=>{ c.colSpan=(+c.colSpan||1)+1; }); const th0=document.createElement("th"); th0.className="tsum"; th0.rowSpan=2; th0.textContent="합계"; t.tHead.rows[0].appendChild(th0);
+  lastIdx.slice().reverse().forEach(i=>{ const th=document.createElement("th"); th.className="ysum"; th.textContent=`${yearOf[i].slice(2)}년 계`; ths[i].after(th); });
+  const cg=t.querySelector("colgroup"); if(cg){ const cols=[...cg.children]; lastIdx.slice().reverse().forEach(i=>{ const c=document.createElement("col"); c.style.width="58px"; cols[i+1].after(c); }); const c2=document.createElement("col"); c2.style.width="70px"; cg.appendChild(c2); }
+  t.style.width=(parseFloat(t.style.width)||0)+58*lastIdx.length+70+"px";
+  [...t.tBodies[0].rows].forEach(r=>{ const cells=[...r.cells]; if(cells.length<NMs+1){ const lc=cells[cells.length-1]; if(lc&&lc.colSpan>1) lc.colSpan+=lastIdx.length+1; else { const td=document.createElement("td"); td.colSpan=lastIdx.length+1; r.appendChild(td); } return; }
+    const mc=cells.slice(1,1+NMs), kind=r.dataset.yk||"", yv=r.dataset.yv?JSON.parse(r.dataset.yv):null, div=+(r.dataset.ydiv||1), lab=r.dataset.ylab||"";
+    const vals=mc.map(c=>+(c.dataset.v||0));
+    const yval=(y,idx)=>{ if(yv) return yv[y]||0; const I=idx.map(i=>vals[i]); if(kind==="end") return I[I.length-1]||0; if(kind==="sum") return I.reduce((a,b)=>a+b,0); return null; };
+    let from=0; lastIdx.slice().reverse().forEach(i=>{ const y=yearOf[i]; const idx=yearOf.map((yy,k)=>yy===y?k:-1).filter(k=>k>=0); const v=yval(y,idx); const td=document.createElement("td"); td.className="ysum"; td.innerHTML=v==null?"":(n(v/div)+(v&&lab?`<small>${lab}</small>`:"")+(kind==="end"&&v?"<small>말</small>":"")); mc[i].after(td); });
+    const tot=yv?Object.entries(yv).filter(([y])=>yearOf.includes(y)).reduce((a,[,v])=>a+v,0):kind==="end"?vals[vals.length-1]:kind==="sum"?vals.reduce((a,b)=>a+b,0):null;
+    const td=document.createElement("td"); td.className="tsum"; td.innerHTML=tot==null?"":(n(tot/div)+(tot&&lab?`<small>${lab}</small>`:"")+(kind==="end"&&tot?"<small>말</small>":"")); r.appendChild(td); }); }); }
 function lcBind(P){
+  lcYearCols();
   if($("lcGap")) $("lcGap").onchange=(e)=>{ const v=Math.max(0,Math.min(104,+e.target.value||0)); lpSet(Q=>{ Q.g={...Q.g,contGapW:v}; }); };
   if($("lcInh")) $("lcInh").onchange=(e)=>{ lpSet(Q=>{ Q.g={...Q.g,contInherit:e.target.checked}; }); };
   if($("lcCR")) $("lcCR").onchange=(e)=>{ const v=Math.max(0,Math.min(100,+e.target.value||0))/100; lpSet(Q=>{ Q.g={...Q.g,contRate:v}; }); };
@@ -5041,6 +5070,39 @@ function lp2Simple(P,C,g,ro){ const M=LP2_M, NM=M.length, G=P.groups, SX=LP2V.sx
   return `<div class="lpsec" style="margin-top:12px">런칭 플랜 <span class="hint">엑셀처럼 — 외부 착수를 바꾸면 바로 계산 · 내부 고정 · 후속 시즌은 시즌 1 뒤 최소 1달 휴재</span></div>
     <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res sx" style="width:${210+48*NM+76}px"><colgroup><col style="width:210px">${M.map(()=>`<col style="width:48px">`).join("")}<col style="width:76px"></colgroup><thead>${head}</thead><tbody>${b}</tbody></table></div>`; }
 let LP2_SRC_HTML="";
+let SXSEL=null;   // 간단 보기 선택 범위 {r0,c0,r1,c1} (행·열 번호)
+function sxGridBind(apply){ const T=document.querySelector("#v-lp table.lp2.sx"); if(!T) return;
+  const rows=[...T.querySelectorAll("tr.sxin")].map(tr=>[...tr.querySelectorAll("input.sxc,input.lp2t")]); if(!rows.length) return;
+  const at=(r,c)=>rows[r]&&rows[r][c]; const pos=new Map(); rows.forEach((row,r)=>row.forEach((el,c)=>pos.set(el,[r,c])));
+  const opOf=(el,v)=>el.classList.contains("sxc")?{t:"xs",g:el.dataset.sxg,m:el.dataset.sxm,v}:{t:"tg",m:el.dataset.tg,v};
+  const norm=(x)=>{ const t=String(x).replace(/[,\s]/g,""); if(t==="") return ""; const n=parseInt(t,10); return isFinite(n)&&n>=0?n:""; };
+  const rect=()=>SXSEL?{r0:Math.min(SXSEL.r0,SXSEL.r1),r1:Math.max(SXSEL.r0,SXSEL.r1),c0:Math.min(SXSEL.c0,SXSEL.c1),c1:Math.max(SXSEL.c0,SXSEL.c1)}:null;
+  const paint=()=>{ rows.forEach(row=>row.forEach(el=>el.parentElement.classList.remove("sxsel"))); const R0=rect(); if(!R0) return; for(let r=R0.r0;r<=R0.r1;r++) for(let c=R0.c0;c<=R0.c1;c++){ const el=at(r,c); if(el) el.parentElement.classList.add("sxsel"); } };
+  const multi=()=>{ const R0=rect(); return R0&&(R0.r0!==R0.r1||R0.c0!==R0.c1); };
+  const each=(fn)=>{ const R0=rect(); const out=[]; if(!R0) return out; for(let r=R0.r0;r<=R0.r1;r++) for(let c=R0.c0;c<=R0.c1;c++){ const el=at(r,c); if(el) out.push(fn(el,r,c)); } return out; };
+  const focusAt=(r,c)=>{ const el=at(r,c); if(el){ el.focus(); el.select(); SXSEL={r0:r,c0:c,r1:r,c1:c}; paint(); } };
+  let drag=false;
+  rows.forEach(row=>row.forEach(el=>{ const td=el.parentElement;
+    td.onmousedown=(e)=>{ const [r,c]=pos.get(el); if(e.shiftKey&&SXSEL){ SXSEL.r1=r; SXSEL.c1=c; e.preventDefault(); } else { SXSEL={r0:r,c0:c,r1:r,c1:c}; drag=true; } paint(); };
+    td.onmouseenter=()=>{ if(!drag) return; const [r,c]=pos.get(el); SXSEL.r1=r; SXSEL.c1=c; paint(); if(multi()) document.activeElement&&document.activeElement.blur&&0; };
+    el.onfocus=()=>{ if(!SXSEL){ const [r,c]=pos.get(el); SXSEL={r0:r,c0:c,r1:r,c1:c}; paint(); } };
+    el.onkeydown=(e)=>{ const [r,c]=pos.get(el); const mod=e.metaKey||e.ctrlKey;
+      if(mod&&(e.key==="c"||e.key==="C")){ if(!multi()) return; e.preventDefault(); const R0=rect(); const lines=[]; for(let rr=R0.r0;rr<=R0.r1;rr++){ const vs=[]; for(let cc=R0.c0;cc<=R0.c1;cc++){ const x=at(rr,cc); vs.push(x?(x.value||""):""); } lines.push(vs.join("\t")); } const txt=lines.join("\n"); (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).catch(()=>{ const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }); toast(`${(R0.r1-R0.r0+1)*(R0.c1-R0.c0+1)}칸 복사했어요`); return; }
+      if((e.key==="Delete"||e.key==="Backspace")&&multi()){ e.preventDefault(); apply(each(x=>opOf(x,""))); toast("선택한 칸을 지웠어요"); return; }
+      if(e.key==="Enter"){ e.preventDefault(); const v=norm(el.value); if(multi()){ apply(each(x=>opOf(x,v))); toast(`${each(()=>1).length}칸에 ${v===""?"빈 값":v} 입력`); return; } el.blur(); setTimeout(()=>focusAt(Math.min(rows.length-1,r+(e.shiftKey?-1:1)),c),80); return; }
+      const mv={ArrowRight:[0,1],ArrowLeft:[0,-1],ArrowDown:[1,0],ArrowUp:[-1,0],Tab:[0,e.shiftKey?-1:1]}[e.key];
+      if(mv){ const atStart=el.selectionStart===0&&el.selectionEnd===el.value.length||el.value===""; if(e.key.startsWith("Arrow")&&!(atStart||e.key==="ArrowUp"||e.key==="ArrowDown")) return;
+        e.preventDefault(); const nr=Math.max(0,Math.min(rows.length-1,r+mv[0])), nc=Math.max(0,Math.min(rows[nr].length-1,c+mv[1]));
+        if(e.shiftKey&&e.key.startsWith("Arrow")){ SXSEL.r1=nr; SXSEL.c1=nc; paint(); return; }
+        if(el.value!==el.defaultValue) el.dispatchEvent(new Event("change")); setTimeout(()=>focusAt(nr,nc),80); return; }
+      if(multi()&&/^[0-9]$/.test(e.key)&&el.selectionStart===0&&el.selectionEnd===el.value.length){ /* 여러 칸 선택 상태에서 숫자 입력 → Enter 시 일괄 */ } };
+    el.onpaste=(e)=>{ const t=(e.clipboardData||window.clipboardData).getData("text"); if(!/[\t\n]/.test(t)&&!multi()) return; e.preventDefault();
+      const [r,c]=pos.get(el); const grid=t.replace(/\r/g,"").split("\n").filter((x,i,a)=>!(i===a.length-1&&x==="")).map(l=>l.split("\t"));
+      const ops=[]; if(grid.length===1&&grid[0].length===1&&multi()){ const v=norm(grid[0][0]); each(x=>ops.push(opOf(x,v))); }
+      else grid.forEach((line,dr)=>line.forEach((val,dc)=>{ const x=at(r+dr,c+dc); if(x) ops.push(opOf(x,norm(val))); }));
+      if(ops.length){ apply(ops); toast(`${ops.length}칸 붙여넣었어요`); } }; }));
+  document.addEventListener("mouseup",()=>{ drag=false; },{once:true});
+  paint(); }
 /* 외주사 관리 탭 아래에 '외주 제작사 발굴 계획' (런칭 플랜 기준 · 보기 전용) */
 function lp2SrcInto(){ const v=$("v-vendors"); if(!v) return;
   if(!LP2_SRC_HTML&&LP&&LP.cur){ const keep=TAB; try{ renderLP2(); }catch(e){} }   // 런칭 플랜을 안 열었어도 한 번 계산
@@ -5257,18 +5319,20 @@ function renderLP2(){
   $("v-lp").innerHTML=h;
   document.querySelectorAll("#v-lp [data-lpm]").forEach(b=>b.onclick=()=>{ LP2V.mode=b.dataset.lpm; render(); });
   document.querySelectorAll("#v-lp [data-sx]").forEach(b=>b.onclick=()=>{ LP2V.sx=LP2V.sx||{}; const k=b.dataset.sx; LP2V.sx[k]=k==="se"?LP2V.sx[k]===false:!LP2V.sx[k]; render(); });
-  const sxSet=(gid,m,v)=>lpSet(Q=>{ const Gq=Q.groups.find(x=>x.id===gid); if(!Gq) return; const i=LP2_M.indexOf(m);
+  const sxSet=(gid,m,v)=>lpSet(Q=>{ sxMut(Q,gid,m,v); Q.groups=lp2Repack(Q).groups; });
+  const sxMut=(Q,gid,m,v)=>{ const Gq=Q.groups.find(x=>x.id===gid); if(!Gq) return; const i=LP2_M.indexOf(m);
       const tot=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[m])||0),0), ai=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,m,i),0);
       let share=tot?ai/tot:null; if(share==null){ for(let j=i-1;j>=0&&share==null;j--){ const t2=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[LP2_M[j]])||0),0); if(t2) share=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,LP2_M[j],j),0)/t2; } } if(share==null) share=1;
       const bd=lp2ff((Gq.pipes.find(p=>Object.keys(p.bd||{}).length)||Gq.pipes[0]||{}).bd,i,7);
       Gq.pipes.forEach(p=>{ if(p.start) delete p.start[m]; if(p.aiN) delete p.aiN[m]; });
       if(!Gq.pipes.length) Gq.pipes.push({id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}});
       const p0=Gq.pipes[0]; p0.start=p0.start||{}; p0.aiN=p0.aiN||{}; p0.bd=p0.bd||{};
-      if(v>0){ p0.start[m]=v; p0.aiN[m]=Math.round(v*share); if(p0.bd[m]==null) p0.bd[m]=bd; }
-      Q.groups=lp2Repack(Q).groups; });
+      if(v>0){ p0.start[m]=v; p0.aiN[m]=Math.round(v*share); if(p0.bd[m]==null) p0.bd[m]=bd; } };
+  /* 엑셀처럼: 드래그로 여러 칸 선택 → 숫자 + Enter 일괄 입력 · Delete 지우기 · Ctrl/⌘+C 복사 · Ctrl/⌘+V 붙여넣기(여러 줄·칸) · 방향키 이동 */
+  sxGridBind((ops)=>lpSet(Q=>{ let rep=false; ops.forEach(o=>{ if(o.t==="tg"){ Q.targets.onair=Q.targets.onair||{}; if(o.v===""||o.v==null) delete Q.targets.onair[o.m]; else Q.targets.onair[o.m]=o.v; } else { sxMut(Q,o.g,o.m,o.v===""?0:o.v); rep=true; } }); if(rep) Q.groups=lp2Repack(Q).groups; }));
   document.querySelectorAll("#v-lp .sxc").forEach(el=>{ el.onchange=()=>sxSet(el.dataset.sxg,el.dataset.sxm,Math.max(0,parseInt(el.value,10)||0));
-    el.onkeydown=(e)=>{ if(e.key==="Enter"||e.key==="ArrowRight"||e.key==="ArrowLeft"){ const all=[...document.querySelectorAll(`#v-lp .sxc[data-sxg="${el.dataset.sxg}"]`)], ix=all.indexOf(el); const nx=all[ix+(e.key==="ArrowLeft"?-1:1)]; if(nx){ e.preventDefault(); el.blur(); setTimeout(()=>{ const q=document.querySelector(`#v-lp .sxc[data-sxg="${nx.dataset.sxg}"][data-sxm="${nx.dataset.sxm}"]`); if(q){ q.focus(); q.select(); } },60); } } };
-    el.onpaste=(e)=>{ const t=(e.clipboardData||window.clipboardData).getData("text"); const vals=t.split(/[\t\n,]+/).map(x=>x.trim()).filter(x=>x!==""); if(vals.length<2) return; e.preventDefault();
+    if(false) el.onkeydown=(e)=>{ if(e.key==="Enter"||e.key==="ArrowRight"||e.key==="ArrowLeft"){ const all=[...document.querySelectorAll(`#v-lp .sxc[data-sxg="${el.dataset.sxg}"]`)], ix=all.indexOf(el); const nx=all[ix+(e.key==="ArrowLeft"?-1:1)]; if(nx){ e.preventDefault(); el.blur(); setTimeout(()=>{ const q=document.querySelector(`#v-lp .sxc[data-sxg="${nx.dataset.sxg}"][data-sxm="${nx.dataset.sxm}"]`); if(q){ q.focus(); q.select(); } },60); } } };
+    if(false) el.onpaste=(e)=>{ const t=(e.clipboardData||window.clipboardData).getData("text"); const vals=t.split(/[\t\n,]+/).map(x=>x.trim()).filter(x=>x!==""); if(vals.length<2) return; e.preventDefault();
       const i0=LP2_M.indexOf(el.dataset.sxm), gid=el.dataset.sxg; lpSet(Q=>{ const Gq=Q.groups.find(x=>x.id===gid); vals.forEach((v,k)=>{ const m=LP2_M[i0+k]; if(!m) return; const nv=Math.max(0,parseInt(v,10)||0); Gq.pipes.forEach(p=>{ if(p.start) delete p.start[m]; if(p.aiN) delete p.aiN[m]; }); const p0=Gq.pipes[0]; if(nv){ p0.start[m]=nv; p0.aiN=p0.aiN||{}; p0.aiN[m]=nv; } }); Q.groups=lp2Repack(Q).groups; }); toast(`${vals.length}칸 붙여넣었어요`); }; });
   // ── 이벤트 ──
   const set=(fn)=>lpSet(fn);
