@@ -546,9 +546,18 @@ table.lct td.lch{background:repeating-linear-gradient(135deg,#FBE1DD 0 4px,#fff 
 table.lct td.ysum,table.lct th.ysum{background:#EEF2FA;font-weight:800;color:#1F2A44;border-left:1px solid #C9D2E6;border-right:2px solid #9AA3B2;white-space:nowrap}
 table.lct th.ysum{background:#33415F;color:#fff;font-size:11px} table.lct td.ysum small{font-size:9px;color:var(--muted);margin-left:2px;font-weight:600}
 table.lp2.sx tr.sxh td{background:#2E3A55;color:#fff;font-weight:800;font-size:12.5px;text-align:left;padding:6px 10px} table.lp2.sx tr.sxh td .hint{color:#C9CED8;font-weight:500}
-table.lp2.sx tr.b td{font-weight:700} table.lp2.sx tr.tot td{font-weight:800} table.lp2.sx tr.sxin td{background:#FFF9E6}
+table.lp2.sx tr.b td{font-weight:700} table.lp2.sx tr.tot td{font-weight:800}
+table.lp2.sx tr.sxin td{background:#FFF1B8!important} table.lp2.sx tr.sxin td.tl{background:#FFE58A!important;font-weight:700}
+table.lp2.sx tr.sxin input{background:#FFFBE8;border:1px solid #E5C44F!important;border-radius:4px;height:26px;width:calc(100% - 4px);margin:0 2px;font-weight:800;color:#7A5200;text-align:center}
+table.lp2.sx tr.sxin input:focus{outline:2px solid #2B6FD0;background:#fff}
+.sxbadge{display:inline-block;font-size:10px;font-weight:800;background:#E5A32B;color:#fff;border-radius:6px;padding:0 5px;margin-left:4px}
+table.lp2.sx td.sxok{background:#E6F4EA!important} table.lp2.sx td.sxbad{background:#FDECEC!important} table.lp2.sx .sxd{display:block;font-size:10px;font-weight:800;line-height:1}
+table.lp2.sx td.sxok .sxd{color:#1F8A5B} table.lp2.sx td.sxbad .sxd{color:#C2272D}
 .sxt{font-size:11px;font-weight:600;color:var(--ink2);background:#EEF0EB;border-radius:8px;padding:0 6px;margin-left:4px;border:0;cursor:pointer}
 table.lp2.sx .sxc{width:100%;text-align:center;border:0;background:transparent;font-weight:700;color:#2B4FA8}
+table.lct td.lchp{position:relative;box-shadow:inset 0 -3px 0 #E5484D} table.lct .hmk{position:absolute;top:1px;right:1px;font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:#E5484D;border-radius:5px;padding:0 3px;line-height:1.35;white-space:nowrap}
+table.lct .nxt{position:absolute;bottom:1px;right:1px;font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:#7F56C2;border-radius:5px;padding:0 3px;line-height:1.35} table.lct td.lce{position:relative}
+.nxtl{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:#7F56C2;border-radius:7px;padding:0 6px;margin-left:4px}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1940,9 +1949,10 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
+const BUILD="10.20-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
-  $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]})`;
+  $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===TAB||(TAB==="std"&&b.dataset.tab==="prod"))));
   ["open","prod","std","lp","lc","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
   try{
@@ -2345,8 +2355,8 @@ function renderSim(){
           :x.st==="rest"?`<td class="c srest${cl}">쉼</td>`
           :x.st==="prod"?`<td class="c prod${cl}"></td>`:`<td class="c${cl}"></td>`; });
       body.push(tr+`</tr>`); }); });
-  h+=`<p class="hint" style="margin:14px 0">월간 오픈 일정은 <b>오픈 일정 탭 → [시뮬레이션 일정]</b>에서 지역별로 봐요. <button type="button" class="btn" id="simGoOpen" style="padding:2px 10px;font-size:12px">오픈 일정에서 보기 →</button></p>`;
-  if(false) h+=`<h2>월간 오픈 일정</h2><div class="calwrap fit"><table class="cal fit"><colgroup><col class="rlc">${months.map(()=>`<col>`).join("")}</colgroup>
+  const SIMCUT=h.length, SIMNOTE=`<p class="hint" style="margin:14px 0">월간 오픈 일정은 <b>오픈 일정 탭 → [시뮬레이션 일정]</b>에서 지역별로 봐요. <button type="button" class="btn" id="simGoOpen" style="padding:2px 10px;font-size:12px">오픈 일정에서 보기 →</button></p>`;
+  h+=`<h2>월간 오픈 일정</h2><div class="calwrap fit"><table class="cal fit"><colgroup><col class="rlc">${months.map(()=>`<col>`).join("")}</colgroup>
     <thead><tr><th class="rl yr" rowspan="2" style="vertical-align:bottom;padding-bottom:6px">작품</th>${[...Array(NY)].map((_,i)=>`<th class="yr y1" colspan="12">${Y0+i}년</th>`).join("")}</tr><tr>`
     +months.map(({m},i)=>`<th class="mh${i===nowM?" now":""}${m===1?" y1":""}">${m}월</th>`).join("")+`</tr></thead><tbody>`;
   const bodyHtml=body.join("");   // (cellsOf 실행 후 합계가 채워짐)
@@ -2355,6 +2365,7 @@ function renderSim(){
   h+=bodyHtml+`</tbody></table></div>
     <div class="legend"><span><i style="background:var(--int)"></i>내부 런칭</span><span><i style="background:var(--ext)"></i>외부 런칭</span><span><i style="background:var(--int-bg)"></i>공개 (숫자 = 그 달 회차)</span>
     <span><i style="background:repeating-linear-gradient(90deg,#E9EAE5 0 3px,#F6F6F3 3px 6px)"></i>쉼 (프리뷰 후·시즌 사이)</span><span><i style="background:var(--hia-bg)"></i>휴재 (제작이 못 따라옴)</span></div>`;
+  h=h.slice(0,SIMCUT)+SIMNOTE;   // 월간표는 오픈 일정 탭에서만
   $("v-sim").innerHTML=h;
   if($("simGoOpen")) $("simGoOpen").onclick=()=>{ OPEN_SIM=true; OPEN_SREG=SIMREG; setTab("open"); };
   // 이벤트
@@ -4936,16 +4947,24 @@ function renderLC(){
   let body=sumRow("신규 오픈 (시즌)",m=>C.tot.launch[M.indexOf(m)],"lcx-s")+sumRow(`<span class="ind">ㄴ 새 작품</span>`,m=>lm(m,w=>!w.cont),"")+sumRow(`<span class="ind">ㄴ 후속 시즌 (같은 작품)</span>`,m=>lm(m,w=>w.cont),"")
     +sumRow("연재 중",m=>C.tot.onair[M.indexOf(m)],"lcx-s")
     +`<tr class="lcx-s"><td class="tl">연재 목표</td>${Ms.map(m=>{ const t=T[m]; const a=C.tot.onair[M.indexOf(m)]; return `<td class="${yb(m)}${t!=null?(a>=t?" okc":" badc"):" z"}">${t!=null?t:""}</td>`; }).join("")}</tr>`;
-  // 작품 한 줄: 시즌 1 → 시즌 2 … 를 같은 줄에
+  // 제작자(팀) 이어받기: 한 시즌을 끝낸 사람이 다음에 맡는 작품 — 같은 작품 후속이 아니면 '→ 작품 N'으로 표시
+  const NEXT=new Map(); { const lanesOf=(ws)=>lcLanes(ws,g).lanes; const groups=[];
+    P.groups.forEach(G=>{ if(G.line==="int") groups.push(W.filter(w=>w.G.id===G.id)); else G.pipes.forEach(p=>groups.push(W.filter(w=>w.p.id===p.id))); });
+    groups.forEach(ws=>lanesOf(ws).forEach(L=>L.items.forEach((it,k)=>{ const nx=L.items[k+1]; if(nx) NEXT.set(it.w,nx.w); }))); }
   const titleRow=(x,ss)=>{ const cls=ss[0].G.line==="ext"?"ext":"int"; const t0=ss[0];
+    // 시즌 사이 휴재 주를 달별로 (한 달을 다 쉬지 않아도 보이게)
+    const hw={}; ss.forEach((z,k)=>{ if(!k) return; for(let d=addDays(ss[k-1].last,7);d<z.launch;d=addDays(d,7)){ const mk=key(d).slice(0,7); hw[mk]=(hw[mk]||0)+1; } });
+    const hm=(m)=>hw[m]?`<i class="hmk" title="시즌 사이 휴재 ${hw[m]}주">휴${hw[m]}</i>`:"";
     const cells=Ms.map(m=>{ const w=ss.find(z=>z.epm[m]); 
       if(!w){ const pw=ss.find(z=>m>=key(z.start).slice(0,7)&&m<key(z.launch).slice(0,7)); const gapM=ss.some((z,k)=>k>0&&m>key(ss[k-1].last).slice(0,7)&&m<key(z.launch).slice(0,7));
         return `<td class="${yb(m)}${gapM?" lch":pw?" lcp":""}"${gapM?` title="시즌 사이 휴재"`:pw?` title="시즌 ${pw.sno} 제작 중"`:""}>${gapM?"휴재":""}</td>`; }
       const n=w.epm[m], fm=key(w.launch).slice(0,7), cum=Object.entries(w.epm).filter(([kk])=>kk<=m).reduce((a,[,v])=>a+v,0);
-      if(m===fm) return `<td class="${yb(m)} lc1 ${cls}${w.voice==="ai"?" ai":""}" title="시즌 ${w.sno} · ${key(w.launch)} 런칭"><b>${+key(w.launch).slice(8)}일</b><small>${ss.length>1?`S${w.sno}·`:""}${n}화</small></td>`;
-      if(cum>=N) return `<td class="${yb(m)} lce ${cls}"><b>${N}화</b><small>${n}화</small></td>`;
-      return `<td class="${yb(m)} lcm ${cls}">${n}</td>`; }).join("");
-    return `<tr class="lcx-w"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 휴재 ${ss.slice(1).map(w=>w.gapW+"주").join("·")}`:""}${ss.some(w=>w.voiceOrig)?" · 성우 유지":""}</span></td>${cells}</tr>`; };
+      const hx=hw[m]?" lchp":"";
+      if(m===fm) return `<td class="${yb(m)} lc1 ${cls}${w.voice==="ai"?" ai":""}${hx}" title="시즌 ${w.sno} · ${key(w.launch)} 런칭${hw[m]?` · 그 달 휴재 ${hw[m]}주`:""}"><b>${+key(w.launch).slice(8)}일</b><small>${ss.length>1?`S${w.sno}·`:""}${n}화</small>${hm(m)}</td>`;
+      if(cum>=N){ const nx=w===ss[ss.length-1]?NEXT.get(w):null; const mv=nx&&nx.title!==w.title?`<i class="nxt" title="이 시즌 담당이 다음에 맡는 작품: 작품 ${nx.tno} 시즌 ${nx.sno} (${key(nx.start).slice(2,7).replace("-",".")} 착수)">→${nx.tno}</i>`:"";
+        return `<td class="${yb(m)} lce ${cls}${hx}"><b>${N}화</b><small>${n}화</small>${hm(m)}${mv}</td>`; }
+      return `<td class="${yb(m)} lcm ${cls}${hx}">${n}${hm(m)}</td>`; }).join("");
+    return `<tr class="lcx-w"><td class="tl" title="${esc(ss.map(w=>`시즌 ${w.sno}: ${key(w.start).slice(2,7)} 착수 → ${key(w.launch)} 런칭`).join("\n"))}"><span class="lcn">작품 ${t0.tno}</span><span class="lcbd ${ss.length>1?"ok":""}" style="margin:0 4px 0 0">${ss.length>1?`시즌 1~${ss.length}`:"시즌 1"}</span>${t0.voice==="ai"?`<span class="gai">AI</span>`:`<span class="gai" style="background:#2E9B6A">사람</span>`}${(()=>{ const nx=NEXT.get(ss[ss.length-1]); return nx&&nx.title!==ss[ss.length-1].title?`<span class="nxtl" title="이 작품을 끝낸 담당이 다음에 맡는 작품">→ 작품 ${nx.tno}</span>`:""; })()}<span class="hint"> ${key(t0.launch).slice(2,7).replace("-",".")} 첫 런칭${ss.length>1?` · 휴재 ${ss.slice(1).map(w=>w.gapW+"주").join("·")}`:""}${ss.some(w=>w.voiceOrig)?" · 성우 유지":""}</span></td>${cells}</tr>`; };
   const titlesOf=(ws)=>{ const mp=new Map(); ws.slice().sort((a,b)=>a.launch-b.launch).forEach(w=>{ if(!mp.has(w.title)) mp.set(w.title,[]); mp.get(w.title).push(w); }); return [...mp.values()]; };
   const workRow=(x,w,k)=>{ const fm=key(w.launch).slice(0,7), lmk=key(w.last).slice(0,7), cls=w.G.line==="ext"?"ext":"int";
     let cum=0; const cells=Ms.map(m=>{ const n=w.epm[m]||0; const before=Object.entries(w.epm).filter(([kk])=>kk<m).reduce((a,[,v])=>a+v,0); cum=before+n;
@@ -4991,7 +5010,7 @@ function lp2Simple(P,C,g,ro){ const M=LP2_M, NM=M.length, G=P.groups, SX=LP2V.sx
   const sA=(o,ids)=>M.map((m,i)=>ids.reduce((a,id)=>a+o[id][i],0));
   const tog=(k,lab)=>`<button type="button" class="lptog sxt" data-sx="${k}">${SX[k]?"▾":"▸"} ${lab}</button>`;
   const row=(lab,arr,cls,opt={})=>`<tr class="${cls||""}${opt.stock?" stock":""}"><td class="tl"${opt.tip?` data-tip="${esc(opt.tip)}"`:""}>${lab}${opt.tip?`<span class="tipi">?</span>`:""}</td>${arr.map((v,i)=>`<td class="${yb(i)}${v?"":" z"}">${n(v)}</td>`).join("")}${(()=>{ const t=opt.stock?arr[NM-1]:arr.reduce((a,b)=>a+(+b||0),0); return `<td class="tsum">${n(t)}${opt.stock&&t?"<small>말</small>":""}</td>`; })()}</tr>`;
-  const inRow=(lab,gid,cls)=>{ const arr=C.R.start[gid]||[]; return `<tr class="${cls||""} sxin"><td class="tl">${lab} <span class="hint">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)} yc"><input class="lp2c sxc" data-sxg="${esc(gid)}" data-sxm="${m}" value="${arr[i]||""}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum">${n(arr.reduce((a,b)=>a+b,0))}</td></tr>`; };
+  const inRow=(lab,gid,cls)=>{ const arr=C.R.start[gid]||[]; return `<tr class="${cls||""} sxin"><td class="tl">${lab} <span class="sxbadge">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)} yc"><input class="lp2c sxc" data-sxg="${esc(gid)}" data-sxm="${m}" value="${arr[i]||""}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum">${n(arr.reduce((a,b)=>a+b,0))}</td></tr>`; };
   const T=P.targets.onair||{};
   let b=`<tr class="sxh"><td class="tl" colspan="${NM+2}">제작 착수 <span class="hint">외부(일본 · 일본 외)는 칸에 바로 입력 → 아래 연재·런칭·회차가 바로 바뀌어요 · 내부는 고정</span></td></tr>`;
   b+=row("착수 합계",C.tot.start,"lcx-s tot");
@@ -5003,9 +5022,10 @@ function lp2Simple(P,C,g,ro){ const M=LP2_M, NM=M.length, G=P.groups, SX=LP2V.sx
   if(SX.sa){ b+=row(`<span class="ind">ㄴ 후속 시즌 (전체)</span>`,sA(cw,G.map(x=>x.id)),"sub"); b+=row(`<span class="ind">ㄴ 내부 새 작품</span>`,sA(nw,ints),"sub"); b+=row(`<span class="ind">ㄴ 외부 새 작품</span>`,sA(nw,exts),"sub"); }
   // 1. 연재
   b+=`<tr class="sxh"><td class="tl" colspan="${NM+2}">1. 연재 작품 수 <span class="hint">그 달 말 연재 중</span></td></tr>`;
-  b+=row("연재 합계",C.tot.onair,"lcx-s tot",{stock:true});
-  b+=`<tr class="tgr"><td class="tl">연재 목표 <span class="hint">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)} yc"><input class="lp2t" data-tg="${m}" value="${T[m]??""}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum"></td></tr>`;
-  b+=`<tr class="dif"><td class="tl">목표 대비</td>${M.map((m,i)=>{ const t=T[m]; if(t==null||t==="") return `<td class="${yb(i)}"></td>`; const d=C.tot.onair[i]-t; return `<td class="${yb(i)} ${d>=0?"okc":"badc"}">${d>=0?"+":""}${d}</td>`; }).join("")}<td class="tsum"></td></tr>`;
+  // 연재 합계 칸 안에 목표 대비를 같이 (목표를 입력한 달) — 바로 아래 노란 칸이 목표 입력
+  b+=`<tr class="lcx-s tot stock"><td class="tl" data-tip="그 달 말 연재 중인 작품 수 · 바로 아래 노란 칸에 목표를 쓰면 이 칸에 +/− 가 같이 보여요">연재 합계<span class="tipi">?</span></td>${M.map((m,i)=>{ const v=C.tot.onair[i], t=T[m]; const has=t!=null&&t!=="";
+      const d=has?v-t:0; return `<td class="${yb(i)}${v?"":" z"}${has?(d>=0?" sxok":" sxbad"):""}"${has?` title="목표 ${t} · ${d>=0?"+":""}${d}"`:""}>${n(v)}${has?`<small class="sxd">${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}<td class="tsum">${n(C.tot.onair[NM-1])}<small>말</small></td></tr>`;
+  b+=`<tr class="tgr sxin"><td class="tl">ㄴ 연재 목표 <span class="sxbadge">입력</span></td>${M.map((m,i)=>`<td class="${yb(i)} yc"><input class="lp2t" data-tg="${m}" value="${T[m]??""}" placeholder="·"${ro?" disabled":""}></td>`).join("")}<td class="tsum"></td></tr>`;
   [["int","내부",ints,"oi"],["ext","외부",exts,"oe"]].forEach(([ln,lab,ids,k])=>{ b+=row(`${lab} ${tog(k,"팀별")}`,sum("onair",ids),"sub b",{stock:true}); if(SX[k]) ids.forEach(id=>{ b+=row(`<span class="ind">ㄴ ${esc(id)}</span>`,C.R.onair[id],"sub",{stock:true}); }); });
   // 2. 런칭
   b+=`<tr class="sxh"><td class="tl" colspan="${NM+2}">2. 런칭 작품 수 <span class="hint">그 달 새로 여는 시즌</span></td></tr>`;
