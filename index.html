@@ -1949,7 +1949,7 @@ const Y0=2026, NY=3, NM=NY*12, YEND=Y0+NY-1;
 /* 런칭 시나리오 — 날짜를 정해 두고 휴재를 허용했을 때 운영 비교 (각 달 마지막 월요일) */
 const SCENARIOS=[["2026-12-21","12/21 런칭"],["2027-01-25","1월 말 런칭 (1/25)"],["2027-02-22","2월 말 런칭 (2/22)"]];
 let FORCE=null;   // null = 휴재 없는 일정 (시나리오 버튼은 없앰 — 시뮬레이터 일정으로 대체)
-let OPEN_SIM=false, OPEN_SREG="KR";   // 오픈 일정 탭: 시뮬레이션 일정 보기 · 지역
+let OPEN_SIM=false, OPEN_SREG="JP";   // 오픈 일정 탭: 시뮬레이션 일정 보기 · 지역
 function simEnsure(reg){   // 시뮬레이션 탭을 안 열었어도 지역별 기본 설정으로 준비 → 그 지역 상태를 돌려줌
   if(SIMS===null){ SIMS=undefined; simRegLoad().then(()=>safeRender()); return null; }
   if(SIMS===undefined) return null;
@@ -2154,15 +2154,15 @@ function covLine(){
 let SIM=null;
 const SIM_R0=(w)=>{ const r=SIM_R00(w); simTzApply(w,r,true); return r; };
 /* 티저: 1화만 먼저 공개 → 2화부터 휴재 없이 이어지도록 쉬는 주를 자동 계산 (티저 순서 작품) */
-function simTzApply(w,r,init){ const T=typeof CONF!=="undefined"&&CONF.teaser; if(!T||!(T.order||[]).includes(w.n)) return false; if(typeof SIMREG!=="undefined"&&SIMREG!=="JP") return false;   // 티저는 일본 우선
-  const d=T.dates&&T.dates[w.n];
+function simTzApply(w,r,init){ const T=typeof CONF!=="undefined"&&CONF.teaser; if(!T||!(T.order||[]).includes(w.n)) return false; if(!simTzOn()) return false;   // 티저: 일본·한국 (글로벌은 없음)
+  const d=simTzDate(w.n);
   if(d&&(init||!(r.launchMode==="fixed"&&r.launch))){ r.launchMode="fixed"; r.launch=d; }
   else if(!(r.launchMode==="fixed"&&r.launch)) r.launchMode="auto";   // 날짜가 없으면 1화가 준비되는 가장 빠른 날
   r.openK=1; r.pgap="auto"; r.inc=true; return true; }
 /* 티저 순서대로: 날짜가 없는 작품은 '앞 순서 티저 다음 주 이후 · 1화가 준비되는 가장 빠른 날'로 고정 */
 function simTzAll(keepFixed){ const T=CONF.teaser; if(!T||!SIM) return 0; let prev=null, n=0;
   (T.order||[]).forEach(nm=>{ const w=WORKS.find(x=>x.n===nm); if(!w||!SIM.rows[w.id]) return; const r=SIM.rows[w.id]; simTzApply(w,r,false); n++;
-    const d=T.dates&&T.dates[nm];
+    const d=simTzDate(nm);
     if(!d&&!(keepFixed&&r.launchMode==="fixed"&&r.launch)){ const S=schedule(simX(w,r)); if(S.held) return;
       let t=dowOnOrAfter(prev?addDays(prev,7):addDays(TODAY,1),S.dow!=null?S.dow:1); while(S.eps[1].need>t) t=addDays(t,7); r.launchMode="fixed"; r.launch=key(t); }
     if(r.launchMode==="fixed"&&r.launch) prev=D(r.launch); });
@@ -2250,7 +2250,7 @@ function renderSim(){
   let h=`<div class="simhd"><div><p class="lead">시뮬레이션</p><p class="lead-sub">제작 일정 탭 기준으로 공개 운영과 제작 가정을 바꿔 보는 화면이에요. 여기서 바꾼 값은 실제 일정에 반영되지 않아요.</p></div>
       <span class="simver"><span class="seg simreg" role="group" aria-label="지역">${SIMREGS.map(([k,l])=>`<button type="button" data-sreg="${k}" aria-pressed="${SIMREG===k}">${l}</button>`).join("")}</span>
         <span class="hint" id="simSaved">${SIMS_AT?`저장됨 · ${SIMS_AT.slice(5,16).replace("T"," ")}`:"바꾸면 자동 저장"}</span><button type="button" class="btn" id="simReset">처음으로</button></span></div>
-    <div class="simbase">지역별 기본 설정 — <b>${esc((SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG)}</b> 값을 바꾸면 모두에게 공유되는 기본값으로 바로 저장돼요. 오픈 일정 탭 [시뮬레이션 일정]에서 KR · JP · GW를 바로 비교할 수 있어요.${SIMREG==="JP"?" · 티저(1화 선공개)는 일본 우선이라 JP에만 적용돼요.":""}</div>
+    <div class="simbase">지역별 기본 설정 — <b>${esc((SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG)}</b> 값을 바꾸면 모두에게 공유되는 기본값으로 바로 저장돼요. 오픈 일정 탭 [시뮬레이션 일정]에서 KR · JP · GW를 바로 비교할 수 있어요.${SIMREG==="JP"?" · 티저: 12/28 나이트런부터 작품 순서대로 1주일마다 1화 선공개":SIMREG==="KR"?" · 티저: 1/25(1월 말) 나이트런부터 일본과 같은 순서로 1주일마다 1화 선공개":" · 글로벌은 티저 없이 정규 런칭"}</div>
         <div class="simv">${yv(2026)} · ${yv(2027)} · ${yv(2028)} 작품 오픈${hia?` · 휴재 합계 <b style="color:var(--hia)">${hia}주</b>`:" · 휴재 없음"}
       <span class="hint" style="font-size:12px">괄호 = 확정 일정 대비</span></div>
     <div class="card simpre"><b>연말 프리뷰 해보기</b>
@@ -2335,7 +2335,7 @@ function renderSim(){
     <span><i style="background:repeating-linear-gradient(90deg,#E9EAE5 0 3px,#F6F6F3 3px 6px)"></i>쉼 (프리뷰 후·시즌 사이)</span><span><i style="background:var(--hia-bg)"></i>휴재 (제작이 못 따라옴)</span></div>`;
   $("v-sim").innerHTML=h;
   // 이벤트
-  $("simReset").onclick=()=>{ const rl=(SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG; if(confirm(`${rl} 시뮬레이션 값을 처음으로(제작 일정 그대로${SIMREG==="JP"?" + 티저 기본":""}) 되돌릴까요? 모두에게 공유되는 기본값이 바뀌어요.`)){ SIMS[SIMREG]=null; SIM=null; simUse(SIMREG); render(); } };
+  $("simReset").onclick=()=>{ const rl=(SIMREGS.find(x=>x[0]===SIMREG)||[])[1]||SIMREG; if(confirm(`${rl} 시뮬레이션 값을 처음으로(제작 일정 그대로${SIMREG!=="GW"?" + 티저 기본":""}) 되돌릴까요? 모두에게 공유되는 기본값이 바뀌어요.`)){ SIMS[SIMREG]=null; SIM=null; simUse(SIMREG); if(SIMREG!=="GW") simTzAll(false); render(); } };
   if($("simBaseGo")) $("simBaseGo").onclick=()=>{ const b=simBaseVer(); if(!b) return; if(!confirm(`기본 버전 '${b.name}'으로 되돌릴까요? 지금 화면 값은 저장하지 않았다면 사라져요.`)) return; SIM=clone(b.data); SIM.extra=(SIM.extra||[]).map(normW); toast("기본 버전으로 되돌렸어요"); render(); };
   if($("simBaseMk")) $("simBaseMk").onclick=()=>{ const v=(SIMSAVES||[]).find(x=>x.id===$("simVer").value); if(!v){ toast("기본으로 정할 저장 버전을 골라 주세요 (지금 화면은 먼저 [현재 버전 저장])"); return; }
     if(confirm(`'${v.name}'을 기본 버전으로 확정할까요? 시뮬레이션 탭을 열면 모두에게 이 버전이 먼저 열려요.`)) simBaseSet(v.id).then(()=>toast("기본 버전으로 확정했어요")); };
@@ -2391,8 +2391,12 @@ async function simVerLoad(){
 }
 let SIMBASE=null, SIM_BASE_TRIED=false, SIMOPS_OPEN=false;
 /* 지역별 시뮬레이션 (KR · JP · GW) — 버전 불러오기 대신 지역마다 '기본 설정값' 하나를 공유 저장 (바꾸면 자동 저장) */
-const SIMREGS=[["KR","한국 KR"],["JP","일본 JP"],["GW","글로벌 GW"]];
-let SIMREG=(()=>{ try{ return localStorage.getItem("anime_simreg")||"KR"; }catch(e){ return "KR"; } })();
+const SIMREGS=[["JP","일본 JP"],["KR","한국 KR"],["GW","글로벌 GW"]];
+let SIMREG=(()=>{ try{ return localStorage.getItem("anime_simreg")||"JP"; }catch(e){ return "JP"; } })();
+/* 지역별 티저 시작일: 일본 12/28(나이트런) · 한국 1월 말(1/25) — 이후 같은 작품 순서로 1주일마다 */
+const SIM_TZ_START={JP:null,KR:"2027-01-25"};
+const simTzOn=()=>typeof SIMREG!=="undefined"&&(SIMREG in SIM_TZ_START);
+const simTzDate=(nm)=>{ const T=CONF.teaser||{}; if(SIMREG==="JP") return (T.dates||{})[nm]||null; if(SIM_TZ_START[SIMREG]&&(T.order||[])[0]===nm) return SIM_TZ_START[SIMREG]; return null; };
 let SIMS=null, SIMS_SIG="", SIMS_T=0, SIMS_AT=null;
 async function simRegLoad(){ let d=null;
   try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.simregion&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_simregion"); }catch(e){}
@@ -2405,7 +2409,8 @@ async function simRegLoad(){ let d=null;
   SIMS_SIG=JSON.stringify(SIMS); }
 function simUse(reg){ if(SIMS&&SIM&&SIMS[SIMREG]!==SIM&&SIMREG) SIMS[SIMREG]=SIM; SIMREG=reg; try{ localStorage.setItem("anime_simreg",reg); }catch(e){}
   SIM=SIMS[reg]||null; if(!SIM){ simInit(); SIMS[reg]=SIM; }
-  if(!SIM.extra) SIM.extra=[]; if(!SIM.tzv){ if(reg==="JP") simTzAll(true); SIM.tzv=1; } }
+  if(!SIM.extra) SIM.extra=[]; if(!SIM.tzv){ if(reg==="JP") simTzAll(true); SIM.tzv=1; }
+  if(reg==="KR"&&!SIM.tzk){ simTzAll(false); SIM.tzk=1; } }   // 10/20: 한국도 1월 말 1화 티징 → 일본과 같은 작품 순서로 1주일마다
 function simRegSaveSoon(){ clearTimeout(SIMS_T); SIMS_T=setTimeout(simRegSave,900); }
 async function simRegSave(){ if(!SIMS) return; if(SIM) SIMS[SIMREG]=SIM; const sig=JSON.stringify(SIMS); if(sig===SIMS_SIG) return;
   try{ const data={states:SIMS,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")};
