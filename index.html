@@ -1582,8 +1582,10 @@ const AGE_OPTS=[["","미정"],["all","전체 이용가"],["12","12세 이용가"
 const ageBadge=(w)=>w.age?`<span class="age a${w.age}" title="${AGE_OPTS.find(a=>a[0]===w.age)[1]}">${w.age==="all"?"전체":w.age}</span>`:"";
 const ageSel=(id,v,attr)=>`<select class="in" ${attr||""} id="${id||""}">${AGE_OPTS.map(([k,t])=>`<option value="${k}"${(v||"")===k?" selected":""}>${t}</option>`).join("")}</select>`;
 /* 담당 미정 · 제작 중단 표시 */
-/* 티저 런칭 순서 (CONF.teaser) — 작품명 옆 배지 */
-const teaserTag=(w,sm)=>{ const T=typeof CONF!=="undefined"&&CONF&&CONF.teaser; if(!T||!w) return ""; const i=(T.order||[]).indexOf(w.n); if(i<0) return ""; const d=(T.dates||{})[w.n];
+/* 티저 런칭 순서 (CONF.teaser) — 작품명 옆 배지 · 공유 설정을 아직 못 불러왔어도 기본 순서로 동작 */
+const TZ0={order:["나이트런","냐한 남자","용사가 돌아왔다","소녀바둑"],first:"일본",dates:{"나이트런":"2026-12-28"}};
+const TZC=()=>(typeof CONF!=="undefined"&&CONF&&CONF.teaser&&(CONF.teaser.order||[]).length)?CONF.teaser:TZ0;
+const teaserTag=(w,sm)=>{ const T=TZC(); if(!T||!w) return ""; const i=(T.order||[]).indexOf(w.n); if(i<0) return ""; const d=(T.dates||{})[w.n];
   return `<span class="tag tz"${sm?' style="font-size:10px;padding:0 5px"':""} title="티저 런칭 ${i+1}순위${T.first?` · ${T.first} 우선`:""}${d?` · ${d}`:" · 일정 미정"}">티저 ${"①②③④⑤⑥⑦⑧⑨"[i]||i+1}${T.first?` · ${T.first} 우선`:""}${d?` ${+d.slice(5,7)}/${+d.slice(8)}`:""}</span>`; };
 const tbdTag0=(w,sm)=>w.tbd?`<span class="tag tbd"${sm?' style="font-size:10px;padding:0 5px"':""}>담당 미정</span>`:"";
 const tbdTag=(w,sm)=>teaserTag(w,sm)+tbdTag0(w,sm);
@@ -2156,13 +2158,13 @@ function covLine(){
 let SIM=null;
 const SIM_R0=(w)=>{ const r=SIM_R00(w); simTzApply(w,r,true); return r; };
 /* 티저: 1화만 먼저 공개 → 2화부터 휴재 없이 이어지도록 쉬는 주를 자동 계산 (티저 순서 작품) */
-function simTzApply(w,r,init){ const T=typeof CONF!=="undefined"&&CONF.teaser; if(!T||!(T.order||[]).includes(w.n)) return false; if(!simTzOn()) return false;   // 티저: 일본·한국 (글로벌은 없음)
+function simTzApply(w,r,init){ const T=TZC(); if(!T||!(T.order||[]).includes(w.n)) return false; if(!simTzOn()) return false;   // 티저: 일본·한국 (글로벌은 없음)
   const d=simTzDate(w.n);
   if(d&&(init||SIM_TZ_FORCE||!(r.launchMode==="fixed"&&r.launch))){ r.launchMode="fixed"; r.launch=d; }
   else if(!(r.launchMode==="fixed"&&r.launch)) r.launchMode="auto";   // 날짜가 없으면 1화가 준비되는 가장 빠른 날
   r.openK=1; r.pgap="auto"; r.resK=3; r.inc=true; return true; }
 /* 기본 방식 (10/20): 티저 4작품 = 국가별 티저 1화 → 쉬고 → 3화 동시 재개 → 주 1회 · 그 밖 작품 = 티저 없이 3화 동시 런칭 → 주 1회 (휴재 없는 가장 빠른 날) */
-function simBaseMode(){ if(!SIM) return 0; const T=CONF.teaser||{}; let n=0;
+function simBaseMode(){ if(!SIM) return 0; const T=TZC(); let n=0;
   SIM_WL().forEach(w=>{ const r=SIM.rows[w.id]; if(!r) return; const tz=simTzOn()&&(T.order||[]).includes(w.n);
     if(tz){ r.openK=1; r.pgap="auto"; r.resK=3; }
     else { r.launchMode="auto"; r.openK=3; r.pgap=""; r.resK=1; if(r.mode==="season") r.rest="auto"; }
@@ -2171,7 +2173,7 @@ function simBaseMode(){ if(!SIM) return 0; const T=CONF.teaser||{}; let n=0;
 /* 휴재 없이: 모든 작품 — 런칭 뒤 쉬는 주 자동(프리뷰·티저 후) · 시즌제면 시즌 사이 쉼 자동 → 제작이 공개를 따라잡을 때까지 미리 쉬어서 휴재 0 */
 function simNoHiatusAll(){ if(!SIM) return 0; let n=0; SIM_WL().forEach(w=>{ const r=SIM.rows[w.id]; if(!r||r.inc===false) return; r.pgap="auto"; if(r.mode==="season") r.rest="auto"; n++; }); return n; }
 let SIM_TZ_FORCE=false;
-function simTzAll(keepFixed){ const T=CONF.teaser; if(!T||!SIM) return 0; let prev=null, n=0; SIM_TZ_FORCE=!keepFixed;
+function simTzAll(keepFixed){ const T=TZC(); if(!SIM) return 0; let prev=null, n=0; SIM_TZ_FORCE=!keepFixed;
   (T.order||[]).forEach(nm=>{ const w=WORKS.find(x=>x.n===nm); if(!w||!SIM.rows[w.id]) return; const r=SIM.rows[w.id]; simTzApply(w,r,false); n++;
     const d=simTzDate(nm);
     if(!d&&!(keepFixed&&r.launchMode==="fixed"&&r.launch)){ const S=schedule(simX(w,r)); if(S.held) return;
@@ -2270,7 +2272,7 @@ function renderSim(){
       <span>${ymd(YE)} 런칭 · <select class="in" id="preK">${opt([[1,"1화"],[2,"2화"]],SIM.preK||2)}</select> 먼저 오픈 → 휴재 없이 이어가려면 몇 주 쉬어야 하는지 계산</span>
       <select class="in" id="preScope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],SIM.preScope||"all")}</select>
       <button type="button" class="btn pri" id="preGo">적용</button>
-      <button type="button" class="btn" id="tzGo" title="티저 순서 작품(${esc(((CONF.teaser||{}).order||[]).join(" → "))})은 1화만 먼저 공개(일본·한국)하고, 모든 작품이 휴재 없이 이어지도록 런칭 뒤 쉬는 주를 자동으로 맞춰요">기본 방식으로 (${SIMREG!=="GW"?"티저 1화 → 3화 재개 · ":""}3화 동시 런칭 · 휴재 없음)</button></div>`;
+      <button type="button" class="btn" id="tzGo" title="티저 순서 작품(${esc((TZC().order||[]).join(" → "))})은 1화만 먼저 공개(일본·한국)하고, 모든 작품이 휴재 없이 이어지도록 런칭 뒤 쉬는 주를 자동으로 맞춰요">기본 방식으로 (${SIMREG!=="GW"?"티저 1화 → 3화 재개 · ":""}3화 동시 런칭 · 휴재 없음)</button></div>`;
   const keepIf=(all,a)=>(all?KEEP:[]).concat(a);
   const seasonCells=(id,r,all)=>{ const k=all?"data-sa":"data-sr", idA=all?"":` data-id="${id}"`, on=r.mode==="season";
     return `<td><select class="in" ${k}="mode"${idA}>${opt(keepIf(all,MODE),r.mode)}</select>${on||(all&&r.mode==="")?` <input class="in n" type="number" min="1" max="100" ${k}="seasonN"${idA} value="${r.seasonN}" placeholder="${all?"그대로":""}">화씩`:""}</td>
@@ -2410,7 +2412,7 @@ let SIMREG=(()=>{ try{ return localStorage.getItem("anime_simreg")||"JP"; }catch
 /* 지역별 티저 시작일: 일본 12/28(나이트런) · 한국 1월 말(1/25) — 이후 같은 작품 순서로 1주일마다 */
 const SIM_TZ_START={JP:null,KR:"2027-01-25"};
 const simTzOn=()=>typeof SIMREG!=="undefined"&&(SIMREG in SIM_TZ_START);
-const simTzDate=(nm)=>{ const T=CONF.teaser||{}; if(SIMREG==="JP") return (T.dates||{})[nm]||null; if(SIM_TZ_START[SIMREG]&&(T.order||[])[0]===nm) return SIM_TZ_START[SIMREG]; return null; };
+const simTzDate=(nm)=>{ const T=TZC(); if(SIMREG==="JP") return (T.dates||{})[nm]||null; if(SIM_TZ_START[SIMREG]&&(T.order||[])[0]===nm) return SIM_TZ_START[SIMREG]; return null; };
 let SIMS=null, SIMS_SIG="", SIMS_T=0, SIMS_AT=null;
 async function simRegLoad(){ let d=null;
   try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.simregion&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_simregion"); }catch(e){}
@@ -2426,7 +2428,7 @@ function simUse(reg){ if(SIMS&&SIM&&SIMS[SIMREG]!==SIM&&SIMREG) SIMS[SIMREG]=SIM
   if(!SIM.extra) SIM.extra=[]; if(!SIM.tzv){ if(reg==="JP") simTzAll(true); SIM.tzv=1; }
   if(reg==="KR"&&!SIM.tzk){ simTzAll(false); SIM.tzk=1; }
   if(!SIM.nh1){ if(reg!=="GW") simTzAll(reg==="JP"); simNoHiatusAll(); SIM.nh1=1; }
-  if(!SIM.bm1){ simBaseMode(); SIM.bm1=1; } }   // 10/20 기본 방식 적용 (티저 날짜는 국가별 그대로)   // 10/20: 남아 있던 휴재 정리 (모든 작품 쉬는 주 자동)   // 10/20: 한국도 1월 말 1화 티징 → 일본과 같은 작품 순서로 1주일마다
+  if(!SIM.bm2){ if(reg!=="GW") simTzAll(true); simBaseMode(); SIM.bm1=1; SIM.bm2=1; } }   // 10/20 재적용: 공유 티저 설정을 못 불러온 채로 적용돼 티저가 빠졌던 문제 보정   // 10/20 기본 방식 적용 (티저 날짜는 국가별 그대로)   // 10/20: 남아 있던 휴재 정리 (모든 작품 쉬는 주 자동)   // 10/20: 한국도 1월 말 1화 티징 → 일본과 같은 작품 순서로 1주일마다
 function simRegSaveSoon(){ clearTimeout(SIMS_T); SIMS_T=setTimeout(simRegSave,900); }
 async function simRegSave(){ if(!SIMS) return; if(SIM) SIMS[SIMREG]=SIM; const sig=JSON.stringify(SIMS); if(sig===SIMS_SIG) return;
   try{ const data={states:SIMS,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")};
