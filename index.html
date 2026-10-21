@@ -567,6 +567,10 @@ table.lct td.tsum,table.lct th.tsum{background:#E3E9F5;font-weight:800;color:#1F
 table.lct td.tsum small{font-size:9px;color:var(--muted);margin-left:2px;font-weight:600}
 table.lp2.sx td.sxsel{outline:2px solid #2B6FD0;outline-offset:-2px;background:#DCE8FB!important} table.lp2.sx td.sxsel input{background:#EEF4FF!important}
 table.lp2.sx tr.sxin td{user-select:none}
+table.lp2.sx td.ctc{cursor:pointer;position:relative} table.lp2.sx td.ctc:hover{outline:2px dashed #E5A32B;outline-offset:-2px}
+table.lp2.sx td.ctc.hasm{background:#FFF3D6!important} table.lp2.sx .cmk{position:absolute;top:1px;right:2px;font-style:normal;font-size:9px;color:#B26B00}
+table.lp2.sx tr.ctrow td{background:#FDEBD3} table.lp2.sx tr.ctrow td.tl{background:#F8D9AE}
+.ctw{width:30px;text-align:center;border:1px solid #E5C44F;background:#FFFBE8;border-radius:4px;font-weight:800;color:#7A5200;margin:0 2px}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1797,7 +1801,7 @@ const JA_PHRASE={
 "제작사 공유 · 당사 피드백 1일":"制作会社共有・当社FB 1日","제작사 공유 · 당사 피드백 3일":"制作会社共有・当社FB 3日","제작사 후보 · 당사 피드백 2일":"制作会社候補・当社FB 2日","제작사 (자체 진행)":"制作会社 (自社進行)","당사 · 자막 번역·입히기":"当社・字幕翻訳・挿入",
 "작품 1회":"作品1回","1화 확인 · 일정 영향 없음":"第1話確認・スケジュール影響なし","제작 시작 10영업일 전까지":"制作開始10営業日前まで","완료 기한":"完了期限","기한 지남":"期限超過","완료 확인":"完了確認","완료":"完了","1차 제작 끝":"一次制作完了",
 "병행":"並行","병렬":"並列","1~3화 병렬":"1〜3話並列","중단":"中断","재개":"再開","재개일":"再開日","취소":"取消","런칭":"ローンチ","기준":"基準","여유":"余裕","메모":"メモ",
-"지정":"指定","못 지킴":"守れず","나머지":"残り","보기":"表示","접기":"折りたたむ","현재 총":"現在 合計","5화 추가":"5話追加","5화":"5話",
+"지정":"指定","못 지킴":"守れず","나머지":"残り","보기":"表示","접기":"折りたたむ","현재 총":"現在 合計","5화 추가":"5話追加","5화":"5話","1화":"1話",
 "'기준' 표시 회차가 런칭일을 정합니다. 이 회차를 당기면(소요일 단축·인력 추가) 런칭도 당겨지고, 여유가 0에 가까운 회차가 밀리면 런칭이 뒤로 갑니다.":"「基準」の話がローンチ日を決めます。この話を前倒しすると（所要日数短縮・人員追加）ローンチも早まり、余裕が0に近い話が遅れるとローンチも後ろにずれます。",
 "제작 중단 —":"制作中断 —","부터 제작 중단":"から制作中断","재개 미정":"再開未定","착수 대기 — 신규 인력이 충원되면 착수 (기존 인력은 현재 작품 계속 연재)":"着手待ち — 新規人員が補充されたら着手（既存人員は現作品の連載を継続）",
 "▶ 착수일 정하기":"▶ 着手日を決める","▶ 활성화 (재개일 정하기)":"▶ 再開 (再開日を決める)","중단 취소":"中断取消","재개일을 정하면(▶ 활성화) 이어서 계산됩니다. 그 전까지 런칭은 '미정'입니다.":"再開日を決めると（▶ 再開）続きが計算されます。それまでローンチは「未定」です。",
@@ -1958,7 +1962,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.20-F";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.21-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2953,7 +2957,9 @@ function renderProd(){
   h+=`</tbody></table></div>`;
   h+=`<div class="epadd">${NR>lim||SHOWALL?`<button type="button" class="btn" id="more">${SHOWALL?"접기":`나머지 ${NR-lim}화 보기`}</button>`:""}
     <span class="sp"></span><span class="hint">현재 총 ${S.N}화</span>
-    <button type="button" class="btn" data-addep="-5"${S.N<=5?" disabled":""}>− 5화</button>
+    <button type="button" class="btn" data-addep="-5"${S.N<=5?" disabled":""} title="마지막 5화 빼기">− 5화</button>
+    <button type="button" class="btn" data-addep="-1"${S.N<=1?" disabled":""} title="마지막 1화 빼기">− 1화</button>
+    <button type="button" class="btn" data-addep="1" title="1화 더하기">+ 1화</button>
     <button type="button" class="btn pri" data-addep="5">+ 5화 추가</button></div>`;
   h+=`<p class="hint" style="margin-top:10px">'기준' 표시 회차가 런칭일을 정합니다. 이 회차를 당기면(소요일 단축·인력 추가) 런칭도 당겨지고, 여유가 0에 가까운 회차가 밀리면 런칭이 뒤로 갑니다.</p></div></div>`;
   $("v-prod").innerHTML=h;
@@ -2971,7 +2977,7 @@ function renderProd(){
   if(FOCUS){ const el=document.querySelector(`#v-prod .cl[data-ep="${FOCUS.k}"][data-s="${FOCUS.s}"]`); FOCUS=null;
     if(el){ el.scrollIntoView({block:"center",inline:"center"}); el.classList.add("flashc"); setTimeout(()=>el.classList.remove("flashc"),2200); } }
   document.querySelectorAll("#v-prod [data-addep]").forEach(b=>b.onclick=()=>{
-    const n=clamp((+w.total||0)+(+b.dataset.addep),5,300); SHOWALL=true; edit(w.id,[{p:["total"],v:n}]); });
+    const n=clamp((+w.total||S.N||0)+(+b.dataset.addep),1,300); SHOWALL=true; edit(w.id,[{p:["total"],v:n}]); });
   document.querySelectorAll("#v-prod [data-f]").forEach(el=>el.onchange=()=>{
     const fk=el.dataset.f; let v=el.value;
     if(["done","rate","total","b1"].includes(fk)){ v=parseInt(v,10); if(isNaN(v))return;
@@ -3768,6 +3774,9 @@ function vChkEditor(v,anchor){
 }
 function renderVendors(){
   const L=vFiltered(), all=VENDORS.filter(v=>!VF.kind||vKind(v)===VF.kind), cnt=(f,k)=>all.filter(v=>f(v)===k).length;
+  // 단계별 숫자는 국가·우선순위·담당자·검색 필터를 반영 (단계 필터만 제외)
+  const qq=VF.q.trim().toLowerCase(), fx=all.filter(v=>(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.owner||(v.owner||"").includes(VF.owner))&&(!qq||JSON.stringify(v).toLowerCase().includes(qq)));
+  const cntS=(k)=>fx.filter(v=>(v.stage||"contact")===k).length;
   const chip=(grp,k,label,n)=>`<button type="button" class="vchip${VF[grp].has(k)?" on":""}" data-vf="${grp}" data-k="${k}">${esc(label)} <span>${n}</span></button>`;
   const owners=[...new Set(all.flatMap(v=>(v.owner||"").split("/").map(x=>x.trim()).filter(Boolean)))];
   const overdue=all.filter(vOd).length;
@@ -3776,10 +3785,10 @@ function renderVendors(){
     <span style="display:flex;gap:8px;align-items:center"><span class="seg sm" role="group" aria-label="보기"><button type="button" data-vv="table" aria-pressed="${VVIEW==="table"}">표</button><button type="button" data-vv="cal" aria-pressed="${VVIEW==="cal"}">캘린더</button></span>
     <button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></span></div>
   <div class="vkseg" role="group" aria-label="외주 구분">${[["","전체",VENDORS.length,"all"],...V_KINDS.map(([k,l])=>[k,l,VENDORS.filter(v=>vKind(v)===k).length,k])].map(([k,l,n,c])=>`<button type="button" class="vkb k-${c}" data-vk2="${k}" aria-pressed="${VF.kind===k}"><i></i>${l} <b>${n}</b></button>`).join("")}</div>
-  ${vNextBoard(all)}
+  ${vNextBoard(fx)}
   <div class="vpipe">
-    <div class="vflow">${V_FLOW.map(([k,l],i)=>{const n=cnt(v=>v.stage||"contact",k);return `<button type="button" class="vstep${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><span class="vno">${i+1}</span><span class="vtx"><b>${n}</b>${l}</span></button>`;}).join("")}</div>
-    <div class="vside"><span class="vsl">진행 외</span>${V_SIDE.map(([k,l])=>{const n=cnt(v=>v.stage||"contact",k);return `<button type="button" class="vsbtn ${k}${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><b>${n}</b>${l}</button>`;}).join("")}</div>
+    <div class="vflow">${V_FLOW.map(([k,l],i)=>{const n=cntS(k);return `<button type="button" class="vstep${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><span class="vno">${i+1}</span><span class="vtx"><b>${n}</b>${l}</span></button>`;}).join("")}</div>
+    <div class="vside"><span class="vsl">진행 외</span>${V_SIDE.map(([k,l])=>{const n=cntS(k);return `<button type="button" class="vsbtn ${k}${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><b>${n}</b>${l}</button>`;}).join("")}</div>
   </div>
   <div class="card vfil">
     <span class="sog">국가</span>${V_COUNTRY.map(c=>chip("country",c,c,all.filter(v=>(V_COUNTRY.includes(v.country)?v.country:"기타")===c).length)).join("")}
@@ -4342,6 +4351,9 @@ function lp2Ensure(){ lpEnsure(); if(LP.cur&&LP.cur.v===2&&(LP.cur.aiv!==2||!LP.
     lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`현실 버전(27말 30편) 전환 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
     const P=clone(LP.cur); const T={}; Object.entries(P.targets.onair||{}).forEach(([m,v])=>{ if(!m.startsWith("2027")) T[m]=v; }); T["2027-12"]=30; P.targets={...P.targets,onair:T};
     P.g={...P.g,autoFit:false,contMinGapW:4,smooth:"off"}; P.real30=1; lpOp({op:"cur",v:P}); }   // 준비되는 대로 런칭 → 착수를 바꾸면 바로 결과에 보임
+  if(LP.cur&&LP.cur.v===2&&LP.cur.real30&&!LP.cur.plan1v){   // 10/21 1차 착수안 자동 기입 (27말 연재 목표 기준)
+    lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`1차 착수안 자동 기입 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
+    const T=+((LP.cur.targets.onair||{})["2027-12"])||30; const r=lp2Plan1(LP.cur,{target:T}); r.P.plan1v=1; r.P.plan1={X:r.X,on:r.on,at:key(TODAY)}; lpOp({op:"cur",v:r.P}); }
   if(LP.cur&&LP.cur.v===2&&LP.cur.rampv&&!LP.cur.lru1){ const P=clone(LP.cur); P.lru1=1; lpOp({op:"cur",v:lp2Repack(P)}); }   // 10/20 제작사 균등 배정으로 다시
   if(LP.cur&&LP.cur.v===2&&!LP.cur.rampv){ const P=clone(LP.cur); P.rampv=1; lpOp({op:"cur",v:lp2Repack(P)}); }   // 외주 신규 셋업 규칙(3개월 뒤 · 1개월 뒤)으로 다시 배정
   if(LP.cur&&LP.cur.v===2&&LP.cur.afv&&!LP.cur.ext30&&LP.cur.g.autoFit!==false){ lpOp({op:"cur",v:lp2AutoFit(clone(LP.cur))}); }   // 2029~30년 팀별 착수 이어가기 + 정확한 월 런칭 계획
@@ -5066,10 +5078,47 @@ function lp2Simple(P,C,g,ro){ const M=LP2_M, NM=M.length, G=P.groups, SX=LP2V.sx
   [["int","내부",ints,"ei"],["ext","외부",exts,"ee"]].forEach(([ln,lab,ids,k])=>{ b+=row(`${lab} ${tog(k,"팀별")}`,sum("eps",ids).map(v=>Math.round(v)),"sub b"); if(SX[k]) ids.forEach(id=>{ b+=row(`<span class="ind">ㄴ ${esc(id)}</span>`,C.R.eps[id].map(v=>Math.round(v)),"sub"); }); });
   b+=row(`${tog("ai","AI 성우 회차")}`,C.tot.epsAi.map(v=>Math.round(v)),"sub ai");
   if(SX.ai){ b+=row(`<span class="ind ai">ㄴ 내부</span>`,sum("epsAi",ints).map(v=>Math.round(v)),"sub ai"); b+=row(`<span class="ind ai">ㄴ 외부</span>`,sum("epsAi",exts).map(v=>Math.round(v)),"sub ai"); }
+  // 4. 외주 컨택 · 계약 일정 (착수에서 역산): 컨택(샘플 계약 시작) → 샘플 1달 → 계약 논의 1주 → 본계약·프리프로덕션 3주 → 착수(1화 제작 시작)
+  const CT=g.ct||{sample:4,talk:1,pre:3}, CM=P.cmemo||{};
+  const wk=(d,w)=>addDays(d,-7*w), mOf=(d)=>key(d).slice(0,7), z0=()=>Array(NM).fill(0);
+  const newV={J:z0(),O:z0()}, talk=z0(), pre=z0();
+  G.filter(x=>x.line==="ext").forEach(x=>{ const jp=!/일본 외/.test(x.id); x.pipes.forEach(pp=>{ const ms=Object.keys(pp.start||{}).filter(m=>+pp.start[m]>0).sort(); if(!ms.length) return;
+      const f=lp2MStart(ms[0]); const ci=M.indexOf(mOf(wk(f,(+CT.sample||0)+(+CT.talk||0)+(+CT.pre||0)))); if(ci>=0) (jp?newV.J:newV.O)[ci]++;
+      ms.forEach(m=>{ const n=+pp.start[m]||0, st=lp2MStart(m); const a=M.indexOf(mOf(wk(st,(+CT.talk||0)+(+CT.pre||0)))), b2=M.indexOf(mOf(wk(st,+CT.pre||0))); if(a>=0) talk[a]+=n; if(b2>=0) pre[b2]+=n; }); }); });
+  const nvT=M.map((m,i)=>newV.J[i]+newV.O[i]);
+  const ctRow=`<tr class="lcx-s tot ctrow"><td class="tl" data-tip="새 외주 제작사와 처음 연락해서 샘플 계약을 시작해야 하는 달이에요 (그 제작사 첫 착수에서 ${(+CT.sample||0)+(+CT.talk||0)+(+CT.pre||0)}주 역산). 칸을 누르면 회사 이름 메모를 적을 수 있고, 마우스를 올리면 보여요.">새 제작사 컨택 <span class="hint">샘플 계약 시작</span><span class="tipi">?</span></td>${M.map((m,i)=>{ const v=nvT[i], memo=CM[m]||"";
+      return `<td class="${yb(i)}${v?"":" z"} ctc${memo?" hasm":""}" data-cm="${m}" title="${esc(memo?`${m.slice(2,4)}.${+m.slice(5)} 컨택 메모\n${memo}`:`${m.slice(2,4)}.${+m.slice(5)} · 눌러서 회사 이름 메모`)}">${n(v)}${memo?`<i class="cmk">✎</i>`:""}</td>`; }).join("")}<td class="tsum">${n(nvT.reduce((a,b)=>a+b,0))}</td></tr>`;
+  b+=`<tr class="sxh"><td class="tl" colspan="${NM+2}">4. 외주 컨택 · 계약 일정 <span class="hint">착수(1화 제작 시작)에서 역산 · 컨택 → 샘플 계약 <input class="ctw" data-ct="sample" value="${CT.sample}">주 → 계약 논의 <input class="ctw" data-ct="talk" value="${CT.talk}">주 → 본계약·프리프로덕션 <input class="ctw" data-ct="pre" value="${CT.pre}">주 → 착수</span></td></tr>`;
+  b+=ctRow+row(`<span class="ind">ㄴ 일본</span>`,newV.J,"sub")+row(`<span class="ind">ㄴ 일본 외</span>`,newV.O,"sub")
+    +row("계약 논의 시작 (작품별)",talk,"sub",{tip:"작품마다 착수 "+((+CT.talk||0)+(+CT.pre||0))+"주 전에 계약 논의를 시작해야 하는 편수 (기존 제작사 포함)"})
+    +row("본계약 · 프리프로덕션 시작",pre,"sub",{tip:"작품마다 착수 "+(+CT.pre||0)+"주 전 — 본계약 체결과 프리프로덕션 시작"});
   const head=`<tr><th class="tl"></th>${M.map((m,i)=>`<th class="${yb(i)}${m===cur?" now":""}">${m.slice(2,4)}.${+m.slice(5)}</th>`).join("")}<th class="tsum">합계</th></tr>`;
-  return `<div class="lpsec" style="margin-top:12px">런칭 플랜 <span class="hint">엑셀처럼 — 외부 착수를 바꾸면 바로 계산 · 내부 고정 · 후속 시즌은 시즌 1 뒤 최소 1달 휴재</span></div>
+  return `<div class="lpsec" style="margin-top:12px">런칭 플랜 <button type="button" class="btn" id="lpPlan1" style="padding:2px 10px;font-size:12px;margin-left:6px" title="26.12 1편 + 27년 분기 15·20·25·40% · 일본 외 60% / 일본 40% — 27년 말 연재 목표를 맞추는 가장 작은 착수 수로 외부 착수를 채워요 (지금 값은 기록에 보관)">27년 목표 기준 1차 착수안 넣기</button> <span class="hint">엑셀처럼 — 외부 착수를 바꾸면 바로 계산 · 내부 고정 · 후속 시즌은 시즌 1 뒤 최소 1달 휴재</span></div>
     <div class="card" style="padding:0;overflow-x:auto"><table class="lp2 res sx" style="width:${210+48*NM+76}px"><colgroup><col style="width:210px">${M.map(()=>`<col style="width:48px">`).join("")}<col style="width:76px"></colgroup><thead>${head}</thead><tbody>${b}</tbody></table></div>`; }
 let LP2_SRC_HTML="";
+/* 외주 팀(일본 · 일본 외) 그 달 착수 편수를 n으로 — 제작사 배정은 나중에 lp2Repack */
+function lp2SetGroupStart(Q,gid,m,v){ const Gq=Q.groups.find(x=>x.id===gid); if(!Gq) return; const i=LP2_M.indexOf(m);
+  const tot=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[m])||0),0), ai=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,m,i),0);
+  let share=tot?ai/tot:null; if(share==null){ for(let j=i-1;j>=0&&share==null;j--){ const t2=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[LP2_M[j]])||0),0); if(t2) share=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,LP2_M[j],j),0)/t2; } } if(share==null) share=1;
+  const bd=lp2ff((Gq.pipes.find(p=>Object.keys(p.bd||{}).length)||Gq.pipes[0]||{}).bd,i,7);
+  Gq.pipes.forEach(p=>{ if(p.start) delete p.start[m]; if(p.aiN) delete p.aiN[m]; });
+  if(!Gq.pipes.length) Gq.pipes.push({id:"p"+Math.random().toString(36).slice(2,8),name:"",start:{},bd:{},aiN:{}});
+  const p0=Gq.pipes[0]; p0.start=p0.start||{}; p0.aiN=p0.aiN||{}; p0.bd=p0.bd||{};
+  if(v>0){ p0.start[m]=v; p0.aiN[m]=Math.round(v*share); if(p0.bd[m]==null) p0.bd[m]=bd; } }
+/* 1차 착수안: 26.12 1편 + 27년 분기 비율(15·20·25·40%) · 일본 외 60% / 일본 40% — 27년 말 연재 목표를 맞추는 가장 작은 27년 외주 착수 수를 찾아 기입 */
+function lp2Plan1(P0,opt){ opt=opt||{}; const q=opt.q||[0.15,0.20,0.25,0.40], jp=opt.jp!=null?opt.jp:0.4, target=opt.target||30, M=LP2_M;
+  const months27=M.filter(m=>m.startsWith("2027"));
+  const alloc=(X)=>{ // 분기 → 월 (분기 안에서 고르게, 나머지는 앞 달부터)
+    const qt=q.map(f=>Math.floor(X*f)); let r=X-qt.reduce((a,b)=>a+b,0); for(let k=3;r>0;k=(k+3)%4,r--) qt[k]++;
+    const mon={}; qt.forEach((t,k)=>{ const ms=months27.slice(k*3,k*3+3); const base=Math.floor(t/3); let rem=t-base*3; ms.forEach(m=>{ mon[m]=base+(rem>0?1:0); if(rem>0) rem--; }); }); return mon; };
+  const build=(X)=>{ const P=clone(P0); const mon={"2026-12":1,...alloc(X)}; let cj=0, ca=0, sumJ=0, sumA=0;
+    Object.entries(mon).sort().forEach(([m,v])=>{ sumA+=v; const wantJ=Math.round(sumA*jp); const j=Math.max(0,Math.min(v,wantJ-sumJ)); sumJ+=j;
+      lp2SetGroupStart(P,"외부 일본",m,j); lp2SetGroupStart(P,"외부 일본 외",m,v-j); });
+    P.groups=lp2Repack(P).groups; return P; };
+  const on27=(P)=>{ const C=lp2Compute(P); return C.tot.onair[M.indexOf("2027-12")]||0; };
+  let lo=0, hi=200, best=null; while(lo<=hi){ const mid=(lo+hi)>>1; const P=build(mid); const v=on27(P); if(v>=target){ best={X:mid,P,on:v}; hi=mid-1; } else lo=mid+1; }
+  if(!best){ const P=build(200); best={X:200,P,on:on27(P)}; }
+  return best; }
 let SXSEL=null;   // 간단 보기 선택 범위 {r0,c0,r1,c1} (행·열 번호)
 function sxGridBind(apply){ const T=document.querySelector("#v-lp table.lp2.sx"); if(!T) return;
   const rows=[...T.querySelectorAll("tr.sxin")].map(tr=>[...tr.querySelectorAll("input.sxc,input.lp2t")]); if(!rows.length) return;
@@ -5318,9 +5367,16 @@ function renderLP2(){
   h=h.replace('<div class="lphead">','<div class="lphead"><span class="seg sm" style="position:absolute;right:24px;margin-top:-4px">'+[["simple","간단 보기"],["detail","상세 보기 (레버·제작사)"]].map(([v,l])=>`<button type="button" data-lpm="${v}" aria-pressed="${(LP2V.mode||"simple")===v}">${l}</button>`).join("")+'</span>');
   $("v-lp").innerHTML=h;
   document.querySelectorAll("#v-lp [data-lpm]").forEach(b=>b.onclick=()=>{ LP2V.mode=b.dataset.lpm; render(); });
+  document.querySelectorAll("#v-lp td[data-cm]").forEach(td=>td.onclick=()=>{ const m=td.dataset.cm, cur0=(LP.cur.cmemo||{})[m]||""; const v=prompt(`${m.slice(2,4)}.${+m.slice(5)} 컨택할 외주 제작사 (회사 이름 · 메모)`,cur0); if(v===null) return; lpSet(Q=>{ Q.cmemo={...(Q.cmemo||{})}; if(v.trim()) Q.cmemo[m]=v.trim(); else delete Q.cmemo[m]; }); });
+  document.querySelectorAll("#v-lp .ctw").forEach(el=>el.onchange=()=>lpSet(Q=>{ Q.g={...Q.g,ct:{...(Q.g.ct||{sample:4,talk:1,pre:3}),[el.dataset.ct]:Math.max(0,+el.value||0)}}; }));
+  if($("lpPlan1")) $("lpPlan1").onclick=()=>{ const T=+((LP.cur.targets.onair||{})["2027-12"])||30; const r=lp2Plan1(LP.cur,{target:T});
+    if(!confirm(`27년 말 연재 ${T}편 기준 1차 착수안\n\n· 26.12 외주 1편\n· 27년 외주 착수 ${r.X}편 = 1Q ${Math.round(r.X*.15)} · 2Q ${Math.round(r.X*.2)} · 3Q ${Math.round(r.X*.25)} · 4Q ${Math.round(r.X*.4)} (반올림)\n· 일본 외 60% · 일본 40%\n→ 27.12 연재 ${r.on}편\n\n외부 착수 칸에 넣을까요? 지금 값은 기록에 남겨둘게요.`)) return;
+    lpOp({op:"hadd",v:{id:"h"+Date.now().toString(36),name:`1차 착수안 넣기 전 (${md(TODAY)})`,by:lpWho(),at:new Date().toISOString(),plan:clone(LP.cur)}});
+    lpOp({op:"cur",v:r.P}); toast(`27년 외주 착수 ${r.X}편으로 넣었어요 · 27.12 연재 ${r.on}편`); render(); };
   document.querySelectorAll("#v-lp [data-sx]").forEach(b=>b.onclick=()=>{ LP2V.sx=LP2V.sx||{}; const k=b.dataset.sx; LP2V.sx[k]=k==="se"?LP2V.sx[k]===false:!LP2V.sx[k]; render(); });
   const sxSet=(gid,m,v)=>lpSet(Q=>{ sxMut(Q,gid,m,v); Q.groups=lp2Repack(Q).groups; });
-  const sxMut=(Q,gid,m,v)=>{ const Gq=Q.groups.find(x=>x.id===gid); if(!Gq) return; const i=LP2_M.indexOf(m);
+  const sxMut=(Q,gid,m,v)=>lp2SetGroupStart(Q,gid,m,v);
+  const sxMutOld=(Q,gid,m,v)=>{ const Gq=Q.groups.find(x=>x.id===gid); if(!Gq) return; const i=LP2_M.indexOf(m);
       const tot=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[m])||0),0), ai=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,m,i),0);
       let share=tot?ai/tot:null; if(share==null){ for(let j=i-1;j>=0&&share==null;j--){ const t2=Gq.pipes.reduce((a,p)=>a+(+((p.start||{})[LP2_M[j]])||0),0); if(t2) share=Gq.pipes.reduce((a,p)=>a+lp2AiN(p,LP2_M[j],j),0)/t2; } } if(share==null) share=1;
       const bd=lp2ff((Gq.pipes.find(p=>Object.keys(p.bd||{}).length)||Gq.pipes[0]||{}).bd,i,7);
