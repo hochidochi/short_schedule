@@ -955,6 +955,7 @@ const DEFAULT_CONF={
     {k:"intAppr", n:"내부 승인",         s:"내부 승인",   team:"내부관계자",       v:{ih:5, ia:5, eh:2, ea:2},  sc:"ep",    upto:{i:3,e:0}, conc:"ext"},   // 내부: 작가+내부 = 10 (1~3화) · 외부: 1~3화 병렬, 4화부터 2일   // 내부: 1~3화만 · 외부: 전 회차 (1~3화는 작가 승인과 병렬)
     {k:"ratingFb",n:"등급 분류 피드백",   s:"등급 피드백", team:"내부관계자",       v:{ih:2, ia:2, eh:2, ea:2},  sc:"ep",    upto:3, conc:"author"},   // 1~3화만 · 승인과 병렬 (추가 기간 없음)
     {k:"prodF",   n:"영상 최종 수정",     s:"영상 최종",   sx:"영상 수정", team:"내부 제작팀", tx:"외부 제작사", v:{ih:5, ia:5, eh:3, ea:3},  sc:"ep",    upto:{i:3,e:0}},   // 외부: 4화부터 내부 승인 뒤 3영업일 안에 수정   // 내부: 1~3화만 · 외부: 전 회차
+    {k:"enshare", n:"EN 컨텐츠 공유",     s:"EN 공유",     team:"GW content · 공유만", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", mirror:["script","dub"], gate:"info"},   // 공유만 · 일본어 녹음 보내는 묶음·날짜를 그대로 표시 (일정 영향 없음)
     {k:"trans",   n:"대사 번역",         s:"대사 번역",   team:"GW content",       v:{ih:5, ia:5, eh:0, ea:0},  sc:"batch"},  // 5회차씩 · 외부: 제작사가 대사·녹음 대본 준비 → 없음
     {k:"vtrans",  n:"영상 번역 (번인)",   s:"영상 번역",   team:"미정 (업체 선정 중)", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", conc:true, par:true, tbdDur:true},   // 대사 번역과 동시 시작 · 기간 미정 (업체 정해지면 공정 기준에서 일수 입력)
     {k:"script",  n:"성우 대사집 확정",   s:"대사집 확정", team:"사운드 스튜디오",  v:{ih:7, ia:0, eh:0, ea:0},  sc:"batch"},  // ┐ 외부는 '더빙·믹싱'에 포함
@@ -974,7 +975,7 @@ function normConf(c){
   return {pv:PV,contCount:false,ext4:!!c.ext4,staff:{n:c.staff&&c.staff.n!=null?+c.staff.n:2,order:c.staff&&Array.isArray(c.staff.order)?c.staff.order:[]},lockBD:c.lockBD!=null?+c.lockBD:DEFAULT_CONF.lockBD, migr:Array.isArray(c.migr)?c.migr:[],
     hol:Array.isArray(c.hol)&&c.hol.length?c.hol:clone(DEFAULT_HOL),
     stages:DEFAULT_CONF.stages.map(d=>{const x=saved.find(y=>y.k===d.k)||{};
-      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:x.team||d.team,upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false)};})};
+      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:x.team||d.team,upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror};})};
 }
 
 /* ---------- 기본 작품 (기존 HTML 값 이관) ---------- */
@@ -1984,7 +1985,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.23-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.23-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
