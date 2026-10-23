@@ -572,6 +572,7 @@ table.lp2.sx td.ctc.hasm{background:#FFF3D6!important} table.lp2.sx .cmk{positio
 table.lp2.sx tr.ctrow td{background:#FDEBD3} table.lp2.sx tr.ctrow td.tl{background:#F8D9AE}
 .ctw{width:30px;text-align:center;border:1px solid #E5C44F;background:#FFFBE8;border-radius:4px;font-weight:800;color:#7A5200;margin:0 2px}
 .cal tr.tzxr th.rl{background:#FCE7F3!important} .cal tr.tzxr td.tzxc{background:#D6458A!important;color:#fff!important;font-weight:800!important;line-height:1.1;font-size:12px!important} .cal tr.tzxr td.tzxc small{display:block;font-size:10px;opacity:.9;color:#fff}
+.winfo{display:none} .winfo.open{display:block} .winfo-sum{font-size:12.5px;color:var(--ink2);margin-right:6px} .winfo-sum b{color:var(--ink)}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -1370,6 +1371,11 @@ function runMigrations0(){
         {p:["ov","1:dub"],v:{f:"2026-12-18",lock:true,m}},{p:["ov","1:mix"],v:{f:"2026-12-21",lock:true,m}},{p:["ov","1:burn"],v:{f:"2026-12-22",lock:true,m}}],true); }
     CONF.migr.push("nightrun-tz-pin-1019"); dirty=true;
   }
+  if(!has("enshare-1023")){   // 10/23 EN 컨텐츠 공유: 통합 수정 뒤 일본어 녹음으로 보내는 묶음·시점에 맞춰 공유 (일정 영향 없음)
+    if(!CONF.stages.some(x=>x.k==="enshare")){ const at=CONF.stages.findIndex(x=>x.k==="fix3");
+      CONF.stages.splice(at>=0?at+1:CONF.stages.length,0,{k:"enshare",n:"EN 컨텐츠 공유",s:"EN 공유",team:"GW content · 공유만",v:{ih:0,ia:0,eh:0,ea:0},sc:"batch",mirror:["script","dub"],gate:"info"}); }
+    CONF.migr.push("enshare-1023"); dirty=true;
+  }
   if(!has("teaser-order-1019")){   // 10/19 티저 런칭 순서: 나이트런 → 냐한 남자 → 용사가 돌아왔다 → 소녀바둑 · 일본 우선
     CONF.teaser={order:["나이트런","냐한 남자","용사가 돌아왔다","소녀바둑"],first:"일본",dates:{"나이트런":"2026-12-28"}};
     CONF.migr.push("teaser-order-1019"); dirty=true;
@@ -1421,7 +1427,7 @@ const concOf=(s,w,k)=>{ if(s&&typeof s.conc==="object"&&s.conc){ const c=s.conc[
   if(s.conc===true) return true;
   if(s.conc!=="ext"&&s.conc!=="author") return false; if(s.conc==="ext"&&lineOf(w)!=="ext") return false;
   if(k==null) return true; const a=CONF.stages.find(x=>x.k==="author"), u=a?uptoOf(a,w):0; return !(u>0&&k>u); };
-const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||durOf(s,w)>0||(s.tbdDur&&CONF.showTbd));   // 기간 미정 단계(영상 번역)는 일정표에서 뺌 · 공정 기준에서 일수를 넣으면 다시 나타남
+const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||s.mirror||durOf(s,w)>0||(s.tbdDur&&CONF.showTbd));   // 기간 미정 단계(영상 번역)는 일정표에서 뺌 · 공정 기준에서 일수를 넣으면 다시 나타남
 function batchesOf(w,N){
   const out=[]; let a=1, size=clamp(+w.b1||BATCH,1,N);
   const cut=+w.batchCut||0;   // 시즌 경계: 이 회차에서 묶음을 끊고 다음 회차부터 새 묶음
@@ -1464,6 +1470,7 @@ function scheduleCore(w,useOv=true){
   const lastMain=Array(N+1).fill(null);   // 직전 '본 단계' 시작일 — 동시 시작(conc) 단계가 씀
   const markMain=(s,k,c)=>{ if(!s.par&&!concOf(s,w,k)) lastMain[k]=c.s||c.e; };
   ST.forEach(s=>{
+    if(s.mirror) return;   // 공유만 하는 단계 — 아래에서 다른 단계 날짜를 그대로 표시 (일정 영향 없음)
     const base=durOf(s,w), conc=concOf(s,w);
     if(s.k===PAR_JOIN) for(let k=1;k<=N;k++) if(parEnds[k]) bump(k,parEnds[k]);
     if(s.k==="prod1"){
@@ -1552,6 +1559,11 @@ function scheduleCore(w,useOv=true){
       else{ bump(k,e); markMain(s,k,eps[k].cells[s.k]); }
     }
   });
+  // 공유 단계 (예: EN 컨텐츠 공유): 일본어 녹음으로 보내는 묶음·날짜(대사집 확정 → 없으면 성우 더빙 시작)를 그대로 표시
+  ST.filter(s=>s.mirror).forEach(s=>{ BT.forEach(([a,b])=>{ const refs=(Array.isArray(s.mirror)?s.mirror:[s.mirror]); let ref=null;
+      for(const rk of refs){ const c=eps[a]&&eps[a].cells[rk]; if(c&&(c.d>0||c.s)&&!c.na){ ref=c; break; } }
+      const o=ov[`${a}:${s.k}`]||null; const st=ref?(ref.s||ref.e):null; const e=o&&o.f?fixD(o.f):st;
+      for(let k=a;k<=b;k++) eps[k].cells[s.k]={s:st,e,d:1,base:1,kind:mkKind(o),m:o&&o.m||"",batch:[a,b],par:true,info:true}; }); });
   // 실제 제작 시작 = 회차 중 가장 이른 영상 1차 시작 (지정 완료일이 착수일보다 앞서면 그 기준) → 계약 체결 마감도 그 10영업일 전
   let prodStart=start0; for(let k=1;k<=N;k++){ const c=eps[k].cells&&eps[k].cells.prod1; if(c){ const x=c.s||(c.e?subBD(c.e,Math.max(0,(+c.base||+c.d||1)-1)):null); if(x&&x<prodStart) prodStart=x; } }
   { const cc=eps[1]&&eps[1].cells&&eps[1].cells.contract, oc=ov["w:contract"]||ov["1:contract"]; if(cc&&cc.due&&!(oc&&oc.f)) cc.e=subBD(prodStart,cc.base); }
@@ -1963,7 +1975,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.21-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.23-B";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2853,6 +2865,7 @@ function allLenCard(){
     <div class="hint">${A.nw}작품 · ${A.n}화 입력</div>
     <div class="als">${I.n?`<span><i class="lnd int"></i>내부 ${fmtLen(I.avg)}</span>`:""}${E.n?`<span><i class="lnd ext"></i>외부 ${fmtLen(E.avg)}</span>`:""}</div></div>`;
 }
+let PINFO=(()=>{ try{ return localStorage.getItem("anime_pinfo")==="1"; }catch(e){ return false; } })();   // 작품 정보(제작·운영 입력 · 요약) 기본 접힘
 function renderProd(){
   if(PVIEW==="cal"){ $("v-prod").innerHTML=pviewSeg()+renderProcCal(); bindPview(); bindProcCal(); return; }
   if(!WORKS.length){ $("v-prod").innerHTML=`<div class="card"><p>등록된 작품이 없습니다.</p><button type="button" class="btn pri" id="addW">+ 작품 추가</button></div>`; $("addW").onclick=(e)=>{e.stopPropagation();addWork(e);}; return; }
@@ -2872,8 +2885,10 @@ function renderProd(){
   h+=`<div class="whead">
     <div class="wtitle">${LANG==="ja"?`<input data-f="nJa" value="${esc(jaName(w))}" size="${Math.max(6,jaName(w).length+2)}" aria-label="作品名 (日本語)" title="日本語名 · 韓国語名: ${esc(w.n)}">`:`<input data-f="n" value="${esc(w.n)}" size="${Math.max(6,w.n.length+2)}" aria-label="작품명">`}
       ${ageBadge(w)}<span class="ln ${lineOf(w)}" style="font-size:11px;padding:1px 7px">${LINE_LABEL[lineOf(w)]}</span>${tbdTag(w)}${pauseOf(w)?`<span class="tag pzt">${esc(pauseShort(w))}</span>`:""}<span class="vo ${w.voice==="ai"?"ai":"human"}">${w.voice==="ai"?"AI 성우":"인간 성우"}</span>
-      <span class="sp"></span><button type="button" class="btn danger" id="delW">작품 삭제</button></div>
-    <div class="fgrid">
+      <span class="sp"></span><span class="winfo-sum">${S.held?"런칭 미정":`예상 런칭 <b>${ymd(S.L)}</b> · 완결 ${ymd(S.end)}`} · ${S.N}화 · 회차당 ${w.rate||"–"}영업일</span>
+      <button type="button" class="btn" id="winfoT" style="padding:3px 10px">${PINFO?"작품 정보 접기 ▴":"작품 정보 펼치기 ▾"}</button>
+      <button type="button" class="btn danger" id="delW">작품 삭제</button></div>
+    <div class="winfo${PINFO?" open":""}"><div class="fgrid">
       <div class="gl">제작</div><div class="fields">
         <label>제작 라인<select class="in" data-sel="line"><option value="int"${lineOf(w)==="int"?" selected":""}>내부 제작</option><option value="ext"${lineOf(w)==="ext"?" selected":""}>외부 제작</option></select></label>
         <label>연령 등급${ageSel("",w.age,'data-sel="age"')}</label>
@@ -2907,7 +2922,7 @@ function renderProd(){
         <div class="stat"><div class="sl">시즌 2를 같은 속도로 이어가면</div><div class="sv">${x.cont?"휴재 없이 이어가기 가능":x.last>=x.N?`시즌 휴재 약 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`} <small style="color:var(--ink2)">${x.cont?"주 1회보다 빠름":x.last>=x.N?`${x.N+1}화(시즌 2 첫 화)가 ${x.gapW}주 늦게 준비됨`:"시즌 1 안에서 휴재 발생"}</small></div></div>`;})()}
       ${lenStatHtml(w)}
       <div class="stat"><div class="sl">적용 공정</div><div class="sv" style="font-size:14px">${VAR_LABEL[VARIANT(w)]}</div></div>`}
-    </div>
+    </div></div>
   </div>`;
 
   if(!fb3On(w)){ const tk=Object.keys(w.ov||{}).filter(kk=>{ const [ep,sk]=kk.split(":"); return FB3_OLD.includes(sk)&&+ep>=1&&+ep<=3; }).length;
@@ -2976,6 +2991,7 @@ function renderProd(){
     <button type="button" class="btn pri" data-addep="5">+ 5화 추가</button></div>`;
   h+=`<p class="hint" style="margin-top:10px">'기준' 표시 회차가 런칭일을 정합니다. 이 회차를 당기면(소요일 단축·인력 추가) 런칭도 당겨지고, 여유가 0에 가까운 회차가 밀리면 런칭이 뒤로 갑니다.</p></div></div>`;
   $("v-prod").innerHTML=h;
+  if($("winfoT")) $("winfoT").onclick=()=>{ PINFO=!PINFO; try{ localStorage.setItem("anime_pinfo",PINFO?"1":""); }catch(e){} render(); };
 
   document.querySelectorAll(".wi").forEach(b=>b.onclick=()=>{SEL=b.dataset.w;SHOWALL=false;render();});
   bindPview();
