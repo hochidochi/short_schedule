@@ -1371,6 +1371,11 @@ function runMigrations0(){
         {p:["ov","1:dub"],v:{f:"2026-12-18",lock:true,m}},{p:["ov","1:mix"],v:{f:"2026-12-21",lock:true,m}},{p:["ov","1:burn"],v:{f:"2026-12-22",lock:true,m}}],true); }
     CONF.migr.push("nightrun-tz-pin-1019"); dirty=true;
   }
+  if(!CONF.stages.some(x=>x.k==="enshare")){   // 항상 확인: 예전 화면에서 저장하며 빠졌으면 다시 넣음 (영상 최종 수정 다음)
+    const at=CONF.stages.findIndex(x=>x.k==="prodF"), at3=CONF.stages.findIndex(x=>x.k==="fix3");
+    CONF.stages.splice(at>=0?at+1:(at3>=0?at3+1:CONF.stages.length),0,{k:"enshare",n:"EN 컨텐츠 공유",s:"EN 공유",team:"GW content · 공유만",v:{ih:0,ia:0,eh:0,ea:0},sc:"batch",mirror:["script","dub"],gate:"info"});
+    if(!has("enshare-1023")) CONF.migr.push("enshare-1023"); if(!has("enshare-pos-1023")) CONF.migr.push("enshare-pos-1023"); dirty=true;
+  }
   if(has("enshare-1023")&&!has("enshare-pos-1023")){   // 위치: 영상 최종 수정 다음
     const i=CONF.stages.findIndex(x=>x.k==="enshare"); if(i>=0){ const st=CONF.stages.splice(i,1)[0]; const at=CONF.stages.findIndex(x=>x.k==="prodF"); CONF.stages.splice(at>=0?at+1:i,0,st); }
     CONF.migr.push("enshare-pos-1023"); dirty=true;
@@ -1979,7 +1984,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.23-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.23-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
