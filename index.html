@@ -581,6 +581,7 @@ table.lp2.sx tr.ctrow td{background:#FDEBD3} table.lp2.sx tr.ctrow td.tl{backgro
 table.xpt{border-collapse:collapse;font-size:12px} table.xpt th,table.xpt td{border-bottom:1px solid var(--line);padding:3px 5px;text-align:center;white-space:nowrap} table.xpt th{color:var(--ink2);font-weight:600} table.xpt tr.xpall td{background:#F4F6FA}
 table.xpplan{border-collapse:collapse;font-size:12px;width:100%} table.xpplan th{position:sticky;top:0;background:#2E3A55;color:#fff;padding:5px 6px;font-weight:600;white-space:nowrap;z-index:2}
 table.xpplan td{border-bottom:1px solid var(--line);padding:3px 5px;white-space:nowrap} table.xpplan tr.xpconf td{background:#F0F7F2} table.xpplan tr.xpsub td{background:#F8F9FB;font-size:11.5px} table.xpplan tr.xpsub.off td{opacity:.45}
+.dgbtn{background:#1C6A86;color:#fff;border:0;border-radius:10px;padding:7px 14px;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 2px 6px rgba(28,106,134,.25)} .dgbtn:hover{background:#155670}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -2080,7 +2081,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.23-G";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.23-H";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2088,7 +2089,7 @@ function render0(){
   ["open","prod","std","guide","lp","lc","xp","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
   try{
     if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors"){ renderVendors(); lp2SrcInto(); } else if(TAB==="lp") renderLP2(); else if(TAB==="lc") renderLC(); else if(TAB==="xp") renderXP(); else if(TAB==="guide") renderGuide(); else renderStd();
-    if(TAB==="prod"||TAB==="std"||TAB==="guide"){ const v=$("v-"+TAB); if(v&&!v.querySelector(".subnav")) v.insertAdjacentHTML("afterbegin",`<div class="subnav"><span class="seg sm"><button type="button" data-subt="prod" aria-pressed="${TAB==="prod"}">작품별 공정</button><button type="button" data-subt="std" aria-pressed="${TAB==="std"}">공정 기준 (설정)</button><button type="button" data-subt="guide" aria-pressed="${TAB==="guide"}">납품 가이드</button></span></div>`); v.querySelectorAll("[data-subt]").forEach(b=>b.onclick=()=>setTab(b.dataset.subt)); }
+    if(TAB==="prod"||TAB==="std"||TAB==="guide"){ const v=$("v-"+TAB); if(v&&!v.querySelector(".subnav")) v.insertAdjacentHTML("afterbegin",`<div class="subnav" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="seg sm"><button type="button" data-subt="prod" aria-pressed="${TAB==="prod"}">작품별 공정</button><button type="button" data-subt="std" aria-pressed="${TAB==="std"}">공정 기준 (설정)</button></span>${TAB==="guide"?`<button type="button" class="btn" data-subt="prod">← 제작 일정으로</button>`:`<button type="button" class="dgbtn" data-subt="guide" title="영상·사운드 최종 납품 기준 · N드라이브 업로드 폴더">📘 납품 가이드 · 업로드</button>`}</div>`); v.querySelectorAll("[data-subt]").forEach(b=>b.onclick=()=>setTab(b.dataset.subt)); }
   }catch(e){
     console.error(e);
     $("v-"+TAB).innerHTML=`<div class="card"><b>화면을 그리지 못했습니다.</b><p class="hint">${esc(e.message)} — 공정 기준 탭에서 JSON을 내보내 확인하거나, 새로고침해 주세요.</p></div>`;
