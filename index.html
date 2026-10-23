@@ -1371,9 +1371,13 @@ function runMigrations0(){
         {p:["ov","1:dub"],v:{f:"2026-12-18",lock:true,m}},{p:["ov","1:mix"],v:{f:"2026-12-21",lock:true,m}},{p:["ov","1:burn"],v:{f:"2026-12-22",lock:true,m}}],true); }
     CONF.migr.push("nightrun-tz-pin-1019"); dirty=true;
   }
+  if(has("enshare-1023")&&!has("enshare-pos-1023")){   // 위치: 영상 최종 수정 다음
+    const i=CONF.stages.findIndex(x=>x.k==="enshare"); if(i>=0){ const st=CONF.stages.splice(i,1)[0]; const at=CONF.stages.findIndex(x=>x.k==="prodF"); CONF.stages.splice(at>=0?at+1:i,0,st); }
+    CONF.migr.push("enshare-pos-1023"); dirty=true;
+  }
   if(!has("enshare-1023")){   // 10/23 EN 컨텐츠 공유: 통합 수정 뒤 일본어 녹음으로 보내는 묶음·시점에 맞춰 공유 (일정 영향 없음)
     if(!CONF.stages.some(x=>x.k==="enshare")){ const at=CONF.stages.findIndex(x=>x.k==="fix3");
-      CONF.stages.splice(at>=0?at+1:CONF.stages.length,0,{k:"enshare",n:"EN 컨텐츠 공유",s:"EN 공유",team:"GW content · 공유만",v:{ih:0,ia:0,eh:0,ea:0},sc:"batch",mirror:["script","dub"],gate:"info"}); }
+      const at2=CONF.stages.findIndex(x=>x.k==="prodF"); CONF.stages.splice(at2>=0?at2+1:(at>=0?at+1:CONF.stages.length),0,{k:"enshare",n:"EN 컨텐츠 공유",s:"EN 공유",team:"GW content · 공유만",v:{ih:0,ia:0,eh:0,ea:0},sc:"batch",mirror:["script","dub"],gate:"info"}); }
     CONF.migr.push("enshare-1023"); dirty=true;
   }
   if(!has("teaser-order-1019")){   // 10/19 티저 런칭 순서: 나이트런 → 냐한 남자 → 용사가 돌아왔다 → 소녀바둑 · 일본 우선
@@ -1975,7 +1979,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.23-B";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.23-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
