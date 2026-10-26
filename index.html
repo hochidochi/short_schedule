@@ -605,11 +605,11 @@ table.l3t tr.l3srch td{background:#5B3A1E!important}
 .cbadge{font-size:11px;font-weight:800;color:#fff;background:#1C6A86;border-radius:6px;padding:2px 8px} .cbadge.main{background:#5B3A1E}
 .cdoc{margin-top:14px;max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:22px 28px;background:#fff;font-size:13.5px;line-height:1.75}
 .cdoc table{border-collapse:collapse;width:100%;margin:8px 0} .cdoc td{border:1px solid #DDD;padding:4px 8px;vertical-align:top} .cdoc ol,.cdoc ul{padding-left:22px} .cdoc p{margin:4px 0}
-/* 런칭 플랜: 연도 계 칸 강조 */
-table.l3t td.ysum{background:#D9E2F3!important;color:#0F1B36!important;font-weight:900!important;font-size:13.5px;border-left:2px solid #5C6B8A!important;border-right:2px solid #5C6B8A!important;box-shadow:inset 0 0 0 1px #B9C6E0}
-table.l3t th.ysum{background:#0F1B36!important;color:#FFD86B!important;font-weight:900;font-size:12.5px;border-left:2px solid #5C6B8A;border-right:2px solid #5C6B8A}
-table.l3t tr.sxin td.ysum,table.l3t tr.ctrow td.ysum{background:#D9E2F3!important} table.l3t td.ysum small{color:#3E4C6B;font-weight:700}
-table.l3t tr.lcx-s td.ysum{background:#C8D5EE!important;font-size:14px}
+/* 런칭 플랜: 연도 계 칸 — 옅은 배경 + 굵은 글씨, 선은 오른쪽 하나만 */
+table.l3t td.ysum,table.l3t th.ysum{border-left:0!important;border-right:1px solid #AEB9CF!important;box-shadow:none!important}
+table.l3t td.ysum{background:#EEF2F9!important;color:#14213D!important;font-weight:800!important}
+table.l3t th.ysum{background:#3A4766!important;color:#fff!important;font-weight:700}
+table.l3t tr.sxin td.ysum,table.l3t tr.ctrow td.ysum,table.l3t tr.lcx-s td.ysum{background:#E4EAF5!important}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -2111,7 +2111,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.26-F";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.26-H";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3948,8 +3948,7 @@ function renderVendors(){
   const overdue=all.filter(vOd).length;
   let h=`<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
     <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">전체 ${all.length}곳 · 진행 중 ${all.filter(v=>!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">일정 기한 지남 ${overdue}곳</b>`:""}</span></p></div>
-    <span style="display:flex;gap:8px;align-items:center"><span class="seg sm" role="group" aria-label="보기"><button type="button" data-vv="table" aria-pressed="${VVIEW==="table"}">표</button><button type="button" data-vv="cal" aria-pressed="${VVIEW==="cal"}">캘린더</button></span>
-    <button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></span></div>
+    <span style="display:flex;gap:8px;align-items:center"><button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></span></div>
   <div class="vkseg" role="group" aria-label="외주 구분">${[["","전체",VENDORS.length,"all"],...V_KINDS.map(([k,l])=>[k,l,VENDORS.filter(v=>vKind(v)===k).length,k])].map(([k,l,n,c])=>`<button type="button" class="vkb k-${c}" data-vk2="${k}" aria-pressed="${VF.kind===k}"><i></i>${l} <b>${n}</b></button>`).join("")}</div>
   ${vNextBoard(fx)}
   <div class="vpipe">
@@ -3970,8 +3969,7 @@ function renderVendors(){
   const linkify=(t)=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,(u)=>`<a href="${u}" target="_blank" rel="noopener" class="vml">${u.length>42?u.slice(0,40)+"…":u}</a>`);
   const TXK=new Set(["status","keyDate","next","interest","note","price","intro"]);   // 자동 번역 대상
   const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}"${v[k]&&TXK.has(k)?" data-tx data-notr":""} data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
-  if(VVIEW==="cal"){ h+=renderVCal(L); }
-  else { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>진행 상황 · 일정</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
+  { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>진행 상황 · 일정</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
   const vRow=(v)=>{ const od=vOd(v);
     const home=(v.url||"").split(/\s+/).filter(Boolean)[0]||"", st=v.stage||"contact", si=vStep(st);
     h+=`<tr class="${["no","hold"].includes(st)?"off":""} pr-${v.prio||"mid"} k-${vKind(v)}">
@@ -4006,7 +4004,7 @@ function renderVendors(){
   document.querySelectorAll("#v-vendors .vnbm").forEach(b=>b.onclick=()=>{ VNB_MORE=!VNB_MORE; render(); });
   if($("vnbOwner")) $("vnbOwner").onchange=(e)=>{ lsSet("anime_vnb_owner",e.target.value); render(); };
   document.querySelectorAll("#v-vendors [data-goto]").forEach(b=>b.onclick=()=>{ VVIEW="table"; render(); const tr=document.querySelector(`#v-vendors .vchkb[data-vid="${b.dataset.goto}"]`); if(tr){ const row=tr.closest("tr"); row.scrollIntoView({block:"center"}); row.classList.add("vflash"); setTimeout(()=>row.classList.remove("vflash"),2000); } });
-  if(VVIEW==="cal") vCalBind(L);
+
   document.querySelectorAll("#v-vendors [data-vf]").forEach(b=>b.onclick=()=>{ const s=VF[b.dataset.vf], k=b.dataset.k; s.has(k)?s.delete(k):s.add(k); render(); });
   $("vOwner").onchange=(e)=>{VF.owner=e.target.value;render();}; $("vSort").onchange=(e)=>{VF.sort=e.target.value;render();};
   $("vQ").oninput=(e)=>{ VF.q=e.target.value; clearTimeout(vQ._t); vQ._t=setTimeout(()=>{ render(); const i=$("vQ"); if(i){ i.focus(); i.setSelectionRange(i.value.length,i.value.length);} },250); };
@@ -5529,12 +5527,12 @@ function renderPlan(){ const v=$("v-plan");
   const yrs=["2026","2027","2028"], yIdx=(y)=>L3_M.map((m,i)=>m.startsWith(y)?i:-1).filter(i=>i>=0);
   const ysum=(arr,kind,y)=>{ const I=yIdx(y); if(kind==="end") return arr[I[I.length-1]]; if(kind==="none") return ""; return I.reduce((a,i)=>a+(+arr[i]||0),0); };
   const tot=(arr,kind)=>kind==="end"?arr[NM-1]:kind==="none"?"":arr.reduce((a,b)=>a+(+b||0),0);
-  const cells=(arr,kind,fmt,cls)=>arr.map((x,i)=>`<td class="${yb(i)}${x?"":" z"}${cls?" "+cls:""}">${(fmt||n)(x)}</td>${ys(i)?`<td class="ysum">${(fmt||n)(ysum(arr,kind,L3_M[i].slice(0,4)))}${kind==="end"&&ysum(arr,kind,L3_M[i].slice(0,4))?"<small>말</small>":""}</td>`:""}`).join("")+`<td class="tsum">${(fmt||n)(tot(arr,kind))}${kind==="end"&&tot(arr,kind)?"<small>말</small>":""}</td>`;
+  const cells=(arr,kind,fmt,cls)=>arr.map((x,i)=>`<td class="${yb(i)}${x?"":" z"}${cls?" "+cls:""}">${(fmt||n)(x)}</td>${ys(i)?`<td class="ysum">${(fmt||n)(ysum(arr,kind,L3_M[i].slice(0,4)))}${kind==="end"&&ysum(arr,kind,L3_M[i].slice(0,4))?"":""}</td>`:""}`).join("")+`<td class="tsum">${(fmt||n)(tot(arr,kind))}${kind==="end"&&tot(arr,kind)?"":""}</td>`;
   const row=(lab,arr,cls,kind,fmt,tip)=>`<tr class="${cls||""}"><td class="tl"${tip?` data-tip="${esc(tip)}"`:""}>${lab}${tip?`<span class="tipi">?</span>`:""}</td>${cells(arr,kind,fmt)}</tr>`;
   const tog=(k,lab)=>`<button type="button" class="lptog sxt" data-l3o="${k}">${L3V.open[k]?"▾":"▸"} ${lab}</button>`;
   const grp=(k,lab,obj,total,kind,fmt,tip)=>row(`<b>${lab}</b> ${tog(k,"팀별")}`,total,"lcx-s tot",kind,fmt,tip)+(L3V.open[k]?L3_TEAMS.map(t=>row(`<span class="ind">ㄴ ${esc(t)}</span>`,obj[t],"sub",kind,fmt)).join(""):"");
   const inRow=(lab,path,arr,isInput,kind,ph)=>`<tr class="sxin"><td class="tl">${lab} <span class="sxbadge">입력</span></td>${arr.map((x,i)=>{ const inp=isInput?isInput(i):true;
-      return `<td class="${yb(i)}${inp?" yc":""}">${inp?`<input class="l3i" data-l3="${path}.${i}" value="${x==null?"":esc(String(x))}" placeholder="${ph||"·"}">`:`<span class="l3auto" title="자동 계산 (작업자가 끝나면 자동 착수)">${n(x)}</span>`}</td>${ys(i)?`<td class="ysum">${(()=>{ const yv=ysum(arr.map(z=>+z||0),kind||"sum",L3_M[i].slice(0,4)); return n(yv)+(kind==="end"&&yv?"<small>말</small>":""); })()}</td>`:""}`; }).join("")}<td class="tsum">${kind==="none"?"":kind==="end"?(()=>{ const lv=+arr[arr.length-1]||0; return lv?n(lv)+"<small>말</small>":""; })():n(arr.reduce((a,b)=>a+(+b||0),0))}</td></tr>`;
+      return `<td class="${yb(i)}${inp?" yc":""}">${inp?`<input class="l3i" data-l3="${path}.${i}" value="${x==null?"":esc(String(x))}" placeholder="${ph||"·"}">`:`<span class="l3auto" title="자동 계산 (작업자가 끝나면 자동 착수)">${n(x)}</span>`}</td>${ys(i)?`<td class="ysum">${(()=>{ const yv=ysum(arr.map(z=>+z||0),kind||"sum",L3_M[i].slice(0,4)); return n(yv)+(kind==="end"&&yv?"":""); })()}</td>`:""}`; }).join("")}<td class="tsum">${kind==="none"?"":kind==="end"?(()=>{ const lv=+arr[arr.length-1]||0; return lv?n(lv)+"":""; })():n(arr.reduce((a,b)=>a+(+b||0),0))}</td></tr>`;
   const head=`<tr><th class="tl"></th>${L3_M.map((m,i)=>`<th class="${yb(i)}">${m.slice(2,4)}.${+m.slice(5)}</th>${ys(i)?`<th class="ysum">${m.slice(2,4)}년 계</th>`:""}`).join("")}<th class="tsum">합계</th></tr>`;
   const W=(w)=>`<colgroup><col style="width:${w}px">${L3_M.map((m,i)=>`<col style="width:46px">${ys(i)?`<col style="width:58px">`:""}`).join("")}<col style="width:70px"></colgroup>`;
   const tw=(w)=>w+46*NM+58*3+70;
@@ -5572,7 +5570,7 @@ function renderPlan(){ const v=$("v-plan");
   b+=`<tr class="sxh"><td class="tl" colspan="${NM+5}">${tog("lev2","영업일 · AI 성우 비중")} <span class="hint">팀별 · 그 달 착수분에 적용</span></td></tr>`;
   if(L3V.open.lev2){ L3_TEAMS.forEach(t=>{ b+=inRow(`<span class="ind">영업일 · ${esc(t)}</span>`,`inp.bd.${t}`,S.inp.bd[t],null,"none"); }); L3_TEAMS.forEach(t=>{ b+=inRow(`<span class="ind">AI 비중 · ${esc(t)}</span>`,`inp.ai.${t}`,S.inp.ai[t],null,"none","0~1"); }); }
   b+=`<tr class="sxh"><td class="tl" colspan="${NM+5}">1. 연재 작품 수 <span class="hint">그 달 말 연재 중</span></td></tr>`;
-  b+=`<tr class="lcx-s tot"><td class="tl"><b>연재 작품 수 (계산)</b> ${tog("on","팀별")}</td>${MO.T.onair.map((x,i)=>{ const t=S.target[i], has=t!=null&&t!==""; const d=has?x-t:0; return `<td class="${yb(i)}${has?(d>=0?" sxok":" sxbad"):""}">${n(x)}${has?`<small class="sxd">${d>=0?"+":""}${d}</small>`:""}</td>${ys(i)?`<td class="ysum">${n(x)}${x?"<small>말</small>":""}</td>`:""}`; }).join("")}<td class="tsum">${n(MO.T.onair[NM-1])}<small>말</small></td></tr>`;
+  b+=`<tr class="lcx-s tot"><td class="tl"><b>연재 작품 수 (계산)</b> ${tog("on","팀별")}</td>${MO.T.onair.map((x,i)=>{ const t=S.target[i], has=t!=null&&t!==""; const d=has?x-t:0; return `<td class="${yb(i)}${has?(d>=0?" sxok":" sxbad"):""}">${n(x)}${has?`<small class="sxd">${d>=0?"+":""}${d}</small>`:""}</td>${ys(i)?`<td class="ysum">${n(x)}${x?"":""}</td>`:""}`; }).join("")}<td class="tsum">${n(MO.T.onair[NM-1])}</td></tr>`;
   if(L3V.open.on) L3_TEAMS.forEach(t=>{ b+=row(`<span class="ind">ㄴ ${esc(t)}</span>`,MO.R.onair[t],"sub","end"); });
   b+=inRow(`ㄴ 연재 목표`,"target",S.target,null,"end");
   b+=inRow(`ㄴ 연재 작품 수 (실제)`,"actual",S.actual,null,"end");
@@ -5585,15 +5583,15 @@ function renderPlan(){ const v=$("v-plan");
   b+=grp("ea","AI 성우 제작 회차 수",MO.R.epAI,MO.T.epAI,"sum");
   // ---- 외주사 찾기
   const SP=S.src, VJ=VD["외부 일본"], VO=VD["외부 일본 외"], sumA=(a,b2)=>a.map((x,i)=>x+b2[i]);
-  b+=`<tr class="sxh l3srch"><td class="tl" colspan="${NM+5}">4. 외주 제작사 찾기 <span class="hint">1곳 동시 <input class="l3i l3s" data-l3="src.cap" value="${SP.cap}">편 · 첫 작품 → <input class="l3i l3s" data-l3="src.gap2" value="${SP.gap2}">개월 뒤 두 번째 → <input class="l3i l3s" data-l3="src.gap3" value="${SP.gap3}">개월 뒤 세 번째 · 컨택 → 샘플 계약 <input class="l3i l3s" data-l3="src.sample" value="${SP.sample}">주 → 계약 논의 <input class="l3i l3s" data-l3="src.talk" value="${SP.talk}">주 → 본계약·프리프로덕션 <input class="l3i l3s" data-l3="src.pre" value="${SP.pre}">주 → 착수</span></td></tr>`;
-  b+=row(`<b>새로 컨택할 외주 제작사</b>`,sumA(VJ.contact,VO.contact),"lcx-s tot ctrow","sum",null,"그 달에 새로 연락해서 샘플 계약을 시작해야 하는 제작사 수 (그 제작사 첫 착수에서 역산)");
+  b+=`<tr class="sxh l3srch"><td class="tl" colspan="${NM+5}">4. 외주 제작사 <span class="hint">동시 <input class="l3i l3s" data-l3="src.cap" value="${SP.cap}">편 · 2번째 <input class="l3i l3s" data-l3="src.gap2" value="${SP.gap2}">개월 · 3번째 <input class="l3i l3s" data-l3="src.gap3" value="${SP.gap3}">개월 · 샘플 <input class="l3i l3s" data-l3="src.sample" value="${SP.sample}">주 · 협의 <input class="l3i l3s" data-l3="src.talk" value="${SP.talk}">주 · 본계약·프리프로 <input class="l3i l3s" data-l3="src.pre" value="${SP.pre}">주</span></td></tr>`;
+  b+=row(`<b>신규 컨택</b>`,sumA(VJ.contact,VO.contact),"lcx-s tot ctrow","sum");
   b+=row(`<span class="ind">ㄴ 일본</span>`,VJ.contact,"sub")+row(`<span class="ind">ㄴ 일본 외</span>`,VO.contact,"sub");
-  b+=row("새 제작사 첫 착수",sumA(VJ.firstS,VO.firstS),"sub");
-  b+=row("누적 외주 제작사",sumA(VJ.cum,VO.cum),"sub","end");
-  b+=row("일하는 외주 제작사",sumA(VJ.vAct,VO.vAct),"sub","end",null,"그 달에 제작 중인 작품이 1편 이상 있는 제작사 수");
-  b+=row("외주 동시 제작 편수",sumA(VJ.act,VO.act),"sub","end",null,"그 달에 착수 ~ 제작 완료 사이인 외주 시즌 수");
+  b+=row("신규 제작사 착수",sumA(VJ.firstS,VO.firstS),"sub");
+  b+=row("누적 제작사",sumA(VJ.cum,VO.cum),"sub","end");
+  b+=row("가동 제작사",sumA(VJ.vAct,VO.vAct),"sub","end");
+  b+=row("동시 제작 편수",sumA(VJ.act,VO.act),"sub","end");
   h+=`<div class="card" style="padding:0;overflow-x:auto;margin-top:12px"><table class="lp2 res sx l3t" style="width:${tw(230)}px">${W(230)}<thead>${head}</thead><tbody>${b}</tbody></table></div>`;
-  const pre=VJ.before+VO.before; if(pre) h+=`<p class="hint" style="margin:6px 2px">※ 표 시작(26.7) 전에 컨택했어야 하는 제작사 ${pre}곳은 '새로 컨택' 줄에 들어가지 않아요 (이미 진행 중인 샘플 협의 업체로 보면 돼요).</p>`;
+  const pre=VJ.before+VO.before; if(pre) h+=`<p class="hint" style="margin:6px 2px">26.7 이전 컨택분 ${pre}곳 제외</p>`;
   // ---- 제작비
   const K=S.cost, ck=(k,lab,unit,w)=>`<label>${lab} <input class="l3i l3l" data-l3="cost.${k}" value="${esc(String(K[k]??""))}" style="width:${w||80}px"> <span class="hint">${unit||""}</span></label>`;
   h+=`<div class="lpsec" style="margin-top:16px"><button type="button" class="lptog sxt" id="l3CostT">${L3V.cost?"▾":"▸"}</button> 제작비 (원화 · 백만 원) <span class="hint">위 표의 회차·착수로 자동 계산 · 연도 계 ${yrs.map(y=>`${y.slice(2)}년 ${won(yIdx(y).reduce((a,i)=>a+MO.cost.total[i],0))}`).join(" · ")}</span></div>`;
@@ -5725,7 +5723,7 @@ function vcEvents(){ const out=[]; VENDORS.forEach(v=>{ if(VC.kind&&vKind(v)!==V
   return out; }
 function renderVCal(){ const v=$("v-vcal"); if(!VC.m) VC.m=key(TODAY).slice(0,7);
   const [y,m]=VC.m.split("-").map(Number), first=Date.UTC(y,m-1,1)/86400000, dim=new Date(Date.UTC(y,m,0)).getUTCDate();
-  const startW=(new Date(first*86400000).getUTCDay()+6)%7;   // 월요일 시작
+  const startW=new Date(first*86400000).getUTCDay();   // 일요일 시작
   const EV=vcEvents(), byD={}; EV.forEach(e=>{ (byD[e.d]=byD[e.d]||[]).push(e); });
   const cc={"한국":"#2B6FD0","일본":"#D6458A","중국":"#E5A32B","미국":"#2E9B6A","기타":"#7F56C2"}, col=(vv)=>cc[V_COUNTRY.includes(vv.country)?vv.country:"기타"];
   const act=VENDORS.filter(vcActive).sort((a,b)=>String(a.name).localeCompare(String(b.name),"ko"));
@@ -5735,10 +5733,10 @@ function renderVCal(){ const v=$("v-vcal"); if(!VC.m) VC.m=key(TODAY).slice(0,7)
     <select class="in" id="vcKind" style="min-height:30px"><option value="">영상 · 성우 전체</option>${V_KINDS.map(([k,l])=>`<option value="${k}"${VC.kind===k?" selected":""}>${l}</option>`).join("")}</select>
     <select class="in" id="vcCountry" style="min-height:30px"><option value="">국가 전체</option>${V_COUNTRY.map(c=>`<option${VC.country===c?" selected":""}>${c}</option>`).join("")}</select>
     <label class="hint" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="vcAuto"${VC.auto?" checked":""}> 기한 · 체크 날짜도 보기</label></div>`;
-  h+=`<div class="vcal"><div class="vch">${["월","화","수","목","금","토","일"].map(d=>`<b>${d}</b>`).join("")}</div><div class="vcg">`;
+  h+=`<div class="vcal"><div class="vch">${["일","월","화","수","목","금","토"].map((d,i)=>`<b${i===0||i===6?' style="color:#C2272D"':""}>${d}</b>`).join("")}</div><div class="vcg">`;
   for(let i=0;i<startW;i++) h+=`<div class="vcd off"></div>`;
   for(let d=1;d<=dim;d++){ const k=`${VC.m}-${String(d).padStart(2,"0")}`, L=(byD[k]||[]).sort((a,b)=>(a.auto?1:0)-(b.auto?1:0)), wd=(startW+d-1)%7;
-    h+=`<div class="vcd${k===key(TODAY)?" today":""}${VC.sel===k?" sel":""}${wd>=5?" we":""}" data-vcd="${k}"><span class="vcn">${d}</span>${L.slice(0,4).map((e,ix)=>`<span class="vce${e.auto?" au":""}" data-vce="${k}|${ix}" style="border-left-color:${col(e.v)}" title="${esc(`${e.v.name} · ${e.full||e.t}`)}"><b>${esc(e.v.name)}</b> ${esc(e.t)}</span>`).join("")}${L.length>4?`<span class="vcmore">+${L.length-4}</span>`:""}</div>`; }
+    h+=`<div class="vcd${k===key(TODAY)?" today":""}${VC.sel===k?" sel":""}${wd===0||wd===6?" we":""}" data-vcd="${k}"><span class="vcn">${d}</span>${L.slice(0,4).map((e,ix)=>`<span class="vce${e.auto?" au":""}" data-vce="${k}|${ix}" style="border-left-color:${col(e.v)}" title="${esc(`${e.v.name} · ${e.full||e.t}`)}"><b>${esc(e.v.name)}</b> ${esc(e.t)}</span>`).join("")}${L.length>4?`<span class="vcmore">+${L.length-4}</span>`:""}</div>`; }
   h+=`</div></div>`;
   // 아래 패널: 선택한 날짜 일정 + 추가 폼
   const k=VC.sel;
