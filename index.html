@@ -2134,7 +2134,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.27-I";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.28-A";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3700,12 +3700,13 @@ const V_STAGES=[["contact","컨택 전"],["meeting","미팅 예정"],["met","미
 const V_FLOW=V_STAGES.filter(s=>!["hold","no"].includes(s[0])), V_SIDE=V_STAGES.filter(s=>["hold","no"].includes(s[0]));
 const vStep=(k)=>V_FLOW.findIndex(s=>s[0]===k);
 /* 계약 준비 체크리스트 — 기본 순서는 있지만 순서대로 안 해도 됨 (체크하면 날짜 기록) */
-const V_CHK=[["met","미팅 완료"],["partner","파트너스사 등록"],["nda","NDA 체결"],["demo","영상 시연"],["pick","작품 선정"],["draft","샘플 계약서 작성"],["quote","견적서 협의"],["gian","샘플 계약 리소스 기안"],["signed","샘플 계약 완료"],["run","샘플 계약 진행"]];
+const V_CHK=[["mail","컨택 메일 발송"],["partner","파트너사 등록"],["nda","NDA 체결"],["met","대면 미팅 완료"],["send","샘플 계약서 및 작품 리스트 전달"],["draft","샘플 계약서 협의"],["quote","샘플 견적서 전달"],["gian","샘플 계약 리소스 기안 등록"],["pick","작품 선정 완료"],["signed","샘플 계약 완료"],["run","샘플 제작 진행"],["keycut","샘플 키컷 공유"],["video","샘플 영상 공유"],["fix","샘플 최종 수정 중"],["sdone","샘플 완료"]];   // 10/28 컨택 순서 변경 (기존 체크는 같은 키로 이어짐)
 function vChk(v){   // 저장된 체크가 없으면 진행 단계로 기본값 추정 (저장은 처음 체크할 때)
   if(v.chk) return v.chk;
   const si=vStep(v.stage||"contact"), o={};
-  if(si>=vStep("met")) o.met="";
-  if(si>=vStep("sampleP")) V_CHK.forEach(([k])=>o[k]="");
+  if(si>=vStep("met")){ o.mail=""; o.met=""; }
+  if(si>=vStep("sampleP")) V_CHK.slice(0,11).forEach(([k])=>o[k]="");   // 샘플 제작 중 → 1~11 완료로 봄
+  if(si>=vStep("sampleD")) V_CHK.forEach(([k])=>o[k]="");   // 샘플 납품·평가 이후 → 전부 완료로 봄
   return o;
 }
 function vChkInfo(v){ const c=vChk(v), done=V_CHK.filter(([k])=>k in c).length, nx=V_CHK.find(([k])=>!(k in c)), rest=V_CHK.filter(([k])=>!(k in c));
