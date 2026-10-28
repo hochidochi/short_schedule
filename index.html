@@ -1093,6 +1093,8 @@ const DEFAULT_CONF={
      v: {ih:내부·인간, ia:내부·AI, eh:외부·인간, ea:외부·AI}  (0이면 그 프로세스에 없는 단계) */
   stages:[
     {k:"contract",n:"계약 체결",         s:"계약 체결",   team:"EB",        v:{ih:10,ia:10,eh:10,ea:10}, sc:"work",  gate:"none"},   // 제작 시작 2주(10영업일) 전까지
+    {k:"preP",    n:"프리프로덕션",           s:"프리프로덕션",   team:"외부 제작사", v:{ih:0,ia:0,eh:8,ea:8}, sc:"work", pre:true, tx:"시즌 1 각색 · 연출 정리 (약 1.5주)"},   // 10/28 외부: 영상 1차 전 3주
+    {k:"preRv",   n:"각색 · 연출 보고 · 피드백 반영", s:"보고 · 피드백", team:"외부 제작사 · 당사 피드백", v:{ih:0,ia:0,eh:7,ea:7}, sc:"work", pre:true, tx:"정리본 보고 → 당사 피드백 → 반영 (약 1.5주)"},
     {k:"prod1",   n:"영상 1차 제작",     s:"영상 1차",    team:"내부 제작팀",      v:{ih:7, ia:7, eh:5, ea:5},  sc:"ep",    seq:true},    // 기본값 — 작품별 '회차당 1차 제작'이 우선
     {k:"imgcut",  n:"1화 이미지 컷 확인", s:"이미지 컷",   team:"제작사 공유 · 당사 피드백 1일", v:{ih:0,ia:0,eh:2,ea:2}, sc:"work", gate:"info", anchor:{stage:"prod1",offset:0}},   // 외부: 1화 1일째 주요 컷 3~5장 공유 → 1일 내 피드백 (일정 영향 없음)
     {k:"fb3",     n:"1~3화 통합 피드백", s:"통합 피드백", team:"작가·내부관계자",  v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3},   // 내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)
@@ -1124,7 +1126,7 @@ function normConf(c){
   return {pv:PV,contCount:false,ext4:!!c.ext4,staff:{n:c.staff&&c.staff.n!=null?+c.staff.n:2,order:c.staff&&Array.isArray(c.staff.order)?c.staff.order:[]},lockBD:c.lockBD!=null?+c.lockBD:DEFAULT_CONF.lockBD, migr:Array.isArray(c.migr)?c.migr:[],
     hol:Array.isArray(c.hol)&&c.hol.length?c.hol:clone(DEFAULT_HOL),
     stages:DEFAULT_CONF.stages.map(d=>{const x=saved.find(y=>y.k===d.k)||{};
-      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:((d.k==="castFb"||d.k==="mixFb")&&x.team==="작가")?d.team:TEAM_REN(x.team||d.team),upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror};})};
+      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:((d.k==="castFb"||d.k==="mixFb")&&x.team==="작가")?d.team:TEAM_REN(x.team||d.team),upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror,pre:d.pre};})};
 }
 
 /* ---------- 기본 작품 (기존 HTML 값 이관) ---------- */
@@ -1610,7 +1612,7 @@ function scheduleCore(w,useOv=true){
   const ov=useOv?(w.ov||{}):{};
   const resumes={}; (w.pauses||[]).forEach(p=>{ if(p.resume) resumes[p.ep]=snapBD(D(p.resume)); });
   const ST=stagesFor(w), N=clamp(+w.total||1,1,300), done=clamp(+w.done||0,0,N);
-  const start0=snapBD(D(w.start||key(TODAY)));
+  const start00=snapBD(D(w.start||key(TODAY))); let start0=start00;   // 외부: 프리프로덕션이 있으면 영상 1차는 그 뒤부터
   // 이미 끝난 회차(1차 제작 완료 회차)의 완료일: 다음 회차 착수일 전날, 단 오늘보다 늦을 수는 없음
   //  (중단 후 재개처럼 착수일이 먼 미래여도 완료된 회차의 뒤 공정이 끌려가지 않게)
   const lastBDToday=isBD(TODAY)?TODAY:prevBD(TODAY);
@@ -1629,7 +1631,12 @@ function scheduleCore(w,useOv=true){
   const lastMain=Array(N+1).fill(null);   // 직전 '본 단계' 시작일 — 동시 시작(conc) 단계가 씀
   const markMain=(s,k,c)=>{ if(!s.par&&!concOf(s,w,k)) lastMain[k]=c.s||c.e; };
   ST.forEach(s=>{
-    if(s.mirror) return;   // 공유만 하는 단계 — 아래에서 다른 단계 날짜를 그대로 표시 (일정 영향 없음)
+    if(s.mirror) return;
+    if(s.pre){ const base=durOf(s,w), o=ov[`w:${s.k}`]||null; let d=durO(o,base);   // 프리프로덕션 (작품 1회 · 순서대로 · 끝나면 영상 1차 시작)
+      if(done>0||d<=0){ const cell={s:null,e:null,d:0,base,kind:"",m:"",work:true,skip:true}; for(let k=1;k<=N;k++) eps[k].cells[s.k]=cell; return; }
+      const st=o&&o.s?snapBD(D(o.s)):start0; let e=addBD(st,d-1); if(o&&o.f){ e=fixD(o.f); }
+      const cell={s:st,e,d,base,kind:mkKind(o),m:o&&o.m||"",work:true}; for(let k=1;k<=N;k++) eps[k].cells[s.k]=cell;
+      start0=nextBD(e); return; }   // 공유만 하는 단계 — 아래에서 다른 단계 날짜를 그대로 표시 (일정 영향 없음)
     const base=durOf(s,w), conc=concOf(s,w);
     if(s.k===PAR_JOIN) for(let k=1;k<=N;k++) if(parEnds[k]) bump(k,parEnds[k]);
     if(s.k==="prod1"){
@@ -1724,7 +1731,7 @@ function scheduleCore(w,useOv=true){
       const o=ov[`${a}:${s.k}`]||null; const st=ref?(ref.s||ref.e):null; const e=o&&o.f?fixD(o.f):st;
       for(let k=a;k<=b;k++) eps[k].cells[s.k]={s:st,e,d:1,base:1,kind:mkKind(o),m:o&&o.m||"",batch:[a,b],par:true,info:true}; }); });
   // 실제 제작 시작 = 회차 중 가장 이른 영상 1차 시작 (지정 완료일이 착수일보다 앞서면 그 기준) → 계약 체결 마감도 그 10영업일 전
-  let prodStart=start0; for(let k=1;k<=N;k++){ const c=eps[k].cells&&eps[k].cells.prod1; if(c){ const x=c.s||(c.e?subBD(c.e,Math.max(0,(+c.base||+c.d||1)-1)):null); if(x&&x<prodStart) prodStart=x; } }
+  let prodStart=start00; for(let k=1;k<=N;k++){ const c=eps[k].cells&&eps[k].cells.prod1; if(c){ const x=c.s||(c.e?subBD(c.e,Math.max(0,(+c.base||+c.d||1)-1)):null); if(x&&x<prodStart) prodStart=x; } }
   { const cc=eps[1]&&eps[1].cells&&eps[1].cells.contract, oc=ov["w:contract"]||ov["1:contract"]; if(cc&&cc.due&&!(oc&&oc.f)) cc.e=subBD(prodStart,cc.base); }
   for(let k=1;k<=N;k++){ eps[k].ready=prev[k]; const tl=w.tzLock&&+w.tzLock.ep===k?+w.tzLock.bd:null; eps[k].need=addBD(prev[k],tl!=null?tl:(+CONF.lockBD||0)); }   // 티저 회차는 최종본→오픈 여유 예외(무리 일정)
 
@@ -2134,7 +2141,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.28-A";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.28-B";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
