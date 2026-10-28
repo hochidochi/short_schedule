@@ -1005,16 +1005,17 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
 .wfil{display:flex;align-items:center;gap:10px;background:#EAF0FA;border-radius:12px;padding:10px 16px;font-size:13.5px;margin-bottom:12px;color:#1B2230}
 .wtw{background:#fff;border:1px solid #E7E9EE;border-radius:14px;overflow:auto} table.wt{width:100%;border-collapse:collapse;font-size:13px}
 table.wt thead th{background:#F7F8FA;color:#7A8293;font-weight:600;text-align:left;padding:11px 12px;border-bottom:1px solid #E7E9EE;white-space:nowrap;position:sticky;top:0;z-index:2}
-table.wt tbody td{padding:12px 12px;border-bottom:1px solid #F0F2F5;vertical-align:middle} table.wt tbody tr:hover td{background:#FAFBFD} table.wt tbody tr:last-child td{border-bottom:0}
-.wtt{min-width:220px} .wtt .wle,.wtt b{font-size:14.5px;font-weight:700;color:#121826;white-space:normal} .wsub{font-size:12px;color:#8A91A0;margin-top:3px}
+table.wt tbody td{padding:5px 10px;border-bottom:1px solid #F0F2F5;vertical-align:middle} table.wt tbody tr:hover td{background:#FAFBFD} table.wt tbody tr:last-child td{border-bottom:0}
+.wtt{min-width:220px;cursor:pointer;user-select:none} .wtt .wle,.wtt b,.wnm{font-size:13.5px;font-weight:700;color:#121826;white-space:normal;line-height:1.3} .wsub{font-size:11px;color:#8A91A0;margin-top:1px}
+table.wt tbody td.wtt.sel{background:#E4EDFB!important;box-shadow:inset 3px 0 0 #2B6FD0} .wselbar{position:sticky;top:64px;z-index:5;display:flex;align-items:center;gap:10px;background:#121826;color:#fff;border-radius:12px;padding:8px 14px;margin-bottom:10px} .wselbar .hint{color:#C9CED8} .wselbar .btn{background:transparent!important;color:#fff!important;border:1px solid #4A5468!important;padding:4px 12px} .wselbar .btn.pri{background:#fff!important;color:#121826!important;border-color:#fff!important;font-weight:700}
 .wle{cursor:pointer;color:#3A4152;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:6px;padding:2px 4px;margin:-2px -4px} .wle:hover{background:#F1F4F9} .wph{color:#B0B6C2}
-.wsel{appearance:none;-webkit-appearance:none;border:0;border-radius:16px;padding:6px 30px 6px 13px;font-size:12.5px;font-weight:700;cursor:pointer;
+.wsel{appearance:none;-webkit-appearance:none;border:0;border-radius:14px;padding:3px 26px 3px 11px;font-size:12px;font-weight:700;cursor:pointer;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23333' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;max-width:190px}
 .wsel.s-dark{background-color:#121826;color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E")}
 .wsel.s-green{background-color:#E3F3E7;color:#1D6B3F} .wsel.s-yellow{background-color:#FDF1D3;color:#8A5A00} .wsel.s-amber{background-color:#FCE6CF;color:#8C4A0B}
 .wsel.s-blue{background-color:#E4EDFB;color:#1E4F9E} .wsel.s-gray{background-color:#F0F2F5;color:#5B6372} .wsel.s-red{background-color:#FBE4E4;color:#A12626}
 .wst{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:220px} td.wst{display:table-cell} td.wst>*{margin:2px 4px 2px 0}
-.wpill{display:inline-flex;align-items:center;font-size:12px;font-weight:700;border-radius:14px;padding:3px 10px;white-space:nowrap}
+.wpill{display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;border-radius:12px;padding:2px 9px;white-space:nowrap}
 .wpill.p-green{background:#E3F3E7;color:#1D6B3F} .wpill.p-amber{background:#FCE6CF;color:#8C4A0B} .wpill.p-blue{background:#E4EDFB;color:#1E4F9E} .wpill.p-gray{background:#F0F2F5;color:#5B6372}
 td.wst .wsub{display:inline;margin-left:4px} .wdel{border:0;background:none;color:#C2C7D0;cursor:pointer;font-size:13px} .wdel:hover{color:#C2272D}
 .wsecs{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-top:18px} .wsec h3{font-size:14px;margin:0 0 8px;color:#1B2230} .wsec h3 span{color:#8A91A0;font-weight:500;font-size:12.5px;margin-left:4px}
@@ -1022,6 +1023,20 @@ td.wst .wsub{display:inline;margin-left:4px} .wdel{border:0;background:none;colo
 table.vt thead th{background:#F7F8FA!important;color:#7A8293!important;font-weight:600!important;font-size:12.5px!important;border-bottom:1px solid #E7E9EE!important}
 table.vt tbody td{border-bottom:1px solid #F0F2F5!important} table.vt tbody tr:hover td{background:#FAFBFD}
 table.vt select.in{border-radius:16px!important;font-weight:700;padding:5px 12px!important;font-size:12.5px!important}
+
+/* 외주사 관리 · 작품 리스트와 같은 색 */
+.vnb{background:#fff!important;color:#1B2230!important;border:1px solid #E7E9EE;border-radius:14px!important}
+.vnb .vnbh b{color:#121826} .vnb .hint{color:#8A91A0!important} .vnbsel{background:#F4F6FA;color:#1B2230;border:1px solid #E1E4EA;border-radius:10px}
+.vnb ul li{border-color:#F0F2F5!important} .vnbn{color:#121826!important} .vnbw{color:#121826!important} .vnbi{color:#8C4A0B!important}
+.vnbt{background:#F0F2F5!important;color:#5B6372!important;border-radius:10px!important}
+.vnb li.t-od .vnbt{background:#FBE4E4!important;color:#A12626!important} .vnb li.t-idle .vnbt{background:#FDF1D3!important;color:#8A5A00!important} .vnb li.t-soon .vnbt{background:#E4EDFB!important;color:#1E4F9E!important}
+.vnbc.od{background:#FBE4E4!important;color:#A12626!important} .vnbc.idle{background:#FDF1D3!important;color:#8A5A00!important} .vnbc.soon{background:#E4EDFB!important;color:#1E4F9E!important}
+.vnbok{border:1px dashed #C9CED8!important;color:#3A4152!important} .vnbok::before{color:#9AA1AE!important}
+.vstep{background:#F4F6FA!important;color:#5B6372!important} .vstep:not(.z){background:#E4EDFB!important;color:#1E4F9E!important} .vstep.on{background:#121826!important;color:#fff!important}
+.vstep .vno{background:#fff!important;color:#5B6372!important} .vstep:not(.z) .vno{background:#2B6FD0!important;color:#fff!important}
+.vchip{border-color:#E1E4EA!important;border-radius:16px!important} .vchip.on{background:#121826!important;border-color:#121826!important}
+.vkb{border-color:#E1E4EA!important;border-radius:14px!important} .vfil{border:1px solid #E7E9EE;border-radius:14px!important}
+.vtwrap{border:1px solid #E7E9EE;border-radius:14px;overflow:hidden} table.vt tr.vgh td{background:#F7F8FA!important;color:#5B6372}
 </style>
 </head>
 <body>
@@ -2184,7 +2199,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.28-J";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.28-K";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -5881,7 +5896,7 @@ const WL_SEED=[["신규 후보","초인의 시대","액션","작가 동의 확�
  ["제작 중","냐한 남자","로맨스","작가 동의 확보"],["제작 중","소녀바둑","드라마","작가 동의 확보"],["제작 중","용사가 돌아왔다","판타지","작가 동의 확보"],["제작 중","나이트런","판타지","작가 동의 확보"],["제작 중","쪽팔려 게임","스릴러","작가 동의 확보"]]
  .map((r,i)=>({id:"w"+(i+1),no:i+1,cat:r[0],name:r[1],genre:r[2],rights:r[3],ani:"",merch:"",game:"",memo:""}));
 const WL_STEPS=[["cand","후보"],["rights","판권 확인 중"],["agree","작가 동의 확보"],["sample","샘플 테스트"],["prod","제작 중"],["live","런칭"]];
-let WL=null, WL_SIG="", WL_T=0, WLV={cat:"",step:"",q:"",genre:""}, WL_META={};
+let WL=null, WL_SIG="", WL_T=0, WLV={cat:"",step:"",q:"",genre:""}, WL_META={}, WLSEL=new Set(), WL_LAST=null;
 async function wlLoad(){ let d=null; try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.wlist&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_wlist"); }catch(e){} WL=d&&Array.isArray(d.rows)?d.rows:clone(WL_SEED); WL_META=d&&d.meta||{}; WL_SIG=JSON.stringify([WL,WL_META]); }
 function wlSaveSoon(){ clearTimeout(WL_T); WL_T=setTimeout(wlSave,800); }
 async function wlSave(){ const sig=JSON.stringify([WL,WL_META]); if(sig===WL_SIG) return; try{ const data={rows:WL,meta:WL_META,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")}; if(!SB.on) lsSet("anime_wlist",data); else await sb("POST",T_CONF,"",[{id:"wlist",data,updated_at:data.at}],"resolution=merge-duplicates"); WL_SIG=sig; }catch(e){ setTimeout(wlSave,5000); } }
@@ -5902,6 +5917,19 @@ function smpSeed(){ if(!WL||WL_META.smp1028||!VENDORS.length) return; WL_META.sm
     list.forEach(([vn,st])=>{ const k=N(vn); const v=VENDORS.find(x=>N(x.name)===k)||VENDORS.find(x=>k&&(N(x.name).includes(k)||k.includes(N(x.name))&&N(x.name).length>=3)); if(!v){ miss.push(vn); return; }
       const has=wlNorm(v.interest).includes(wlNorm(work)); const interest=has?v.interest:[v.interest,work].filter(Boolean).join(", "); vEdit({id:v.id,v:{interest,smp:{...(v.smp||{}),[work]:st}}}); n++; }); });
   WL_META.smp1028=true; wlSaveSoon(); toast(`샘플 테스트 현황 ${n}건 반영${miss.length?` · 외주사 관리에 없는 업체: ${miss.join(", ")}`:""}`); }
+/* 선택한 작품을 메일에 붙여넣기 좋은 텍스트로 복사 */
+function wlCopySel(rows){ rows=rows||WL.map(r=>({r,...wlInfo(r)})); const L=rows.filter(x=>WLSEL.has(x.r.id)); if(!L.length) return;
+  const stL=(k)=>(WL_STEPS.find(x=>x[0]===k)||[,""])[1], fd=(d)=>d?`${d.getUTCFullYear()}.${d.getUTCMonth()+1}.${d.getUTCDate()}`:"";
+  const lines=L.map((x,i)=>{ const r=x.r, parts=[`${i+1}. ${r.name}${r.genre?` (${r.genre})`:""}`, `   - 구분: ${r.cat} · 판권: ${r.rights||"미확인"} · 진행 단계: ${stL(x.step)}`];
+    if(x.vs.length) parts.push(`   - 샘플 테스트: ${x.vs.map(o=>`${o.v.name} ${o.done?"완료":"진행 중"}`).join(", ")}`);
+    if(x.w&&x.S) parts.push(`   - 제작: ${lineOf(x.w)==="ext"?"외부":"내부"} 제작 · ${x.S.held?(+x.w.done?"중단":"착수 대기"):`${fd(x.S.L)} 런칭 예정`}`);
+    [["ani","애니화 적합"],["merch","상품화"],["game","게임화"]].forEach(([k,l])=>{ if(r[k]) parts.push(`   - ${l}: ${r[k]}`); });
+    return parts.join("\n"); });
+  const txt=lines.join("\n");
+  const done=()=>toast(`${L.length}작품을 복사했어요 — 메일에 붙여넣기`);
+  (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(done).catch(()=>{ const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); done(); }); }
+document.addEventListener("keydown",(e)=>{ if(TAB!=="wl"||!WLSEL.size) return; if(!(e.metaKey||e.ctrlKey)||(e.key!=="c"&&e.key!=="C")) return; const t=e.target; if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable)) return; if(String(window.getSelection())) return; e.preventDefault(); wlCopySel(); });
+document.addEventListener("keydown",(e)=>{ if(TAB==="wl"&&e.key==="Escape"&&WLSEL.size){ WLSEL.clear(); render(); } });
 function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028) smpSeed();
   if(WL===null){ WL=undefined; wlLoad().then(()=>{ if(TAB==="wl") safeRender(); }); }
   if(!WL){ v.innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">작품 리스트를 불러오는 중이에요…</div>`; return; }
@@ -5929,10 +5957,11 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
     <p class="wdesc">후보 → 판권 확인 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 순서로 관리해요. 샘플 테스트는 외주사 관리, 제작 상황은 제작 일정에서 자동으로 가져와요.</p>
     <div class="wcards">${bar("구분",cats.map((c,i)=>[c,cnt(x=>x.r.cat===c),["#1F2A44","#E5A32B","#2E9B6A"][i],c]),"cat")}${bar("장르",genres,"genre")}${bar("진행 단계",WL_STEPS.map(([k,l])=>[l,cnt(x=>x.step===k),SC[k],k]),"step")}</div>`;
   const act=[WLV.cat,WLV.step&&WL_STEPS[si(WLV.step)][1],WLV.genre,WLV.q&&`'${WLV.q}'`].filter(Boolean);
+  if(WLSEL.size) h+=`<div class="wselbar"><b>${WLSEL.size}작품 선택</b><span class="hint">Ctrl/⌘ + C로 메일용 텍스트 복사</span><span class="sp"></span><button type="button" class="btn pri" id="wlCopy">복사</button><button type="button" class="btn" id="wlClr">선택 해제</button></div>`;
   if(act.length) h+=`<div class="wfil">${act.map(esc).join(" · ")}만 보는 중 · ${L.length}작품 <button type="button" class="btn" id="wlAll">전체 보기</button></div>`;
   h+=`<div class="wtw"><table class="wt"><thead><tr><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
     ${L.map(x=>{ const r=x.r, cur=r.rights||"미확인", opts=RO.includes(cur)?RO:[cur,...RO]; return `<tr>
-      <td class="wtt">${txt(r,"name","작품명")}<div class="wsub">${esc(r.genre||"장르 미정")} · ${r.no}번</div></td>
+      <td class="wtt${WLSEL.has(r.id)?" sel":""}" data-wsel="${r.id}"><div class="wnm" title="클릭: 선택 · Shift+클릭: 여러 개 선택 · 더블클릭: 이름 수정">${esc(r.name)}</div><div class="wsub">${esc(r.genre||"장르 미정")} · ${r.no}번</div></td>
       <td><select class="wsel ${catCls[r.cat]||"s-gray"} wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
       <td><select class="wsel ${rCls(RO.includes(cur)?cur:"작가 동의 확보")} wls" data-wid="${r.id}" data-wk="rights" title="${esc(cur)}">${opts.map(o=>`<option value="${esc(o==="미확인"?"":o)}"${o===cur?" selected":""}>${esc(o)}</option>`).join("")}</select></td>
       <td><select class="wsel ${stCls[x.step]} wls" data-wid="${r.id}" data-wk="step">${WL_STEPS.map(([k,l])=>`<option value="${k}"${x.step===k?" selected":""}>${l}</option>`).join("")}</select></td>
@@ -5946,6 +5975,13 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
     ${sec("내부 제작",inP,x=>`<tr><td class="wtt"><b>${esc(x.r.name)}</b><div class="wsub">${esc(x.r.genre)}</div></td><td class="wst">${prodTxt(x)}</td></tr>`)}
     ${sec("외부 제작",exP,x=>`<tr><td class="wtt"><b>${esc(x.r.name)}</b><div class="wsub">${esc(x.r.genre)}</div></td><td class="wst">${prodTxt(x)}</td></tr>`)}</div>`;
   v.innerHTML=h;
+  const vis=L.map(x=>x.r.id);
+  v.querySelectorAll("[data-wsel]").forEach(td=>{ td.onclick=(e)=>{ const id=td.dataset.wsel; if(e.shiftKey&&WL_LAST&&vis.includes(WL_LAST)){ const a=vis.indexOf(WL_LAST), b=vis.indexOf(id); vis.slice(Math.min(a,b),Math.max(a,b)+1).forEach(x=>WLSEL.add(x)); }
+      else if(e.shiftKey||e.metaKey||e.ctrlKey){ WLSEL.has(id)?WLSEL.delete(id):WLSEL.add(id); } else { const only=WLSEL.size===1&&WLSEL.has(id); WLSEL.clear(); if(!only) WLSEL.add(id); }
+      WL_LAST=id; render(); };
+    td.ondblclick=(e)=>{ const r=WL.find(x=>x.id===td.dataset.wsel); if(!r) return; const nv=prompt("작품명",r.name||""); if(nv===null) return; r.name=nv.trim(); wlSaveSoon(); render(); }; });
+  if($("wlCopy")) $("wlCopy").onclick=()=>wlCopySel(rows);
+  if($("wlClr")) $("wlClr").onclick=()=>{ WLSEL.clear(); render(); };
   v.querySelectorAll("[data-wc]").forEach(b=>b.onclick=()=>{ WLV.cat=b.dataset.wc; render(); });
   v.querySelectorAll("[data-ws]").forEach(b=>b.onclick=()=>{ WLV.step=WLV.step===b.dataset.ws?"":b.dataset.ws; render(); });
   v.querySelectorAll("[data-wf]").forEach(b=>b.onclick=()=>{ const k=b.dataset.wf, val=b.dataset.wv; WLV[k]=WLV[k]===val?"":val; render(); });
