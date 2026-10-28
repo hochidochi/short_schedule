@@ -636,7 +636,7 @@ table.tzt tr.off td{opacity:.5} table.tzt td:nth-child(5){width:230px} table.tzt
 table.wlt{border-collapse:collapse;width:100%;font-size:12.5px} table.wlt th{position:sticky;top:0;background:#F4F6FA;color:var(--ink2);font-weight:600;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:2}
 table.wlt td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle} table.wlt tr.wc-1 td{background:#FAFAF8} table.wlt tr.wc-2 td{background:#FDF3EA}
 table.wlt td.wln{font-weight:700;min-width:180px} .wle{cursor:pointer;min-height:18px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .wle:hover{outline:1px dashed #E5A32B} .wle .ph{color:var(--muted);border:0!important;background:none!important;box-shadow:none!important;padding:0!important;display:inline} .wle{border:0!important;box-shadow:none!important}
-.wls{min-height:26px;padding:1px 4px;font-size:12px} .wld{display:flex;gap:3px;margin-top:4px} .wld i{width:14px;height:4px;border-radius:2px;background:#E1E5EC} .wld i.on{background:#7FA6E6} .wld i.cur{background:#2B6FD0}
+.wls{min-height:26px;padding:1px 4px;font-size:12px} .wlr{max-width:170px} .wlr.r-2{background:#E6F4EA;color:#1F7A4D;font-weight:700} .wlr.r-1{background:#FFF6DB;color:#854F0B} .wlr.r-3,.wlr.r-4{background:#F1F1F1;color:#777} .wld{display:flex;gap:3px;margin-top:4px} .wld i{width:14px;height:4px;border-radius:2px;background:#E1E5EC} .wld i.on{background:#7FA6E6} .wld i.cur{background:#2B6FD0}
 .wlst{display:flex;flex-wrap:wrap;gap:4px;align-items:center} .wlv{font-size:11px;font-weight:700;background:#FFF1D6;color:#854F0B;border-radius:10px;padding:1px 8px} .wlv.dn{background:#E6F4EA;color:#1F7A4D} .wlv.off{background:#EEE;color:#888}
 .wlp{font-size:11px;font-weight:800;background:#E6F1FB;color:#0C447C;border-radius:6px;padding:1px 6px} .wlrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap}
 .vwpl{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px} .vwpg{margin-bottom:6px} .vwpg>b{display:block;font-size:11px;color:var(--ink2);margin:2px 0 4px}
@@ -992,6 +992,36 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
 .dg .dgup span{color:var(--muted);margin-left:6px} .dg .dgupb{background:#03C75A;color:#fff!important;font-weight:700;border-radius:8px;padding:8px 14px;text-decoration:none;white-space:nowrap}
 /* 메모 마우스 오버 */
 #mmTip{position:fixed;z-index:9999;max-width:320px;background:#1F2A44;color:#fff;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);white-space:pre-wrap;pointer-events:none}
+
+/* ===== 작품 리스트 · 외주사 관리 공통 (후보군 대시보드 스타일) ===== */
+.whead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 6px} .whead h2{margin:0;font-size:20px;font-weight:800}
+.wchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center} .wchips button{border:1px solid #E1E4EA;background:#fff;border-radius:16px;padding:5px 12px;font-size:13px;color:#3A4152;cursor:pointer}
+.wchips button b{margin-left:3px;color:#1B2230} .wchips button.on{background:#121826;color:#fff;border-color:#121826} .wchips button.on b{color:#fff} .wsep{width:1px;height:20px;background:#E1E4EA;margin:0 4px}
+.wq{width:220px;min-height:34px;border-radius:10px} .wdesc{font-size:12.5px;color:#7A8293;margin:4px 0 14px}
+.wcards{display:grid;grid-template-columns:1fr 1.4fr 1.2fr;gap:12px;margin-bottom:14px} .wcard{background:#fff;border:1px solid #E7E9EE;border-radius:14px;padding:14px 16px}
+.wct{font-size:12.5px;color:#7A8293;margin-bottom:10px} .wbar{display:flex;height:10px;border-radius:6px;overflow:hidden;background:#EEF0F4;gap:2px} .wbar i{display:block;height:100%}
+.wleg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:10px} .wleg button{border:1px solid transparent;background:none;border-radius:14px;padding:2px 8px;font-size:12.5px;color:#3A4152;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.wleg button i{width:9px;height:9px;border-radius:2px} .wleg button span{color:#9AA1AE} .wleg button.on{border-color:#121826;background:#F4F6FA}
+.wfil{display:flex;align-items:center;gap:10px;background:#EAF0FA;border-radius:12px;padding:10px 16px;font-size:13.5px;margin-bottom:12px;color:#1B2230}
+.wtw{background:#fff;border:1px solid #E7E9EE;border-radius:14px;overflow:auto} table.wt{width:100%;border-collapse:collapse;font-size:13px}
+table.wt thead th{background:#F7F8FA;color:#7A8293;font-weight:600;text-align:left;padding:11px 12px;border-bottom:1px solid #E7E9EE;white-space:nowrap;position:sticky;top:0;z-index:2}
+table.wt tbody td{padding:12px 12px;border-bottom:1px solid #F0F2F5;vertical-align:middle} table.wt tbody tr:hover td{background:#FAFBFD} table.wt tbody tr:last-child td{border-bottom:0}
+.wtt{min-width:220px} .wtt .wle,.wtt b{font-size:14.5px;font-weight:700;color:#121826;white-space:normal} .wsub{font-size:12px;color:#8A91A0;margin-top:3px}
+.wle{cursor:pointer;color:#3A4152;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:6px;padding:2px 4px;margin:-2px -4px} .wle:hover{background:#F1F4F9} .wph{color:#B0B6C2}
+.wsel{appearance:none;-webkit-appearance:none;border:0;border-radius:16px;padding:6px 30px 6px 13px;font-size:12.5px;font-weight:700;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23333' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;max-width:190px}
+.wsel.s-dark{background-color:#121826;color:#fff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E")}
+.wsel.s-green{background-color:#E3F3E7;color:#1D6B3F} .wsel.s-yellow{background-color:#FDF1D3;color:#8A5A00} .wsel.s-amber{background-color:#FCE6CF;color:#8C4A0B}
+.wsel.s-blue{background-color:#E4EDFB;color:#1E4F9E} .wsel.s-gray{background-color:#F0F2F5;color:#5B6372} .wsel.s-red{background-color:#FBE4E4;color:#A12626}
+.wst{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:220px} td.wst{display:table-cell} td.wst>*{margin:2px 4px 2px 0}
+.wpill{display:inline-flex;align-items:center;font-size:12px;font-weight:700;border-radius:14px;padding:3px 10px;white-space:nowrap}
+.wpill.p-green{background:#E3F3E7;color:#1D6B3F} .wpill.p-amber{background:#FCE6CF;color:#8C4A0B} .wpill.p-blue{background:#E4EDFB;color:#1E4F9E} .wpill.p-gray{background:#F0F2F5;color:#5B6372}
+td.wst .wsub{display:inline;margin-left:4px} .wdel{border:0;background:none;color:#C2C7D0;cursor:pointer;font-size:13px} .wdel:hover{color:#C2272D}
+.wsecs{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px;margin-top:18px} .wsec h3{font-size:14px;margin:0 0 8px;color:#1B2230} .wsec h3 span{color:#8A91A0;font-weight:500;font-size:12.5px;margin-left:4px}
+/* 외주사 관리 표도 같은 톤으로 */
+table.vt thead th{background:#F7F8FA!important;color:#7A8293!important;font-weight:600!important;font-size:12.5px!important;border-bottom:1px solid #E7E9EE!important}
+table.vt tbody td{border-bottom:1px solid #F0F2F5!important} table.vt tbody tr:hover td{background:#FAFBFD}
+table.vt select.in{border-radius:16px!important;font-weight:700;padding:5px 12px!important;font-size:12.5px!important}
 </style>
 </head>
 <body>
@@ -2154,7 +2184,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.28-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.28-J";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3907,11 +3937,13 @@ function vCalBind(list){
 /* 관심 & 배정 작품: 작품 리스트(작품 리스트 탭) + 제작 일정 작품에서 골라 넣기 · 기타 메모는 그대로 */
 async function vWorkPick(el){ const v=VENDORS.find(x=>x.id===el.dataset.vid); if(!v) return;
   if(WL===null||WL===undefined){ try{ await wlLoad(); }catch(e){} }
-  const names=[...new Set([...(WL||[]).map(r=>r.name),...WORKS.map(w=>w.n)].filter(Boolean))];
-  const cur=String(v.interest||""), norm=wlNorm, picked=new Set(names.filter(n=>norm(cur).includes(norm(n))));
+  const ok=(r)=>r.cat==="제작 중"||/작가 동의/.test(r.rights||"");   // 1차 확보(작가 동의) 완료 작품만
+  const allN=[...new Set([...(WL||[]).map(r=>r.name),...WORKS.map(w=>w.n)].filter(Boolean))];
+  const cur=String(v.interest||""), norm=wlNorm, picked=new Set(allN.filter(n=>norm(cur).includes(norm(n))));
+  const names=[...new Set([...(WL||[]).filter(ok).map(r=>r.name),...WORKS.filter(w=>!/^외부 제작 \d+$|^미정/.test(w.n)).map(w=>w.n),...picked].filter(Boolean))];
   let rest=cur; picked.forEach(n=>{ rest=rest.replace(n,""); }); rest=rest.replace(/^[\s,·/]+|[\s,·/]+$/g,"").replace(/[\s]*[,·/][\s,·/]*/g,", ").trim();
-  const catOf=(n)=>{ const r=(WL||[]).find(x=>x.name===n); return r?r.cat:(WORKS.find(w=>w.n===n)?"제작 일정":"") };
-  const groups=["제작 중","신규 후보","후순위 후보","제작 일정"];
+  const catOf=(n)=>{ const r=(WL||[]).find(x=>x.name===n); if(r) return r.cat==="제작 중"?"제작 중":ok(r)?"1차 확보 완료 (작가 동의)":"선택됨 (확보 전)"; return WORKS.find(w=>w.n===n)?"제작 일정":"선택됨 (확보 전)"; };
+  const groups=["제작 중","1차 확보 완료 (작가 동의)","제작 일정","선택됨 (확보 전)"];
   const draw=(q)=>{ const ql=norm(q||""); return groups.map(g=>{ const L=names.filter(n=>catOf(n)===g&&(!ql||norm(n).includes(ql))); return L.length?`<div class="vwpg"><b>${g}</b>${L.map(n=>`<label class="vwp${picked.has(n)?" on":""}"><input type="checkbox" data-n="${esc(n)}"${picked.has(n)?" checked":""}>${esc(n)}</label>`).join("")}</div>`:""; }).join("")||`<div class="hint">검색 결과가 없어요</div>`; };
   const pop=vPopAt(el,`<h4>${esc(v.name)} · 관심 & 배정 작품</h4><input class="in" id="vwpQ" placeholder="작품명 검색" style="width:100%;margin-bottom:6px"><div class="vwpl" id="vwpL">${draw("")}</div>
     <label class="hint" style="display:block;margin-top:8px">기타 메모 (리스트에 없는 작품 · 설명)</label><input class="in" id="vwpX" value="${esc(rest)}" style="width:100%">
@@ -5849,54 +5881,78 @@ const WL_SEED=[["신규 후보","초인의 시대","액션","작가 동의 확�
  ["제작 중","냐한 남자","로맨스","작가 동의 확보"],["제작 중","소녀바둑","드라마","작가 동의 확보"],["제작 중","용사가 돌아왔다","판타지","작가 동의 확보"],["제작 중","나이트런","판타지","작가 동의 확보"],["제작 중","쪽팔려 게임","스릴러","작가 동의 확보"]]
  .map((r,i)=>({id:"w"+(i+1),no:i+1,cat:r[0],name:r[1],genre:r[2],rights:r[3],ani:"",merch:"",game:"",memo:""}));
 const WL_STEPS=[["cand","후보"],["rights","판권 확인 중"],["agree","작가 동의 확보"],["sample","샘플 테스트"],["prod","제작 중"],["live","런칭"]];
-let WL=null, WL_SIG="", WL_T=0, WLV={cat:"",step:"",q:""};
-async function wlLoad(){ let d=null; try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.wlist&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_wlist"); }catch(e){} WL=d&&Array.isArray(d.rows)?d.rows:clone(WL_SEED); WL_SIG=JSON.stringify(WL); }
+let WL=null, WL_SIG="", WL_T=0, WLV={cat:"",step:"",q:"",genre:""}, WL_META={};
+async function wlLoad(){ let d=null; try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.wlist&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_wlist"); }catch(e){} WL=d&&Array.isArray(d.rows)?d.rows:clone(WL_SEED); WL_META=d&&d.meta||{}; WL_SIG=JSON.stringify([WL,WL_META]); }
 function wlSaveSoon(){ clearTimeout(WL_T); WL_T=setTimeout(wlSave,800); }
-async function wlSave(){ const sig=JSON.stringify(WL); if(sig===WL_SIG) return; try{ const data={rows:WL,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")}; if(!SB.on) lsSet("anime_wlist",data); else await sb("POST",T_CONF,"",[{id:"wlist",data,updated_at:data.at}],"resolution=merge-duplicates"); WL_SIG=sig; }catch(e){ setTimeout(wlSave,5000); } }
+async function wlSave(){ const sig=JSON.stringify([WL,WL_META]); if(sig===WL_SIG) return; try{ const data={rows:WL,meta:WL_META,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")}; if(!SB.on) lsSet("anime_wlist",data); else await sb("POST",T_CONF,"",[{id:"wlist",data,updated_at:data.at}],"resolution=merge-duplicates"); WL_SIG=sig; }catch(e){ setTimeout(wlSave,5000); } }
 const wlNorm=(x)=>String(x||"").replace(/[\s·,.!?~'"()\-]/g,"").toLowerCase();
 function wlInfo(r){ const n=wlNorm(r.name);
   const w=WORKS.find(x=>wlNorm(x.n)===n)||WORKS.find(x=>n&&wlNorm(x.n).includes(n))||null;
   const S=w?schedule(w):null;
-  const vs=VENDORS.filter(v=>n&&wlNorm(v.interest).includes(n)).map(v=>({v,done:vStep(v.stage||"contact")>=vStep("sampleD"),off:["no","hold"].includes(v.stage)}));
+  const vs=VENDORS.filter(v=>n&&wlNorm(v.interest).includes(n)).map(v=>{ const st=(v.smp||{})[r.name]; return {v,done:st?st==="done":vStep(v.stage||"contact")>=vStep("sampleD"),off:!st&&["no","hold"].includes(v.stage)}; });
   let step=r.step||"";
-  if(!step){ if(w&&S&&!S.held&&S.L&&S.L<=TODAY) step="live"; else if((w&&!(S&&S.held))||r.cat==="제작 중") step="prod"; else if(vs.length) step="sample"; else if(/작가 동의/.test(r.rights)) step="agree"; else if(/확인/.test(r.rights)) step="rights"; else step="cand"; }
+  if(!step){ if(w&&S&&!S.held&&S.L&&S.L<=TODAY) step="live"; else if(r.cat==="제작 중"||(w&&+w.done>0&&!(S&&S.held))) step="prod"; else if(vs.length) step="sample"; else if(/작가 동의/.test(r.rights)) step="agree"; else if(/확인/.test(r.rights)) step="rights"; else step="cand"; }
   return {w,S,vs,step}; }
-function renderWL(){ const v=$("v-wl");
+/* 10/28 다른 대시보드의 샘플 테스트 현황을 한 번 반영 (작품 ↔ 제작사 · 완료/진행 중) */
+const SMP_SEED=[["작두",[["HNS","done"],["Comee","done"],["StoryCo","done"],["OiiOiiAI","run"]]],["잔불의 기사",[["Passione","run"],["프리윌루전","run"]]],
+  ["샤MONEY즘",[["KAKACreation","run"],["사이퍼스튜디오","run"],["크릭스에이아이","run"]]],["초인의 시대",[["스튜디오리코","run"],["마테오에이아이","run"]]],
+  ["하루만 네가 되고 싶어",[["큐폴라","run"]]],["스캔들 메이커가 돌아왔다",[["엠스토리허브","run"]]]];
+function smpSeed(){ if(!WL||WL_META.smp1028||!VENDORS.length) return; WL_META.smp1028=true; const N=(x)=>wlNorm(x).replace(/스튜디오|studio/g,""), miss=[]; let n=0;
+  SMP_SEED.forEach(([work,list])=>{ if(!WL.some(r=>wlNorm(r.name)===wlNorm(work))) WL.push({id:"w"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:Math.max(0,...WL.map(x=>+x.no||0))+1,cat:"신규 후보",name:work,genre:"",rights:"샘플 테스트 진행 (판권 확인 필요)",ani:"",merch:"",game:"",memo:""});
+    list.forEach(([vn,st])=>{ const k=N(vn); const v=VENDORS.find(x=>N(x.name)===k)||VENDORS.find(x=>k&&(N(x.name).includes(k)||k.includes(N(x.name))&&N(x.name).length>=3)); if(!v){ miss.push(vn); return; }
+      const has=wlNorm(v.interest).includes(wlNorm(work)); const interest=has?v.interest:[v.interest,work].filter(Boolean).join(", "); vEdit({id:v.id,v:{interest,smp:{...(v.smp||{}),[work]:st}}}); n++; }); });
+  WL_META.smp1028=true; wlSaveSoon(); toast(`샘플 테스트 현황 ${n}건 반영${miss.length?` · 외주사 관리에 없는 업체: ${miss.join(", ")}`:""}`); }
+function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028) smpSeed();
   if(WL===null){ WL=undefined; wlLoad().then(()=>{ if(TAB==="wl") safeRender(); }); }
   if(!WL){ v.innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">작품 리스트를 불러오는 중이에요…</div>`; return; }
-  const rows=WL.map(r=>({r,...wlInfo(r)})), cats=["신규 후보","후순위 후보","제작 중"];
+  const rows=WL.map(r=>({r,...wlInfo(r)})), cats=["신규 후보","후순위 후보","제작 중"], RO=["미확인","확인 중","작가 동의 확보","판권 불가","보류"];
   const cnt=(f)=>rows.filter(f).length, si=(k)=>WL_STEPS.findIndex(x=>x[0]===k);
-  const L=rows.filter(x=>(!WLV.cat||x.r.cat===WLV.cat)&&(!WLV.step||x.step===WLV.step)&&(!WLV.q||wlNorm(x.r.name).includes(wlNorm(WLV.q))));
+  const gOf=(x)=>x.r.genre||"기타";
+  const L=rows.filter(x=>(!WLV.cat||x.r.cat===WLV.cat)&&(!WLV.step||x.step===WLV.step)&&(!WLV.genre||gOf(x)===WLV.genre)&&(!WLV.q||wlNorm(x.r.name).includes(wlNorm(WLV.q))));
   const fd=(d)=>d?`${d.getUTCFullYear()%100}.${d.getUTCMonth()+1}.${d.getUTCDate()}`:"";
-  const prodTxt=(x)=>{ if(!x.w) return ""; const ln=lineOf(x.w)==="ext"?"외부 제작":"내부 제작"; if(x.S&&x.S.held) return `<span class="wlp">${ln}</span> <span class="hint">${+x.w.done?"중단 · 재개 미정":"착수 대기"}</span>`;
-    return `<span class="wlp">${ln}</span> ${x.S?`<b>${fd(x.S.L)} 런칭</b> <span class="hint">· ${+x.w.done||0}/${x.S.N}화 1차 완료</span>`:""}`; };
-  const vchips=(x)=>x.vs.map(o=>`<span class="wlv${o.done?" dn":o.off?" off":""}" title="${esc(vStage(o.v.stage))}">${esc(o.v.name)} · ${o.done?"완료":o.off?vStage(o.v.stage):"진행 중"}</span>`).join("");
-  const dots=(k)=>{ const i=si(k); return `<span class="wld">${WL_STEPS.map((s,j)=>`<i class="${j<=i?"on":""}${j===i?" cur":""}" title="${s[1]}"></i>`).join("")}</span>`; };
-  const tx=(r,k,ph)=>`<div class="wle" data-wid="${r.id}" data-wk="${k}" title="${esc(r[k]||"눌러서 입력")}">${r[k]?esc(r[k]):`<span class="ph">${ph}</span>`}</div>`;
-  let h=`<div class="lphead"><div><h2 style="margin:0">작품 리스트 <span class="hint" style="font-weight:500">후보 → 판권 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 · 제작 일정 · 외주사 관리와 자동 연결</span></h2></div>
-    <input class="in" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}" style="width:200px"> <button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
-    <div class="wltabs"><button type="button" data-wc="" class="${!WLV.cat?"on":""}">전체 <b>${rows.length}</b></button>${cats.map(c=>`<button type="button" data-wc="${c}" class="${WLV.cat===c?"on":""}">${c} <b>${cnt(x=>x.r.cat===c)}</b></button>`).join("")}</div>
-    <div class="wlflow">${WL_STEPS.map(([k,l],i)=>`<button type="button" data-ws="${k}" class="${WLV.step===k?"on":""}"><em>${i+1}</em><b>${cnt(x=>x.step===k&&(!WLV.cat||x.r.cat===WLV.cat))}</b><span>${l}</span></button>`).join("")}</div>`;
-  h+=`<div class="card" style="padding:0;overflow:auto;max-height:72vh"><table class="wlt"><thead><tr><th>번호</th><th>구분</th><th>작품명</th><th>장르</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작 상황</th><th>애니화 적합 평가</th><th>상품화 가능성</th><th>게임화 가능성</th><th></th></tr></thead><tbody>
-    ${L.map(x=>{ const r=x.r; return `<tr class="wc-${cats.indexOf(r.cat)}"><td class="hint">${r.no}</td>
-      <td><select class="in wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
-      <td class="wln">${tx(r,"name","작품명")}</td><td>${tx(r,"genre","장르")}</td><td>${tx(r,"rights","판권 상태")}</td>
-      <td><select class="in wls wlstep st-${x.step}" data-wid="${r.id}" data-wk="step"><option value="">자동 · ${WL_STEPS[si(x.step)][1]}</option>${WL_STEPS.map(([k,l])=>`<option value="${k}"${r.step===k?" selected":""}>${l}</option>`).join("")}</select>${dots(x.step)}</td>
-      <td class="wlst">${prodTxt(x)}${vchips(x)}${!x.w&&!x.vs.length?`<span class="hint">–</span>`:""}</td>
-      <td>${tx(r,"ani","+ 평가")}</td><td>${tx(r,"merch","+ 평가")}</td><td>${tx(r,"game","+ 평가")}</td>
-      <td><button type="button" class="vdel" data-wdel="${r.id}" title="삭제">✕</button></td></tr>`; }).join("")}</tbody></table></div>`;
-  // 아래: 샘플 테스트 진행 · 내부/외부 제작
-  const smp=rows.filter(x=>x.vs.length&&!x.w), inP=rows.filter(x=>x.w&&lineOf(x.w)!=="ext"), exP=rows.filter(x=>x.w&&lineOf(x.w)==="ext");
-  const sec=(t,arr,fn)=>`<div class="lpsec" style="margin-top:16px">${t} <span class="hint">${arr.length}작품</span></div><div class="card" style="padding:4px 14px">${arr.length?arr.map(fn).join(""):`<div class="hint" style="padding:10px">해당 작품이 없어요.</div>`}</div>`;
-  h+=sec("샘플 테스트 진행",smp,x=>`<div class="wlrow"><b>${esc(x.r.name)}</b><span class="hint">${esc(x.r.genre)}</span><span class="wlst">${vchips(x)}</span></div>`);
-  h+=sec("내부 제작",inP,x=>`<div class="wlrow"><b>${esc(x.r.name)}</b><span class="hint">${esc(x.r.genre)}</span><span>${prodTxt(x)}</span></div>`);
-  h+=sec("외부 제작",exP,x=>`<div class="wlrow"><b>${esc(x.r.name)}</b><span class="hint">${esc(x.r.genre)}</span><span>${prodTxt(x)}</span></div>`);
+  const prodTxt=(x)=>{ if(!x.w) return ""; const ln=lineOf(x.w)==="ext"?"외부 제작":"내부 제작"; if(x.S&&x.S.held) return `<span class="wpill p-gray">${ln} · ${+x.w.done?"중단":"착수 대기"}</span>`;
+    return `<span class="wpill p-blue">${ln}</span>${x.S?`<span class="wsub">${fd(x.S.L)} 런칭 · ${+x.w.done||0}/${x.S.N}화</span>`:""}`; };
+  const vchips=(x)=>x.vs.map(o=>`<span class="wpill ${o.done?"p-green":o.off?"p-gray":"p-amber"}" title="${esc(vStage(o.v.stage))}">${esc(o.v.name)} · ${o.done?"완료":o.off?vStage(o.v.stage):"진행 중"}</span>`).join("");
+  const txt=(r,k,ph)=>`<div class="wle" data-wid="${r.id}" data-wk="${k}" title="${esc(r[k]||"눌러서 입력")}">${r[k]?esc(r[k]):`<span class="wph">${ph}</span>`}</div>`;
+  const catCls={"신규 후보":"s-dark","후순위 후보":"s-amber","제작 중":"s-green"}, rCls=(c)=>["s-gray","s-yellow","s-green","s-red","s-red"][Math.max(0,RO.indexOf(c||"미확인"))]||"s-gray";
+  const stCls={cand:"s-gray",rights:"s-yellow",agree:"s-green",sample:"s-amber",prod:"s-blue",live:"s-dark"};
+  // 분포 카드
+  const bar=(title,items,key)=>{ const tot=items.reduce((a,b)=>a+b[1],0)||1; return `<div class="wcard"><div class="wct">${title}</div><div class="wbar">${items.filter(i=>i[1]).map(([l,n,c])=>`<i style="width:${n/tot*100}%;background:${c}"></i>`).join("")}</div>
+      <div class="wleg">${items.map(([l,n,c,val])=>`<button type="button" class="${WLV[key]===val?"on":""}" data-wf="${key}" data-wv="${esc(val)}"><i style="background:${c}"></i>${esc(l)} <b>${n}</b> <span>${Math.round(n/tot*100)}%</span></button>`).join("")}</div></div>`; };
+  const GC=["#2B6FD0","#E07A3F","#2E9B6A","#E5A32B","#7F56C2","#D6458A","#3BA3B8","#9AA3B2"];
+  const genres=[...new Set(rows.map(gOf))].map(g=>[g,cnt(x=>gOf(x)===g)]).sort((a,b)=>b[1]-a[1]).map((g,i)=>[g[0],g[1],GC[i%GC.length],g[0]]);
+  const SC={cand:"#B8BFCC",rights:"#E5C44F",agree:"#2E9B6A",sample:"#E5A32B",prod:"#2B6FD0",live:"#1F2A44"};
+  let h=`<div class="whead"><h2>작품 리스트</h2>
+      <div class="wchips"><button type="button" data-wc="" class="${!WLV.cat?"on":""}">전체 <b>${rows.length}</b></button>${cats.map(c=>`<button type="button" data-wc="${c}" class="${WLV.cat===c?"on":""}">${c} <b>${cnt(x=>x.r.cat===c)}</b></button>`).join("")}
+      <span class="wsep"></span>${WL_STEPS.map(([k,l])=>`<button type="button" data-ws="${k}" class="${WLV.step===k?"on":""}">${l} <b>${cnt(x=>x.step===k)}</b></button>`).join("")}</div>
+      <span class="sp"></span><input class="in wq" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}"><button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
+    <p class="wdesc">후보 → 판권 확인 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 순서로 관리해요. 샘플 테스트는 외주사 관리, 제작 상황은 제작 일정에서 자동으로 가져와요.</p>
+    <div class="wcards">${bar("구분",cats.map((c,i)=>[c,cnt(x=>x.r.cat===c),["#1F2A44","#E5A32B","#2E9B6A"][i],c]),"cat")}${bar("장르",genres,"genre")}${bar("진행 단계",WL_STEPS.map(([k,l])=>[l,cnt(x=>x.step===k),SC[k],k]),"step")}</div>`;
+  const act=[WLV.cat,WLV.step&&WL_STEPS[si(WLV.step)][1],WLV.genre,WLV.q&&`'${WLV.q}'`].filter(Boolean);
+  if(act.length) h+=`<div class="wfil">${act.map(esc).join(" · ")}만 보는 중 · ${L.length}작품 <button type="button" class="btn" id="wlAll">전체 보기</button></div>`;
+  h+=`<div class="wtw"><table class="wt"><thead><tr><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
+    ${L.map(x=>{ const r=x.r, cur=r.rights||"미확인", opts=RO.includes(cur)?RO:[cur,...RO]; return `<tr>
+      <td class="wtt">${txt(r,"name","작품명")}<div class="wsub">${esc(r.genre||"장르 미정")} · ${r.no}번</div></td>
+      <td><select class="wsel ${catCls[r.cat]||"s-gray"} wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
+      <td><select class="wsel ${rCls(RO.includes(cur)?cur:"작가 동의 확보")} wls" data-wid="${r.id}" data-wk="rights" title="${esc(cur)}">${opts.map(o=>`<option value="${esc(o==="미확인"?"":o)}"${o===cur?" selected":""}>${esc(o)}</option>`).join("")}</select></td>
+      <td><select class="wsel ${stCls[x.step]} wls" data-wid="${r.id}" data-wk="step">${WL_STEPS.map(([k,l])=>`<option value="${k}"${x.step===k?" selected":""}>${l}</option>`).join("")}</select></td>
+      <td class="wst">${prodTxt(x)}${vchips(x)}${!x.w&&!x.vs.length?`<span class="wph">–</span>`:""}</td>
+      <td>${txt(r,"ani","평가 입력")}</td><td>${txt(r,"merch","평가 입력")}</td><td>${txt(r,"game","평가 입력")}</td>
+      <td><button type="button" class="wdel" data-wdel="${r.id}" title="삭제">✕</button></td></tr>`; }).join("")}</tbody></table></div>`;
+  const isProd=(x)=>x.w&&(x.r.cat==="제작 중"||+x.w.done>0);
+  const smp=rows.filter(x=>x.vs.length), inP=rows.filter(x=>isProd(x)&&lineOf(x.w)!=="ext"), exP=rows.filter(x=>isProd(x)&&lineOf(x.w)==="ext");
+  const sec=(t,arr,fn)=>`<div class="wsec"><h3>${t} <span>${arr.length}작품</span></h3><div class="wtw"><table class="wt"><tbody>${arr.length?arr.map(fn).join(""):`<tr><td class="wph" style="padding:16px;text-align:center">해당 작품이 없어요</td></tr>`}</tbody></table></div></div>`;
+  h+=`<div class="wsecs">${sec("샘플 테스트 진행",smp,x=>`<tr><td class="wtt"><b>${esc(x.r.name)}</b><div class="wsub">${esc(x.r.genre)}</div></td><td class="wst">${vchips(x)}</td></tr>`)}
+    ${sec("내부 제작",inP,x=>`<tr><td class="wtt"><b>${esc(x.r.name)}</b><div class="wsub">${esc(x.r.genre)}</div></td><td class="wst">${prodTxt(x)}</td></tr>`)}
+    ${sec("외부 제작",exP,x=>`<tr><td class="wtt"><b>${esc(x.r.name)}</b><div class="wsub">${esc(x.r.genre)}</div></td><td class="wst">${prodTxt(x)}</td></tr>`)}</div>`;
   v.innerHTML=h;
   v.querySelectorAll("[data-wc]").forEach(b=>b.onclick=()=>{ WLV.cat=b.dataset.wc; render(); });
   v.querySelectorAll("[data-ws]").forEach(b=>b.onclick=()=>{ WLV.step=WLV.step===b.dataset.ws?"":b.dataset.ws; render(); });
+  v.querySelectorAll("[data-wf]").forEach(b=>b.onclick=()=>{ const k=b.dataset.wf, val=b.dataset.wv; WLV[k]=WLV[k]===val?"":val; render(); });
+  if($("wlAll")) $("wlAll").onclick=()=>{ WLV.cat=""; WLV.step=""; WLV.genre=""; WLV.q=""; render(); };
   if($("wlQ")) $("wlQ").oninput=(e)=>{ WLV.q=e.target.value; clearTimeout(window._wlq); window._wlq=setTimeout(()=>{ render(); const q=$("wlQ"); if(q){ q.focus(); q.setSelectionRange(q.value.length,q.value.length); } },250); };
   v.querySelectorAll(".wls").forEach(el=>el.onchange=()=>{ const r=WL.find(x=>x.id===el.dataset.wid); if(!r) return; r[el.dataset.wk]=el.value; wlSaveSoon(); render(); });
-  v.querySelectorAll(".wle").forEach(el=>el.onclick=()=>{ const r=WL.find(x=>x.id===el.dataset.wid); if(!r) return; const k=el.dataset.wk; const nv=prompt({name:"작품명",genre:"장르",rights:"판권 확보",ani:"애니화 적합 평가",merch:"상품화 가능성",game:"게임화 가능성"}[k]||k,r[k]||""); if(nv===null) return; r[k]=nv.trim(); wlSaveSoon(); render(); });
+  v.querySelectorAll(".wle").forEach(el=>el.onclick=()=>{ const r=WL.find(x=>x.id===el.dataset.wid); if(!r) return; const k=el.dataset.wk; const nv=prompt({name:"작품명",genre:"장르",ani:"애니화 적합 평가",merch:"상품화 가능성",game:"게임화 가능성"}[k]||k,r[k]||""); if(nv===null) return; r[k]=nv.trim(); wlSaveSoon(); render(); });
   v.querySelectorAll("[data-wdel]").forEach(b=>b.onclick=()=>{ const r=WL.find(x=>x.id===b.dataset.wdel); if(!r||!confirm(`'${r.name}'을 리스트에서 삭제할까요?`)) return; WL=WL.filter(x=>x!==r); wlSaveSoon(); render(); });
   if($("wlAdd")) $("wlAdd").onclick=()=>{ const n=prompt("추가할 작품명"); if(!n||!n.trim()) return; WL.push({id:"w"+Date.now().toString(36),no:Math.max(0,...WL.map(x=>+x.no||0))+1,cat:WLV.cat||"신규 후보",name:n.trim(),genre:"",rights:"",ani:"",merch:"",game:"",memo:""}); wlSaveSoon(); render(); };
   wlSaveSoon(); }
