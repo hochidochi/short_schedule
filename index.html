@@ -630,6 +630,15 @@ table.tzt tr.off td{opacity:.5} table.tzt td:nth-child(5){width:230px} table.tzt
 .card.tzbox{background:#FDF2F7} table.tzt .in{min-height:28px;padding:1px 6px;width:100%} table.tzt td:nth-child(3){width:150px} table.tzt td:nth-child(2){width:160px}
 .tzw{display:flex;flex-wrap:wrap;gap:4px} .tzc{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;border:1px solid var(--line);border-radius:12px;padding:1px 8px;background:#fff;cursor:pointer} .tzc.on{background:#D6458A;color:#fff;border-color:#D6458A} .tzc input{display:none}
 .upl{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px} .upl b{display:block;font-size:14px} .upl .hint{font-size:12px}
+.wltabs{display:flex;gap:6px;margin:10px 0 8px} .wltabs button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer} .wltabs button b{margin-left:4px} .wltabs button.on{background:#1F2A44;color:#fff;border-color:#1F2A44}
+.wlflow{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px} .wlflow button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer;text-align:left}
+.wlflow em{font-style:normal;font-size:11px;font-weight:800;color:#fff;background:#9AA3B2;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center} .wlflow b{font-size:18px} .wlflow span{font-size:12px;color:var(--ink2)} .wlflow button.on{border-color:#2B6FD0;box-shadow:0 0 0 2px #2B6FD033} .wlflow button.on em{background:#2B6FD0}
+table.wlt{border-collapse:collapse;width:100%;font-size:12.5px} table.wlt th{position:sticky;top:0;background:#F4F6FA;color:var(--ink2);font-weight:600;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:2}
+table.wlt td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle} table.wlt tr.wc-1 td{background:#FAFAF8} table.wlt tr.wc-2 td{background:#FDF3EA}
+table.wlt td.wln{font-weight:700;min-width:180px} .wle{cursor:pointer;min-height:18px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .wle:hover{outline:1px dashed #E5A32B} .wle .ph{color:var(--muted);border:0!important;background:none!important;box-shadow:none!important;padding:0!important;display:inline} .wle{border:0!important;box-shadow:none!important}
+.wls{min-height:26px;padding:1px 4px;font-size:12px} .wld{display:flex;gap:3px;margin-top:4px} .wld i{width:14px;height:4px;border-radius:2px;background:#E1E5EC} .wld i.on{background:#7FA6E6} .wld i.cur{background:#2B6FD0}
+.wlst{display:flex;flex-wrap:wrap;gap:4px;align-items:center} .wlv{font-size:11px;font-weight:700;background:#FFF1D6;color:#854F0B;border-radius:10px;padding:1px 8px} .wlv.dn{background:#E6F4EA;color:#1F7A4D} .wlv.off{background:#EEE;color:#888}
+.wlp{font-size:11px;font-weight:800;background:#E6F1FB;color:#0C447C;border-radius:6px;padding:1px 6px} .wlrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap}
 .cal .far{color:var(--ink2);font-weight:700;font-size:14px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:var(--ink2);margin:10px 0 0}
 .legend i{display:inline-block;width:18px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
@@ -992,7 +1001,8 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
     <button type="button" role="tab" data-tab="sim">시뮬레이션 설정</button>
     <button type="button" role="tab" data-tab="prod">제작 일정</button>
     <button type="button" role="tab" data-tab="guide">제작 가이드</button></span>
-    <span class="tgrp tgb"><button type="button" role="tab" data-tab="plan">런칭 플랜</button></span>
+    <span class="tgrp tgb"><button type="button" role="tab" data-tab="plan">런칭 플랜</button>
+    <button type="button" role="tab" data-tab="wl">작품 리스트</button></span>
     <span class="tgrp tgc"><button type="button" role="tab" data-tab="vendors">외주사 관리</button>
     <button type="button" role="tab" data-tab="vcal">외주사 캘린더</button></span>
   </nav>
@@ -1013,6 +1023,7 @@ table.std tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--li
   <section id="v-guide" hidden></section>
   <section id="v-plan" hidden></section>
   <section id="v-vcal" hidden></section>
+  <section id="v-wl" hidden></section>
   <section id="v-sim" hidden></section>
   <section id="v-vendors" hidden></section>
   <section id="v-users" hidden></section>
@@ -2141,15 +2152,15 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.28-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.28-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===TAB||(TAB==="std"&&b.dataset.tab==="prod"))));
   if(["lp","lc","xp"].includes(TAB)) TAB="plan";   // 예전 런칭 플랜 · 연재 캘린더 · 확장 플랜 탭은 새 런칭 플랜으로
-  ["open","prod","std","guide","plan","vcal","lp","lc","xp","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
+  ["open","prod","std","guide","plan","wl","vcal","lp","lc","xp","sim","vendors","users"].forEach(t=>$("v-"+t).hidden=t!==TAB);
   try{
-    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors"){ renderVendors(); } else if(TAB==="lp") renderLP2(); else if(TAB==="lc") renderLC(); else if(TAB==="xp") renderXP(); else if(TAB==="guide") renderGuideTab(); else if(TAB==="plan") renderPlan(); else if(TAB==="vcal") renderVCal(); else renderStd();
+    if(TAB==="open") renderOpen(); else if(TAB==="prod") renderProd(); else if(TAB==="users") renderUsers(); else if(TAB==="sim") renderSim(); else if(TAB==="vendors"){ renderVendors(); } else if(TAB==="lp") renderLP2(); else if(TAB==="lc") renderLC(); else if(TAB==="xp") renderXP(); else if(TAB==="guide") renderGuideTab(); else if(TAB==="plan") renderPlan(); else if(TAB==="vcal") renderVCal(); else if(TAB==="wl") renderWL(); else renderStd();
     if(TAB==="prod"||TAB==="std"){ const v=$("v-"+TAB); if(v&&!v.querySelector(".subnav")) v.insertAdjacentHTML("afterbegin",`<div class="subnav" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span class="seg sm"><button type="button" data-subt="prod" aria-pressed="${TAB==="prod"}">작품별 공정</button><button type="button" data-subt="std" aria-pressed="${TAB==="std"}">공정 기준 (설정)</button></span><button type="button" class="btn" onclick="setTab('guide')" title="제작 프로세스 · 납품 가이드 · 계약서 · 업로드">제작 가이드 →</button></div>`); v.querySelectorAll("[data-subt]").forEach(b=>b.onclick=()=>setTab(b.dataset.subt)); }
   }catch(e){
     console.error(e);
@@ -5808,6 +5819,69 @@ function renderVCal(){ const v=$("v-vcal"); if(!VC.m) VC.m=key(TODAY).slice(0,7)
     const vv=VENDORS.find(x=>x.id===id); const ev=[...(vv.ev||[]),{id:"e"+Date.now().toString(36),d,t,by:(ME&&(ME.name||ME.email))||"",at:new Date().toISOString()}];
     VC.sel=d; VC.m=d.slice(0,7); vEdit({id,v:{ev}}); toast(`${vv.name} · ${+d.slice(5,7)}/${+d.slice(8)} 일정을 추가했어요`); };
   v.querySelectorAll("[data-vcdel]").forEach(b=>b.onclick=()=>{ const [vid,eid]=b.dataset.vcdel.split("|"); const vv=VENDORS.find(x=>x.id===vid); if(!vv||!confirm("이 일정을 삭제할까요?")) return; vEdit({id:vid,v:{ev:(vv.ev||[]).filter(e=>e.id!==eid)}}); }); }
+/* ---------- 작품 리스트: 후보 → 판권 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 한눈에 ---------- */
+const WL_SEED=[["신규 후보","초인의 시대","액션","작가 동의 확보"],["신규 후보","신화급 귀속 아이템을 손에 넣었다","판타지","작가 동의 확보"],["신규 후보","샤MONEY즘","판타지","작가 동의 확보"],["신규 후보","하루만 네가 되고 싶어","로맨스","작가 동의 확보 (실사 드라마 이슈 확인 중)"],
+ ["신규 후보","상남자","드라마",""],["신규 후보","오늘의 한요일은 여자다","드라마",""],["신규 후보","내 최애는 막차를 탄다","로맨스",""],["신규 후보","울어 봐, 빌어도 좋고","로맨스","확인 중"],["신규 후보","이기적 연애론","로맨스","확인 중"],["신규 후보","미스 펜들턴","로맨스","확인 중"],
+ ["신규 후보","우리 길드 아이돌","로맨스","확인 중"],["신규 후보","속아주고싶어","로맨스","확인 중"],["신규 후보","다정한 침입자","로맨스","확인 중"],["신규 후보","해시태그는 첫사랑","로맨스","확인 중"],["신규 후보","시월드가 내게 집착한다","로맨스","확인 중"],
+ ["신규 후보","제물 투표","스릴러",""],["신규 후보","똑 닮은 딸","스릴러","확인 중"],["신규 후보","사신소년","액션",""],["신규 후보","나쁜사람","액션",""],["신규 후보","아카데미에서 살아남기","판타지",""],
+ ["신규 후보","오늘만 사는 기사","판타지",""],["신규 후보","66666년 만에 환생한 흑마법사","판타지",""],["신규 후보","회귀한 용병은 다 계획이 있다","판타지",""],["신규 후보","악당들의 후원자가 되었다","판타지",""],["신규 후보","양치기 마법사","판타지",""],
+ ["신규 후보","마왕인데 용사가 너무 많음","판타지",""],["신규 후보","내가 죽인 드래곤과 결혼했다","판타지",""],["신규 후보","세상에 나쁜 영애는 없다","판타지",""],["신규 후보","검술명가의 네크로맨서","판타지",""],["신규 후보","어느 마법사의 식당","판타지",""],
+ ["후순위 후보","심해수","판타지","작가 동의 확보"],["후순위 후보","잔불의 기사","판타지","작가 동의 확보"],["후순위 후보","작두","판타지","작가 동의 확보"],["후순위 후보","악당의 사연","개그","작가 동의 확보"],["후순위 후보","어느 날 해출링이 되었다","판타지","작가 동의 확보"],
+ ["제작 중","냐한 남자","로맨스","작가 동의 확보"],["제작 중","소녀바둑","드라마","작가 동의 확보"],["제작 중","용사가 돌아왔다","판타지","작가 동의 확보"],["제작 중","나이트런","판타지","작가 동의 확보"],["제작 중","쪽팔려 게임","스릴러","작가 동의 확보"]]
+ .map((r,i)=>({id:"w"+(i+1),no:i+1,cat:r[0],name:r[1],genre:r[2],rights:r[3],ani:"",merch:"",game:"",memo:""}));
+const WL_STEPS=[["cand","후보"],["rights","판권 확인 중"],["agree","작가 동의 확보"],["sample","샘플 테스트"],["prod","제작 중"],["live","런칭"]];
+let WL=null, WL_SIG="", WL_T=0, WLV={cat:"",step:"",q:""};
+async function wlLoad(){ let d=null; try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.wlist&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_wlist"); }catch(e){} WL=d&&Array.isArray(d.rows)?d.rows:clone(WL_SEED); WL_SIG=JSON.stringify(WL); }
+function wlSaveSoon(){ clearTimeout(WL_T); WL_T=setTimeout(wlSave,800); }
+async function wlSave(){ const sig=JSON.stringify(WL); if(sig===WL_SIG) return; try{ const data={rows:WL,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")}; if(!SB.on) lsSet("anime_wlist",data); else await sb("POST",T_CONF,"",[{id:"wlist",data,updated_at:data.at}],"resolution=merge-duplicates"); WL_SIG=sig; }catch(e){ setTimeout(wlSave,5000); } }
+const wlNorm=(x)=>String(x||"").replace(/[\s·,.!?~'"()\-]/g,"").toLowerCase();
+function wlInfo(r){ const n=wlNorm(r.name);
+  const w=WORKS.find(x=>wlNorm(x.n)===n)||WORKS.find(x=>n&&wlNorm(x.n).includes(n))||null;
+  const S=w?schedule(w):null;
+  const vs=VENDORS.filter(v=>n&&wlNorm(v.interest).includes(n)).map(v=>({v,done:vStep(v.stage||"contact")>=vStep("sampleD"),off:["no","hold"].includes(v.stage)}));
+  let step=r.step||"";
+  if(!step){ if(w&&S&&!S.held&&S.L&&S.L<=TODAY) step="live"; else if((w&&!(S&&S.held))||r.cat==="제작 중") step="prod"; else if(vs.length) step="sample"; else if(/작가 동의/.test(r.rights)) step="agree"; else if(/확인/.test(r.rights)) step="rights"; else step="cand"; }
+  return {w,S,vs,step}; }
+function renderWL(){ const v=$("v-wl");
+  if(WL===null){ WL=undefined; wlLoad().then(()=>{ if(TAB==="wl") safeRender(); }); }
+  if(!WL){ v.innerHTML=`<div class="card" style="padding:24px;text-align:center;color:var(--ink2)">작품 리스트를 불러오는 중이에요…</div>`; return; }
+  const rows=WL.map(r=>({r,...wlInfo(r)})), cats=["신규 후보","후순위 후보","제작 중"];
+  const cnt=(f)=>rows.filter(f).length, si=(k)=>WL_STEPS.findIndex(x=>x[0]===k);
+  const L=rows.filter(x=>(!WLV.cat||x.r.cat===WLV.cat)&&(!WLV.step||x.step===WLV.step)&&(!WLV.q||wlNorm(x.r.name).includes(wlNorm(WLV.q))));
+  const fd=(d)=>d?`${d.getUTCFullYear()%100}.${d.getUTCMonth()+1}.${d.getUTCDate()}`:"";
+  const prodTxt=(x)=>{ if(!x.w) return ""; const ln=lineOf(x.w)==="ext"?"외부 제작":"내부 제작"; if(x.S&&x.S.held) return `<span class="wlp">${ln}</span> <span class="hint">${+x.w.done?"중단 · 재개 미정":"착수 대기"}</span>`;
+    return `<span class="wlp">${ln}</span> ${x.S?`<b>${fd(x.S.L)} 런칭</b> <span class="hint">· ${+x.w.done||0}/${x.S.N}화 1차 완료</span>`:""}`; };
+  const vchips=(x)=>x.vs.map(o=>`<span class="wlv${o.done?" dn":o.off?" off":""}" title="${esc(vStage(o.v.stage))}">${esc(o.v.name)} · ${o.done?"완료":o.off?vStage(o.v.stage):"진행 중"}</span>`).join("");
+  const dots=(k)=>{ const i=si(k); return `<span class="wld">${WL_STEPS.map((s,j)=>`<i class="${j<=i?"on":""}${j===i?" cur":""}" title="${s[1]}"></i>`).join("")}</span>`; };
+  const tx=(r,k,ph)=>`<div class="wle" data-wid="${r.id}" data-wk="${k}" title="${esc(r[k]||"눌러서 입력")}">${r[k]?esc(r[k]):`<span class="ph">${ph}</span>`}</div>`;
+  let h=`<div class="lphead"><div><h2 style="margin:0">작품 리스트 <span class="hint" style="font-weight:500">후보 → 판권 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 · 제작 일정 · 외주사 관리와 자동 연결</span></h2></div>
+    <input class="in" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}" style="width:200px"> <button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
+    <div class="wltabs"><button type="button" data-wc="" class="${!WLV.cat?"on":""}">전체 <b>${rows.length}</b></button>${cats.map(c=>`<button type="button" data-wc="${c}" class="${WLV.cat===c?"on":""}">${c} <b>${cnt(x=>x.r.cat===c)}</b></button>`).join("")}</div>
+    <div class="wlflow">${WL_STEPS.map(([k,l],i)=>`<button type="button" data-ws="${k}" class="${WLV.step===k?"on":""}"><em>${i+1}</em><b>${cnt(x=>x.step===k&&(!WLV.cat||x.r.cat===WLV.cat))}</b><span>${l}</span></button>`).join("")}</div>`;
+  h+=`<div class="card" style="padding:0;overflow:auto;max-height:72vh"><table class="wlt"><thead><tr><th>번호</th><th>구분</th><th>작품명</th><th>장르</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작 상황</th><th>애니화 적합 평가</th><th>상품화 가능성</th><th>게임화 가능성</th><th></th></tr></thead><tbody>
+    ${L.map(x=>{ const r=x.r; return `<tr class="wc-${cats.indexOf(r.cat)}"><td class="hint">${r.no}</td>
+      <td><select class="in wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
+      <td class="wln">${tx(r,"name","작품명")}</td><td>${tx(r,"genre","장르")}</td><td>${tx(r,"rights","판권 상태")}</td>
+      <td><select class="in wls wlstep st-${x.step}" data-wid="${r.id}" data-wk="step"><option value="">자동 · ${WL_STEPS[si(x.step)][1]}</option>${WL_STEPS.map(([k,l])=>`<option value="${k}"${r.step===k?" selected":""}>${l}</option>`).join("")}</select>${dots(x.step)}</td>
+      <td class="wlst">${prodTxt(x)}${vchips(x)}${!x.w&&!x.vs.length?`<span class="hint">–</span>`:""}</td>
+      <td>${tx(r,"ani","+ 평가")}</td><td>${tx(r,"merch","+ 평가")}</td><td>${tx(r,"game","+ 평가")}</td>
+      <td><button type="button" class="vdel" data-wdel="${r.id}" title="삭제">✕</button></td></tr>`; }).join("")}</tbody></table></div>`;
+  // 아래: 샘플 테스트 진행 · 내부/외부 제작
+  const smp=rows.filter(x=>x.vs.length&&!x.w), inP=rows.filter(x=>x.w&&lineOf(x.w)!=="ext"), exP=rows.filter(x=>x.w&&lineOf(x.w)==="ext");
+  const sec=(t,arr,fn)=>`<div class="lpsec" style="margin-top:16px">${t} <span class="hint">${arr.length}작품</span></div><div class="card" style="padding:4px 14px">${arr.length?arr.map(fn).join(""):`<div class="hint" style="padding:10px">해당 작품이 없어요.</div>`}</div>`;
+  h+=sec("샘플 테스트 진행",smp,x=>`<div class="wlrow"><b>${esc(x.r.name)}</b><span class="hint">${esc(x.r.genre)}</span><span class="wlst">${vchips(x)}</span></div>`);
+  h+=sec("내부 제작",inP,x=>`<div class="wlrow"><b>${esc(x.r.name)}</b><span class="hint">${esc(x.r.genre)}</span><span>${prodTxt(x)}</span></div>`);
+  h+=sec("외부 제작",exP,x=>`<div class="wlrow"><b>${esc(x.r.name)}</b><span class="hint">${esc(x.r.genre)}</span><span>${prodTxt(x)}</span></div>`);
+  v.innerHTML=h;
+  v.querySelectorAll("[data-wc]").forEach(b=>b.onclick=()=>{ WLV.cat=b.dataset.wc; render(); });
+  v.querySelectorAll("[data-ws]").forEach(b=>b.onclick=()=>{ WLV.step=WLV.step===b.dataset.ws?"":b.dataset.ws; render(); });
+  if($("wlQ")) $("wlQ").oninput=(e)=>{ WLV.q=e.target.value; clearTimeout(window._wlq); window._wlq=setTimeout(()=>{ render(); const q=$("wlQ"); if(q){ q.focus(); q.setSelectionRange(q.value.length,q.value.length); } },250); };
+  v.querySelectorAll(".wls").forEach(el=>el.onchange=()=>{ const r=WL.find(x=>x.id===el.dataset.wid); if(!r) return; r[el.dataset.wk]=el.value; wlSaveSoon(); render(); });
+  v.querySelectorAll(".wle").forEach(el=>el.onclick=()=>{ const r=WL.find(x=>x.id===el.dataset.wid); if(!r) return; const k=el.dataset.wk; const nv=prompt({name:"작품명",genre:"장르",rights:"판권 확보",ani:"애니화 적합 평가",merch:"상품화 가능성",game:"게임화 가능성"}[k]||k,r[k]||""); if(nv===null) return; r[k]=nv.trim(); wlSaveSoon(); render(); });
+  v.querySelectorAll("[data-wdel]").forEach(b=>b.onclick=()=>{ const r=WL.find(x=>x.id===b.dataset.wdel); if(!r||!confirm(`'${r.name}'을 리스트에서 삭제할까요?`)) return; WL=WL.filter(x=>x!==r); wlSaveSoon(); render(); });
+  if($("wlAdd")) $("wlAdd").onclick=()=>{ const n=prompt("추가할 작품명"); if(!n||!n.trim()) return; WL.push({id:"w"+Date.now().toString(36),no:Math.max(0,...WL.map(x=>+x.no||0))+1,cat:WLV.cat||"신규 후보",name:n.trim(),genre:"",rights:"",ani:"",merch:"",game:"",memo:""}); wlSaveSoon(); render(); };
+  wlSaveSoon(); }
+
 function lcBind(P){
   lcYearCols();
   if($("lcGap")) $("lcGap").onchange=(e)=>{ const v=Math.max(0,Math.min(104,+e.target.value||0)); lpSet(Q=>{ Q.g={...Q.g,contGapW:v}; }); };
@@ -6317,7 +6391,7 @@ if(LANG==="ja"){ document.documentElement.lang="ja"; document.title="アニメ�
 TR_OBS.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:["title","placeholder","aria-label"]});
 (async function init(){
   try{ const q=new URLSearchParams(location.search);
-    if(["open","prod","std","guide","plan","vcal","lp","lc","xp","sim","vendors","users"].includes(q.get("tab"))) TAB=q.get("tab");
+    if(["open","prod","std","guide","plan","wl","vcal","lp","lc","xp","sim","vendors","users"].includes(q.get("tab"))) TAB=q.get("tab");
     if(q.get("w")) SEL=q.get("w"); }catch(e){}
   if(!SB.on){
     WORKS=clone(DEFAULT_WORKS).map(normW); VENDORS=vApplyUpd1015(vActMigrate(clone(V_SEED)));
