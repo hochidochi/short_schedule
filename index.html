@@ -2215,7 +2215,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.29-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.29-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -4091,8 +4091,9 @@ function renderVendors(){
     <div class="vside"><span class="vsl">진행 외</span>${V_SIDE.map(([k,l])=>{const n=cntS(k);return `<button type="button" class="vsbtn ${k}${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><b>${n}</b>${l}</button>`;}).join("")}</div>
   </div>
   <div class="card vfil">
-    <span class="sog">국가</span>${V_COUNTRY.map(c=>chip("country",c,c,all.filter(v=>(V_COUNTRY.includes(v.country)?v.country:"기타")===c).length)).join("")}
-    <span class="sog">우선순위</span>${V_PRIO.map(([k,l])=>chip("prio",k,l,cnt(v=>v.prio||"mid",k))).join("")}
+    <span class="sog">국가</span>${(()=>{ const vid=VF.kind==="voice"?all:all.filter(v=>vKind(v)!=="voice"); return V_COUNTRY.map(c=>chip("country",c,c,vid.filter(v=>(V_COUNTRY.includes(v.country)?v.country:"기타")===c).length)).join(""); })()}
+    <span class="sog">우선순위</span>${(()=>{ const vid=VF.kind==="voice"?all:all.filter(v=>vKind(v)!=="voice"); return V_PRIO.map(([k,l])=>chip("prio",k,l,vid.filter(v=>(v.prio||"mid")===k).length)).join(""); })()}
+    <span class="hint" style="font-size:11px">${VF.kind==="voice"?"성우 업체 기준":"영상 제작사 기준"}</span>
     <span class="vsp"></span>
     <select class="in" id="vOwner"><option value="">컨택 담당자 전체</option>${owners.map(o=>`<option${VF.owner===o?" selected":""}>${esc(o)}</option>`).join("")}</select>
     <select class="in" id="vSort">${[["prio","우선순위순"],["stage","진행 단계순"],["next","다음 액션 기한순"],["country","국가순"]].map(([k,l])=>`<option value="${k}"${VF.sort===k?" selected":""}>${l}</option>`).join("")}</select>
