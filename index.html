@@ -1046,6 +1046,10 @@ table.lp2.sx.l3t tr.rtg .l3i{background:#F4EEFC!important;border:1.5px dashed #8
 table.lp2.sx.l3t tr.rac .l3i{background:#F4F5F7!important;border:1px solid #D5D9E0!important;color:#5B6372!important;font-weight:600}
 .sxbadge.btg{background:#8B6BD1} .sxbadge.bac{background:#9AA3B2}
 table.l3t .l3auto{color:#9AA1AE}
+
+.wtgh{width:64px} td.wtgc{padding-right:0!important;width:64px}
+.wtg{appearance:none;-webkit-appearance:none;border:0;border-radius:12px;padding:3px 8px;font-size:11.5px;font-weight:800;cursor:pointer;text-align:center;width:58px}
+.wtg.t-m{background:#DDEEFB;color:#185FA5} .wtg.t-f{background:#FBE3EE;color:#A83268} .wtg.t-mf{background:#EEE6FA;color:#5B3A9C} .wtg.t-n{background:#F0F2F5;color:#9AA1AE}
 </style>
 </head>
 <body>
@@ -2208,7 +2212,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.29-A";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.29-B";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -5904,6 +5908,9 @@ const WL_SEED=[["신규 후보","초인의 시대","액션","작가 동의 확�
  ["후순위 후보","심해수","판타지","작가 동의 확보"],["후순위 후보","잔불의 기사","판타지","작가 동의 확보"],["후순위 후보","작두","판타지","작가 동의 확보"],["후순위 후보","악당의 사연","개그","작가 동의 확보"],["후순위 후보","어느 날 해출링이 되었다","판타지","작가 동의 확보"],
  ["제작 중","냐한 남자","로맨스","작가 동의 확보"],["제작 중","소녀바둑","드라마","작가 동의 확보"],["제작 중","용사가 돌아왔다","판타지","작가 동의 확보"],["제작 중","나이트런","판타지","작가 동의 확보"],["제작 중","쪽팔려 게임","스릴러","작가 동의 확보"]]
  .map((r,i)=>({id:"w"+(i+1),no:i+1,cat:r[0],name:r[1],genre:r[2],rights:r[3],ani:"",merch:"",game:"",memo:""}));
+const WL_TGT0={"남성향":["신화급 귀속 아이템을 손에 넣었다","잔불의 기사","초인의 시대","샤MONEY즘","용사가 돌아왔다","나이트런","심해수","66666년 만에 환생한 흑마법사","사신소년","상남자","아카데미에서 살아남기","악당들의 후원자가 되었다","회귀한 용병은 다 계획이 있다","검술명가의 네크로맨서","내 최애는 막차를 탄다","양치기 마법사","세상에 나쁜 영애는 없다","내가 죽인 드래곤과 결혼했다","어느 날 해출링이 되었다"],
+  "여성향":["하루만 네가 되고 싶어","스캔들 메이커가 돌아왔다","쪽팔려 게임","냐한 남자","소녀바둑","똑 닮은 딸","이기적 연애론","속아주고싶어"],"여·남":["작두","제물 투표"]};
+const wlTgt=(r)=>{ if(r.tgt) return r.tgt; const n=wlNorm(r.name); for(const [t,L] of Object.entries(WL_TGT0)) if(L.some(x=>wlNorm(x)===n)) return t; return ""; };
 const WL_STEPS=[["cand","후보"],["rights","판권 확인 중"],["agree","작가 동의 확보"],["sample","샘플 테스트"],["prod","제작 중"],["live","런칭"]];
 let WL=null, WL_SIG="", WL_T=0, WLV={cat:"",step:"",q:"",genre:""}, WL_META={}, WLSEL=new Set(), WL_LAST=null;
 async function wlLoad(){ let d=null; try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.wlist&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_wlist"); }catch(e){} WL=d&&Array.isArray(d.rows)?d.rows:clone(WL_SEED); WL_META=d&&d.meta||{}; WL_SIG=JSON.stringify([WL,WL_META]); }
@@ -5929,7 +5936,7 @@ function smpSeed(){ if(!WL||WL_META.smp1028||!VENDORS.length) return; WL_META.sm
 /* 선택한 작품을 메일에 붙여넣기 좋은 텍스트로 복사 */
 function wlCopySel(rows){ rows=rows||WL.map(r=>({r,...wlInfo(r)})); const L=rows.filter(x=>WLSEL.has(x.r.id)); if(!L.length) return;
   const stL=(k)=>(WL_STEPS.find(x=>x[0]===k)||[,""])[1], fd=(d)=>d?`${d.getUTCFullYear()}.${d.getUTCMonth()+1}.${d.getUTCDate()}`:"";
-  const lines=L.map((x,i)=>{ const r=x.r, parts=[`${i+1}. ${r.name}${r.genre?` (${r.genre})`:""}`, `   - 구분: ${r.cat} · 판권: ${r.rights||"미확인"} · 진행 단계: ${stL(x.step)}`];
+  const lines=L.map((x,i)=>{ const r=x.r, tg=wlTgt(r), parts=[`${i+1}. ${r.name} (${[tg,r.genre].filter(Boolean).join(" · ")||"장르 미정"})`, `   - 구분: ${r.cat} · 판권: ${r.rights||"미확인"} · 진행 단계: ${stL(x.step)}`];
     if(x.vs.length) parts.push(`   - 샘플 테스트: ${x.vs.map(o=>`${o.v.name} ${o.done?"완료":"진행 중"}`).join(", ")}`);
     if(x.w&&x.S) parts.push(`   - 제작: ${lineOf(x.w)==="ext"?"외부":"내부"} 제작 · ${x.S.held?(+x.w.done?"중단":"착수 대기"):`${fd(x.S.L)} 런칭 예정`}`);
     [["ani","애니화 적합"],["merch","상품화"],["game","게임화"]].forEach(([k,l])=>{ if(r[k]) parts.push(`   - ${l}: ${r[k]}`); });
@@ -5970,8 +5977,9 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   const act=[WLV.cat,WLV.step&&(WLV.step==="agree"?"작가 동의 확보 (샘플 · 제작 · 런칭 포함)":WL_STEPS[si(WLV.step)][1]),WLV.genre,WLV.q&&`'${WLV.q}'`].filter(Boolean);
   if(WLSEL.size) h+=`<div class="wselbar"><b>${WLSEL.size}작품 선택</b><span class="hint">Ctrl/⌘ + C로 메일용 텍스트 복사</span><span class="sp"></span><button type="button" class="btn pri" id="wlCopy">복사</button><button type="button" class="btn" id="wlClr">선택 해제</button></div>`;
   if(act.length) h+=`<div class="wfil">${act.map(esc).join(" · ")}만 보는 중 · ${L.length}작품 <button type="button" class="btn" id="wlAll">전체 보기</button></div>`;
-  h+=`<div class="wtw"><table class="wt"><thead><tr><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
+  h+=`<div class="wtw"><table class="wt"><thead><tr><th class="wtgh">타겟</th><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
     ${L.map(x=>{ const r=x.r, cur=r.rights||"미확인", opts=RO.includes(cur)?RO:[cur,...RO]; return `<tr>
+      <td class="wtgc">${(()=>{ const t=wlTgt(r); return `<select class="wtg ${t==="남성향"?"t-m":t==="여성향"?"t-f":t==="여·남"?"t-mf":"t-n"} wls" data-wid="${r.id}" data-wk="tgt" title="타겟">${["","남성향","여성향","여·남"].map(o=>`<option value="${o}"${t===o?" selected":""}>${o||"미정"}</option>`).join("")}</select>`; })()}</td>
       <td class="wtt${WLSEL.has(r.id)?" sel":""}" data-wsel="${r.id}"><div class="wnm" title="클릭: 선택 · Shift+클릭: 여러 개 선택 · 더블클릭: 이름 수정">${esc(r.name)}</div><div class="wsub">${esc(r.genre||"장르 미정")} · ${r.no}번</div></td>
       <td><select class="wsel ${catCls[r.cat]||"s-gray"} wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
       <td><select class="wsel ${rCls(RO.includes(cur)?cur:"작가 동의 확보")} wls" data-wid="${r.id}" data-wk="rights" title="${esc(cur)}">${opts.map(o=>`<option value="${esc(o==="미확인"?"":o)}"${o===cur?" selected":""}>${esc(o)}</option>`).join("")}</select></td>
