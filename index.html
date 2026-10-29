@@ -2221,7 +2221,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.29-G";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.29-H";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -5837,7 +5837,7 @@ function toolsHTML(){ if(TOOLS===null){ TOOLS=undefined; toolsLoad().then(()=>{ 
   const inp=(t,k,w,ph)=>`<input class="tin" data-tid="${t.id}" data-tk="${k}" value="${esc(t[k]||"")}" placeholder="${ph||""}" style="width:${w}">`;
   return `<div class="card" style="padding:16px 18px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px"><h3 style="margin:0">사용 툴 리스트</h3>
       <div class="wchips"><button type="button" data-tok="" class="${!TV.ok?"on":""}">전체 <b>${TOOLS.length}</b></button>${TOOL_OK.map(o=>`<button type="button" data-tok="${o}" class="${TV.ok===o?"on":""}">${o} <b>${TOOLS.filter(t=>t.ok===o).length}</b></button>`).join("")}</div>
-      <span class="sp"></span><button type="button" class="btn" id="tDl">HTML 다운로드</button><button type="button" class="btn pri" id="tAdd">+ 도구 추가</button></div>
+      <span class="sp"></span><span class="hint" style="font-size:11.5px">다운로드 파일에는 비고가 빠져요</span><button type="button" class="btn" id="tDl">HTML 다운로드</button><button type="button" class="btn pri" id="tAdd">+ 도구 추가</button></div>
     <p class="hint" style="margin:0 0 10px">칸을 눌러 바로 고치면 모두에게 저장돼요. '개별 승인'은 서면 승인을 받은 경우에만 사용해요.</p>
     <div class="wtw"><table class="wt tt"><thead><tr><th>구분</th><th>회사 (본사)</th><th>도구</th><th>용도</th><th>사용 여부</th><th>비고</th><th></th></tr></thead><tbody>
     ${L.map(t=>`<tr class="${t.ok==="사용 불가"?"tno":""}"><td>${inp(t,"cat","70px","구분")}</td><td>${inp(t,"co","170px","회사 (국가)")}</td><td>${inp(t,"tool","200px","도구명")}</td><td>${inp(t,"use","190px","용도")}</td>
@@ -5862,7 +5862,7 @@ function dlDelivHTML(){ const ja=LANG==="ja", src=document.querySelector("#v-gui
   dlFile(ja?"ショートアニメ_納品ガイド.html":"숏애니_납품가이드.html",html); toast(ja?"HTMLファイルをダウンロードしました":"HTML 파일을 내려받았어요"); }
 function dlToolsHTML(){ const ja=LANG==="ja", T=(x)=>ja?trText(String(x||"")):String(x||""), L=TOOLS||[];
   const ok=(o)=>o==="사용 가능"?"#E3F3E7;color:#1D6B3F":o==="개별 승인"?"#FDF1D3;color:#8A5A00":"#FBE4E4;color:#A12626";
-  const head=ja?["区分","会社（本社）","ツール","用途","使用可否","備考"]:["구분","회사 (본사)","도구","용도","사용 여부","비고"];
+  const head=ja?["区分","会社（本社）","ツール","用途","使用可否"]:["구분","회사 (본사)","도구","용도","사용 여부"];   // 다운로드 파일에는 비고(내부 사용 정보) 빼기
   const title=ja?"ショートアニメ制作 使用ツールリスト":"숏애니 제작 사용 툴 리스트";
   const html=`<!doctype html><html lang="${ja?"ja":"ko"}"><head><meta charset="utf-8"><title>${title}</title><style>
 body{margin:0;padding:32px;background:#F4F6F8;font-family:"Pretendard","Apple SD Gothic Neo","Hiragino Sans","Meiryo","Malgun Gothic",sans-serif;color:#1B2230}
@@ -5871,7 +5871,7 @@ table{border-collapse:collapse;width:100%;background:#fff;border:1px solid #E7E9
 th{background:#F7F8FA;color:#7A8293;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid #E7E9EE}td{padding:9px 12px;border-bottom:1px solid #F0F2F5}
 td.t{font-weight:700}span.b{display:inline-block;border-radius:12px;padding:2px 10px;font-size:12px;font-weight:700}tr.no td{background:#FDF6F6}</style></head><body>
 <h1>${title}</h1><p>${ja?"「個別承認」は書面で承認を得た場合のみ使用します。":"'개별 승인'은 서면 승인을 받은 경우에만 사용해요."} · ${new Date().toISOString().slice(0,10)}</p>
-<table><thead><tr>${head.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${L.map(t=>`<tr class="${t.ok==="사용 불가"?"no":""}"><td>${esc(T(t.cat))}</td><td>${esc(T(t.co))}</td><td class="t">${esc(T(t.tool))}</td><td>${esc(T(t.use))}</td><td><span class="b" style="background:${ok(t.ok)}">${esc(T(t.ok))}</span></td><td>${esc(T(t.memo))}</td></tr>`).join("")}</tbody></table></body></html>`;
+<table><thead><tr>${head.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>${L.map(t=>`<tr class="${t.ok==="사용 불가"?"no":""}"><td>${esc(T(t.cat))}</td><td>${esc(T(t.co))}</td><td class="t">${esc(T(t.tool))}</td><td>${esc(T(t.use))}</td><td><span class="b" style="background:${ok(t.ok)}">${esc(T(t.ok))}</span></td></tr>`).join("")}</tbody></table></body></html>`;
   dlFile(ja?"ショートアニメ_使用ツールリスト.html":"숏애니_사용툴리스트.html",html); toast(ja?"HTMLファイルをダウンロードしました":"HTML 파일을 내려받았어요"); }
 function renderGuideTab(){ const v=$("v-guide");
   if(GL===null){ GL=undefined; glLoad().then(()=>{ if(TAB==="guide") safeRender(); }); }
