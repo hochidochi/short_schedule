@@ -1059,7 +1059,29 @@ table.wt.tt td{padding:4px 8px} table.wt.tt td:nth-child(3) .tin{font-weight:700
 .tgrp.tgd{background:#F1F2F4} .rrhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 10px} .rrhead .hint{display:block;margin-top:2px}
 .rrframe{width:100%;min-height:900px;border:1px solid #E7E9EE;border-radius:14px;background:#fff;display:block}
 
-th.pvcol,td.pvc{min-width:230px} #v-sim .pgr{white-space:normal;line-height:1.35}
+th.pvcol{min-width:0} #v-sim .pgr{white-space:normal;line-height:1.3;font-size:11px}
+/* 작품별 운영 표: 한 화면에 맞추기 */
+table.simt{font-size:12px} table.simt th,table.simt td{padding:4px 5px!important}
+table.simt th small,table.simt th .hint{font-size:10.5px}
+table.simt select.in{font-size:12px!important;padding:2px 18px 2px 6px!important;min-height:28px;max-width:118px}
+table.simt input.in{font-size:12px!important;min-height:28px;padding:2px 4px!important}
+table.simt input.in.n{width:46px!important} table.simt input[type=date].in{width:118px!important;font-size:12px!important}
+table.simt td:nth-child(2){max-width:150px} table.simt td:nth-child(2) b,table.simt td:nth-child(2) .wn{font-size:12.5px}
+table.simt .lnb{padding:0 5px!important;min-width:0!important}
+.simtw{overflow:auto!important}
+ table.simt td:nth-child(3) *{white-space:normal}
+table.simt td:nth-child(3) input[type=date].in{width:112px!important}
+table.simt select[data-sr=cad],table.simt select[data-sa=cad]{max-width:92px}
+ table.simt select[data-sr=mode],table.simt select[data-sa=mode]{max-width:76px}
+
+table.simt select[data-sr=pgap],table.simt select[data-sa=pgap]{max-width:76px} table.simt select[data-sr=resK]{max-width:180px}
+table.simt td:nth-child(12) select.in{display:block;width:100%;max-width:100%!important;margin-top:2px}
+table.simt th{white-space:normal!important;word-break:keep-all;line-height:1.25} table.simt th>*{white-space:normal!important}
+table.simt td:nth-child(2) *{white-space:normal!important} table.simt td:nth-child(2){overflow:hidden}
+table.simt td:nth-child(10) input.in.n{width:40px!important}
+table.simt{table-layout:fixed;width:100%;min-width:1358px}table.simt thead tr:first-child th:nth-child(1){width:30px}table.simt thead tr:first-child th:nth-child(2){width:124px}table.simt thead tr:first-child th:nth-child(3){width:186px}table.simt thead tr:first-child th:nth-child(4){width:54px}table.simt thead tr:first-child th:nth-child(5){width:112px}table.simt thead tr:first-child th:nth-child(6){width:58px}table.simt thead tr:first-child th:nth-child(7){width:88px}table.simt thead tr:first-child th:nth-child(8){width:58px}table.simt thead tr:first-child th:nth-child(9){width:116px}table.simt thead tr:first-child th:nth-child(10){width:112px}table.simt thead tr:first-child th:nth-child(11){width:62px}table.simt thead tr:first-child th:nth-child(12){width:226px}table.simt thead tr:first-child th:nth-child(13){width:82px}table.simt thead tr:first-child th:nth-child(14){width:50px}table.simt td{overflow:hidden} table.simt td select.in,table.simt td input.in{max-width:100%} table.simt td:nth-child(4) input.in,table.simt td:nth-child(6) input.in,table.simt td:nth-child(8) input.in{width:100%!important}
+
+.pwhy{display:block;color:#8A5A00;font-weight:500;margin-top:2px} .preal{display:block;color:#5B6372;font-weight:500;margin-top:2px} table.simt td.ro{color:#5B6372;font-weight:600} .pgr.diff{color:#8A5A00}
 </style>
 </head>
 <body>
@@ -2228,7 +2250,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.30-A";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.30-F";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2487,11 +2509,8 @@ const cadDays=(v)=>+v<=2?7*(+v||1):+v;   // 공개 간격(일) · 예전 저장�
 const CAD_L={7:"주간",10:"10일 간격",14:"격주"}, cadLab=(v)=>CAD_L[cadDays(v)]||`${cadDays(v)}일 간격`;
 /* 회차 길이 가정: 지금보다 ±10~30% → 회차당 제작 기간도 같은 비율로 줄고 늘어남 */
 const simAvgLen=(w)=>{ const L=w.len?lenStats(w):null; return (L&&L.avg)||AVG_LEN(); };
-function simX(w,r){
-  const x={...clone(w),launchAuto:true,total:clamp(+r.total||+w.total||SEASON_N,1,300)};
-  if(r.voice==="human"||r.voice==="ai") x.voice=r.voice;
-  const base=+r.rate||+w.rate||defRate(w), f=r.len?1+(+r.len)/100:1;
-  x.rate=Math.max(1,Math.round(base*f)); return x;
+function simX(w,r){   // 10/30: 제작 조건(회차 수 · 회차당 제작 · 성우 · 길이)은 항상 제작 일정 탭 값 그대로 — 시뮬레이션은 공개 방식만 바꿈
+  return {...clone(w),launchAuto:true,total:clamp(+w.total||SEASON_N,1,300)};
 }
 function simAddWork(line){
   const id="s"+Date.now().toString(36), w=normW({id,line,n:line==="ext"?"":"새 작품",voice:"human",done:0,start:key(nextBD(TODAY)),total:SEASON_N,b1:BATCH,simOnly:true,
@@ -2514,15 +2533,15 @@ function planOpens(S,c){
   const RB=K<N?Math.min(Math.max(1,+c.resK||1),N-K):1;   // 티저·프리뷰 뒤 다시 열 때 몇 화를 한 번에 (예: 2·3·4화 동시)
   const run=(L0,rest,pw,n=N)=>{ let L=L0, late=false;
     while([...Array(Math.min(K,n))].some((_,i)=>S.eps[i+1].need>L)){ L=addDays(L,7); late=true; }
-    const opens=[null], restW=[], hiaW=[]; let hiatus=0;
+    const opens=[null], restW=[], hiaW=[]; let hiatus=0, firstK=0;
     for(let k=1;k<=n;k++){
       let t=L;
       if(k>K+1&&k<=K+RB){ opens.push(opens[K+1]); continue; }   // 재개 묶음: 첫 회차와 같은 날
       if(k>K){ const extra=(season&&(k-1)%sn===0?7*rest:0)+(k===K+1?7*pw:0), base=addDays(opens[k-1],cad);
         for(let x=base;x<addDays(base,extra);x=addDays(x,7)) restW.push(x); t=addDays(base,extra); }
-      const slot=t; const lastK=k===K+1?Math.min(n,K+RB):k; while([...Array(lastK-k+1)].some((_,i)=>S.eps[k+i].need>t)){ hiaW.push(t); t=addDays(t,7); }
+      const slot=t; const lastK=k===K+1?Math.min(n,K+RB):k; while([...Array(lastK-k+1)].some((_,i)=>S.eps[k+i].need>t)){ if(!firstK) firstK=k; hiaW.push(t); t=addDays(t,7); }
       hiatus+=weeks(slot,t); opens.push(t); }
-    return {L,late,opens,hiatus,end:opens[n],rest,pw,K,restW,hiaW}; };
+    return {L,late,opens,hiatus,end:opens[n],rest,pw,K,restW,hiaW,firstK}; };
   const fixed=c.launchMode==="fixed"&&c.launch;
   const pAuto=c.pgap==="auto", pw0=pAuto?0:(+c.pgap||0);
   const rAuto=season&&c.rest==="auto", r0=season&&!rAuto?+c.rest||0:0;
@@ -2533,6 +2552,7 @@ function planOpens(S,c){
   if(pAuto){   // 프리뷰 먼저 열고, 휴재 없이 이어가려면 몇 주 쉬어야 하나
     const L=fixed?D(c.launch):run(dowOnOrAfter(addDays(TODAY,1),S.dow!=null?S.dow:1),0,0,K).L;
     let best=null; for(let pw=0;pw<=78;pw++){ const P=at(L,pw); if(!best||P.hiatus<best.hiatus) best=P; if(!P.hiatus) break; }
+    if(best&&best.pw>0&&!best.hiatus){ const Q=at(L,best.pw-1); if(Q.firstK){ best.whyK=Q.firstK; best.whyNeed=S.eps[Q.firstK].need; best.whyHia=Q.hiatus; } }   // 왜 이만큼 쉬어야 하나: 1주 당기면 몇 화에서 휴재가 생기는지
     return {...best,fixed:!!fixed};
   }
   if(fixed) return {...at(D(c.launch),pw0),fixed:true};
@@ -2587,17 +2607,17 @@ function renderSim(){
       <td>${on||(all&&r.mode==="")?`<select class="in" ${k}="rest"${idA}>${opt(keepIf(all,REST),r.rest)}</select>`:`<span class="hint">–</span>`}</td>`; };
   const TH=(t,sub,cls)=>`<th${cls?` class="${cls}"`:""}>${t}<small>${sub||"&nbsp;"}</small></th>`;
   h+=`<details class="simfold"${SIMOPS_OPEN?" open":""}><summary><h2 style="display:inline">작품별 운영</h2> <span class="hint">${WORKS.length+(SIM.extra||[]).length}작품 · 펼쳐서 런칭일·런칭 회차·쉼 등을 고쳐요</span></summary><div class="simtw"><table class="simt"><thead><tr><th class="sc0"></th>${TH("작품","이름 클릭해서 수정","sc1")}
-    ${TH("런칭일","◀▶ 1주씩 · 날짜 직접 입력")}${TH("런칭 회차","런칭 때 오픈")}${TH("성우","인간 · AI")}${TH("시즌 회차","총 회차")}${TH("공개 주기","주간 · 10일 · 격주")}
-    ${TH("회차당 제작","영업일 · 목표 7일")}${TH("회차 길이","현재 대비 ±30%까지")}${TH("시즌제","○화씩 나눠 공개")}${TH("시즌 쉼","시즌 사이")}${TH("프리뷰 후 쉼 · 재개","쉬는 기간 · 다음 오픈 화수","pvcol")}
+    ${TH("런칭일","◀▶ 1주씩 · 날짜 직접 입력")}${TH("런칭 회차","런칭 때 오픈")}${TH("성우","제작 일정 기준")}${TH("시즌 회차","제작 일정 기준")}${TH("공개 주기","주간 · 10일 · 격주")}
+    ${TH("회차당 제작","제작 일정 영업일")}${TH("회차 길이","제작 일정 평균")}${TH("시즌제","○화씩 나눠 공개")}${TH("시즌 쉼","시즌 사이")}${TH("프리뷰 후 쉼 · 재개","쉬는 기간 · 다음 오픈 화수","pvcol")}
     ${TH("완결","마지막 회차","rs rs1")}${TH("휴재","제작 지연","rs rs2")}</tr></thead><tbody>
     <tr class="allrow"><td class="sc0"></td><td class="sc1"><b>전체</b> <select class="in" data-sa="scope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],A.scope)}</select></td>
       <td><select class="in" data-sa="launchMode">${opt(keepIf(true,LM),A.launchMode)}</select>${A.launchMode==="fixed"?` <input class="in t" type="date" data-sa="launch" value="${A.launch||""}">`:""}</td>
       <td class="r"><input class="in n" type="number" min="1" max="20" data-sa="openK" value="${A.openK}" placeholder="그대로"></td>
-      <td><select class="in" data-sa="voice">${opt(keepIf(true,VOI),A.voice)}</select></td>
-      <td class="r"><input class="in n" type="number" min="1" max="300" data-sa="total" value="${A.total}" placeholder="그대로"></td>
+      <td class="ro hint">제작 일정</td>
+      <td class="ro hint">제작 일정</td>
       <td><select class="in" data-sa="cad">${opt(keepIf(true,CAD),A.cad)}</select></td>
-      <td class="r"><input class="in n" type="number" min="1" max="60" data-sa="rate" value="${A.rate}" placeholder="그대로"></td>
-      <td><select class="in" data-sa="len">${opt([["","그대로"],["cur","현재로"]].concat(LEN),A.len)}</select></td>
+      <td class="ro hint">제작 일정</td>
+      <td class="ro hint">제작 일정</td>
       ${seasonCells("",A,true)}
       <td><select class="in" data-sa="pgap">${opt([["keep","그대로"]].concat(PG),A.pgap===""?"keep":A.pgap==="none"?"":A.pgap)}</select><select class="in" data-sa="resK" style="margin-top:3px" title="쉬고 다시 열 때 한 번에 공개하는 화수">${opt([["","재개 그대로"]].concat([1,2,3,4,5,6].map(v=>[String(v),`재개 ${v}화 동시`])),A.resK===undefined||A.resK===""?"":String(A.resK))}</select></td>
       <td colspan="2" class="rs rs12"><button type="button" class="btn pri" id="simApply">일괄 적용</button></td></tr>`;
@@ -2612,14 +2632,13 @@ function renderSim(){
           <div class="lcs">${fx?`<span class="tag" style="background:var(--serial);color:var(--serial-ink)">직접 지정</span> <button type="button" class="lna" data-lauto="${id}">자동으로</button>`:`<span class="hint">자동 · 휴재 없는 가장 빠른 날</span>`}${d?` <span class="dvi" style="color:${d>0?"var(--bad)":"var(--good)"}">확정 대비 ${d>0?"+":""}${d}주</span>`:""}</div>
           ${P.late?`<div class="lcw">${md(D(r.launch))}엔 ${P.K}화까지 준비 안 돼서 ${md(P.L)}로 밀렸어요</div>`:""}</td>
         <td class="r"><input class="in n" type="number" min="1" max="20" data-sr="openK" data-id="${id}" value="${r.openK}"></td>
-        <td><select class="in" data-sr="voice" data-id="${id}">${opt([["keep",`현재 (${w.voice==="ai"?"AI":"인간"})`]].concat(VOI),r.voice)}</select></td>
-        <td class="r"><input class="in n" type="number" min="1" max="300" data-sr="total" data-id="${id}" value="${r.total}"></td>
+        <td class="ro">${w.voice==="ai"?"AI":"인간"}</td>
+        <td class="r ro">${+w.total||SEASON_N}화</td>
         <td><select class="in" data-sr="cad" data-id="${id}">${opt(CAD,cadDays(r.cad))}</select></td>
-        <td class="r"><input class="in n${r.rate?" set":""}" type="number" min="1" max="60" data-sr="rate" data-id="${id}" value="${r.rate}" placeholder="${+w.rate||defRate(w)}" title="비우면 제작 일정 값 (${+w.rate||defRate(w)}일)">
-          ${r.rate||r.len?`<div class="pgr${z.x.rate<=7?" ok":""}">${r.len?`길이 ${r.len>0?"+":""}${r.len}% → `:"→ "}${z.x.rate}일${z.x.rate<=7?" · 목표 달성":""}</div>`:""}</td>
-        <td>${(()=>{ const avg=simAvgLen(w); return `<select class="in${r.len?" set":""}" data-sr="len" data-id="${id}">${opt([["",`현재${avg?` (${fmtLen(avg)})`:""}`]].concat(LEN),r.len)}</select>${r.len&&avg?`<div class="pgr">→ 평균 ${fmtLen(avg*(1+r.len/100))}</div>`:""}`; })()}</td>
+        <td class="r ro">${+w.rate||defRate(w)}일</td>
+        <td class="ro">${(()=>{ const avg=simAvgLen(w); return avg?fmtLen(avg):"–"; })()}</td>
         ${seasonCells(id,r,false)}
-        <td><select class="in" data-sr="pgap" data-id="${id}">${opt(PG,r.pgap)}</select>${r.pgap!==""&&P.K<z.S.N?`<select class="in" data-sr="resK" data-id="${id}" title="쉬고 다시 열 때 한 번에 공개하는 회차 수" style="margin-top:3px">${[1,2,3,4,5,6].filter(v=>P.K+v<=z.S.N).map(v=>`<option value="${v}"${(+r.resK||1)===v?" selected":""}>다음 오픈 ${v>1?`${P.K+1}~${P.K+v}화 (${v}화 동시)`:`${P.K+1}화 (1화씩)`}</option>`).join("")}</select><div class="pgr">${P.pw?`${P.pw}주 쉬고`:"쉬지 않고"} ${md(P.opens[P.K+1])}부터 ${(+r.resK||1)>1?`${P.K+1}~${P.K+(+r.resK)}화 동시 → `:""}연재</div>`:""}</td>
+        <td><select class="in" data-sr="pgap" data-id="${id}">${opt(PG,r.pgap)}</select>${r.pgap!==""&&P.K<z.S.N?`<select class="in" data-sr="resK" data-id="${id}" title="쉬고 다시 열 때 한 번에 공개하는 회차 수" style="margin-top:3px">${[1,2,3,4,5,6].filter(v=>P.K+v<=z.S.N).map(v=>`<option value="${v}"${(+r.resK||1)===v?" selected":""}>다음 오픈 ${v>1?`${P.K+1}~${P.K+v}화 (${v}화 동시)`:`${P.K+1}화 (1화씩)`}</option>`).join("")}</select><div class="pgr">${P.pw?`${P.pw}주 쉬고`:"쉬지 않고"} ${md(P.opens[P.K+1])}부터 ${(+r.resK||1)>1?`${P.K+1}~${P.K+(+r.resK)}화 동시 → `:""}연재${z.real&&P.opens&&P.opens[P.K+1]?`<span class="preal">제작 일정 탭: ${md(z.real)} 공개 (휴재 없는 기준)</span>`:""}${P.whyK?`<span class="pwhy" title="매주 공개하면서 휴재가 없으려면 각 회차 최종본이 공개일 5영업일 전에 끝나야 해요">1주 당기면 ${P.whyK}화(최종본 ${md(P.whyNeed)} 필요)부터 휴재 · 휴재를 감수하면 쉬는 주를 직접 고르세요</span>`:""}</div>`:""}</td>
         <td class="rs rs1 hint">${ymd(P.end)}${r.mode==="season"?`<div>시즌마다 ${P.rest}주 쉼</div>`:""}</td><td class="rs rs2 r">${P.hiatus?`<b style="color:var(--hia)">${P.hiatus}주</b>`:"–"}</td></tr>`; }); });
   h+=`</tbody></table></div></details>`;
   // 월간표
@@ -2684,6 +2703,7 @@ function renderSim(){
   document.querySelectorAll("#v-sim [data-lw]").forEach(b=>b.onclick=()=>{ const r=SIM.rows[b.dataset.id]; r.launchMode="fixed"; r.launch=key(addDays(D(b.dataset.base),7*(+b.dataset.lw))); render(); });
   document.querySelectorAll("#v-sim [data-lauto]").forEach(b=>b.onclick=()=>{ SIM.rows[b.dataset.lauto].launchMode="auto"; render(); });
   const sf=document.querySelector("#v-sim .simfold"); if(sf) sf.ontoggle=()=>{ SIMOPS_OPEN=sf.open; };
+  if($("simSync")) $("simSync").onclick=()=>{ let n=0; SIM_WL().forEach(w=>{ const r=SIM.rows[w.id]; if(!r) return; const t=+w.total||SEASON_N; if(+r.total!==t||r.rate!==""||(r.voice&&r.voice!=="keep")||r.len!==""){ r.total=t; r.rate=""; r.voice="keep"; r.len=""; n++; } }); toast(n?`${n}작품을 제작 일정 값으로 맞췄어요`:"이미 제작 일정 값과 같아요"); render(); };
   if($("tzGo")) $("tzGo").onclick=()=>{ const n=SIMREG!=="GW"?simTzAll(false):0; simBaseMode(); toast(`${n?`티저 ${n}작품: 1화 선공개 → 쉬고 3화 동시 재개 · `:""}나머지는 3화 동시 런칭 → 주 1회 (휴재 없음)`); render(); };
   $("preK").onchange=(e)=>{ SIM.preK=+e.target.value; }; $("preScope").onchange=(e)=>{ SIM.preScope=e.target.value; };
   $("preGo").onclick=()=>{ const sc=SIM.preScope||"all", K=SIM.preK||2, YE=yearEndMon(); let n=0;
@@ -2710,11 +2730,11 @@ function renderSim(){
     render(); });
   $("simApply").onclick=()=>{ let n=0;
     WL.forEach(w=>{ if(A.scope!=="all"&&lineOf(w)!==A.scope) return; const r=SIM.rows[w.id];
-      ["openK","total","cad","mode"].forEach(k=>{ if(A[k]!=="") r[k]=A[k]; });
+      ["openK","cad","mode"].forEach(k=>{ if(A[k]!=="") r[k]=A[k]; });
       if(r.mode==="season"){ if(A.seasonN!=="") r.seasonN=A.seasonN; if(A.rest!=="") r.rest=A.rest; }
       if(A.pgap!=="") r.pgap=A.pgap==="none"?"":A.pgap;
       if(A.resK!==undefined&&A.resK!=="") r.resK=+A.resK;
-      if(A.voice) r.voice=A.voice; if(A.rate!=="") r.rate=A.rate; if(A.len==="cur") r.len=""; else if(A.len!=="") r.len=A.len;
+
       if(A.launchMode){ r.launchMode=A.launchMode; if(A.launchMode==="fixed") r.launch=A.launch; }
       n++; });
     toast(`${n}작품에 적용했어요`); render(); };
