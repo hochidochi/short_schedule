@@ -1058,6 +1058,8 @@ table.wt.tt td{padding:4px 8px} table.wt.tt td:nth-child(3) .tin{font-weight:700
 
 .tgrp.tgd{background:#F1F2F4} .rrhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 10px} .rrhead .hint{display:block;margin-top:2px}
 .rrframe{width:100%;min-height:900px;border:1px solid #E7E9EE;border-radius:14px;background:#fff;display:block}
+
+th.pvcol,td.pvc{min-width:230px} #v-sim .pgr{white-space:normal;line-height:1.35}
 </style>
 </head>
 <body>
@@ -2226,7 +2228,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.29-J";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.30-A";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2586,7 +2588,7 @@ function renderSim(){
   const TH=(t,sub,cls)=>`<th${cls?` class="${cls}"`:""}>${t}<small>${sub||"&nbsp;"}</small></th>`;
   h+=`<details class="simfold"${SIMOPS_OPEN?" open":""}><summary><h2 style="display:inline">작품별 운영</h2> <span class="hint">${WORKS.length+(SIM.extra||[]).length}작품 · 펼쳐서 런칭일·런칭 회차·쉼 등을 고쳐요</span></summary><div class="simtw"><table class="simt"><thead><tr><th class="sc0"></th>${TH("작품","이름 클릭해서 수정","sc1")}
     ${TH("런칭일","◀▶ 1주씩 · 날짜 직접 입력")}${TH("런칭 회차","런칭 때 오픈")}${TH("성우","인간 · AI")}${TH("시즌 회차","총 회차")}${TH("공개 주기","주간 · 10일 · 격주")}
-    ${TH("회차당 제작","영업일 · 목표 7일")}${TH("회차 길이","현재 대비 ±30%까지")}${TH("시즌제","○화씩 나눠 공개")}${TH("시즌 쉼","시즌 사이")}${TH("프리뷰 후 쉼","런칭 회차 뒤")}
+    ${TH("회차당 제작","영업일 · 목표 7일")}${TH("회차 길이","현재 대비 ±30%까지")}${TH("시즌제","○화씩 나눠 공개")}${TH("시즌 쉼","시즌 사이")}${TH("프리뷰 후 쉼 · 재개","쉬는 기간 · 다음 오픈 화수","pvcol")}
     ${TH("완결","마지막 회차","rs rs1")}${TH("휴재","제작 지연","rs rs2")}</tr></thead><tbody>
     <tr class="allrow"><td class="sc0"></td><td class="sc1"><b>전체</b> <select class="in" data-sa="scope">${opt([["all","모든 작품"],["int","내부만"],["ext","외부만"]],A.scope)}</select></td>
       <td><select class="in" data-sa="launchMode">${opt(keepIf(true,LM),A.launchMode)}</select>${A.launchMode==="fixed"?` <input class="in t" type="date" data-sa="launch" value="${A.launch||""}">`:""}</td>
@@ -2597,7 +2599,7 @@ function renderSim(){
       <td class="r"><input class="in n" type="number" min="1" max="60" data-sa="rate" value="${A.rate}" placeholder="그대로"></td>
       <td><select class="in" data-sa="len">${opt([["","그대로"],["cur","현재로"]].concat(LEN),A.len)}</select></td>
       ${seasonCells("",A,true)}
-      <td><select class="in" data-sa="pgap">${opt([["keep","그대로"]].concat(PG),A.pgap===""?"keep":A.pgap==="none"?"":A.pgap)}</select></td>
+      <td><select class="in" data-sa="pgap">${opt([["keep","그대로"]].concat(PG),A.pgap===""?"keep":A.pgap==="none"?"":A.pgap)}</select><select class="in" data-sa="resK" style="margin-top:3px" title="쉬고 다시 열 때 한 번에 공개하는 화수">${opt([["","재개 그대로"]].concat([1,2,3,4,5,6].map(v=>[String(v),`재개 ${v}화 동시`])),A.resK===undefined||A.resK===""?"":String(A.resK))}</select></td>
       <td colspan="2" class="rs rs12"><button type="button" class="btn pri" id="simApply">일괄 적용</button></td></tr>`;
   GR.forEach(([gk,gl,rows])=>{
     h+=`<tr class="sgh ${gk}"><td colspan="14"><div class="sghin"><span class="lnd ${gk}"></span>${gl} <span class="hint">${rows.length}</span><button type="button" class="btn sadd" data-sadd="${gk}">+ ${gl} 추가</button></div></td></tr>`;
@@ -2617,7 +2619,7 @@ function renderSim(){
           ${r.rate||r.len?`<div class="pgr${z.x.rate<=7?" ok":""}">${r.len?`길이 ${r.len>0?"+":""}${r.len}% → `:"→ "}${z.x.rate}일${z.x.rate<=7?" · 목표 달성":""}</div>`:""}</td>
         <td>${(()=>{ const avg=simAvgLen(w); return `<select class="in${r.len?" set":""}" data-sr="len" data-id="${id}">${opt([["",`현재${avg?` (${fmtLen(avg)})`:""}`]].concat(LEN),r.len)}</select>${r.len&&avg?`<div class="pgr">→ 평균 ${fmtLen(avg*(1+r.len/100))}</div>`:""}`; })()}</td>
         ${seasonCells(id,r,false)}
-        <td><select class="in" data-sr="pgap" data-id="${id}">${opt(PG,r.pgap)}</select>${r.pgap!==""&&P.K<z.S.N?`<select class="in" data-sr="resK" data-id="${id}" title="쉬고 다시 열 때 한 번에 공개하는 회차 수" style="margin-top:3px">${[1,2,3,4,5].map(v=>`<option value="${v}"${(+r.resK||1)===v?" selected":""}>재개 ${v}화 동시</option>`).join("")}</select><div class="pgr">${P.pw?`${P.pw}주 쉬고`:"쉬지 않고"} ${md(P.opens[P.K+1])}부터 ${(+r.resK||1)>1?`${P.K+1}~${P.K+(+r.resK)}화 동시 → `:""}연재</div>`:""}</td>
+        <td><select class="in" data-sr="pgap" data-id="${id}">${opt(PG,r.pgap)}</select>${r.pgap!==""&&P.K<z.S.N?`<select class="in" data-sr="resK" data-id="${id}" title="쉬고 다시 열 때 한 번에 공개하는 회차 수" style="margin-top:3px">${[1,2,3,4,5,6].filter(v=>P.K+v<=z.S.N).map(v=>`<option value="${v}"${(+r.resK||1)===v?" selected":""}>다음 오픈 ${v>1?`${P.K+1}~${P.K+v}화 (${v}화 동시)`:`${P.K+1}화 (1화씩)`}</option>`).join("")}</select><div class="pgr">${P.pw?`${P.pw}주 쉬고`:"쉬지 않고"} ${md(P.opens[P.K+1])}부터 ${(+r.resK||1)>1?`${P.K+1}~${P.K+(+r.resK)}화 동시 → `:""}연재</div>`:""}</td>
         <td class="rs rs1 hint">${ymd(P.end)}${r.mode==="season"?`<div>시즌마다 ${P.rest}주 쉼</div>`:""}</td><td class="rs rs2 r">${P.hiatus?`<b style="color:var(--hia)">${P.hiatus}주</b>`:"–"}</td></tr>`; }); });
   h+=`</tbody></table></div></details>`;
   // 월간표
@@ -2690,6 +2692,7 @@ function renderSim(){
   const num=(k,v)=>{ if(v==="") return ""; if(k==="rest"||k==="pgap") return v==="auto"?"auto":+v; return clamp(parseInt(v,10)||1,1,300); };
   document.querySelectorAll("#v-sim [data-sa]").forEach(el=>el.onchange=()=>{ const k=el.dataset.sa;
     if(k==="pgap") A.pgap=el.value==="keep"?"":el.value===""?"none":num(k,el.value);
+    else if(k==="resK") A.resK=el.value;
     else if(k==="len") A.len=el.value===""||el.value==="cur"?el.value:+el.value;
     else if(k==="rate"){ const v=parseInt(el.value,10); A.rate=v>0?clamp(v,1,60):""; }
     else A[k]=["scope","launch","mode","launchMode","voice"].includes(k)?el.value:num(k,el.value); render(); });
@@ -2710,6 +2713,7 @@ function renderSim(){
       ["openK","total","cad","mode"].forEach(k=>{ if(A[k]!=="") r[k]=A[k]; });
       if(r.mode==="season"){ if(A.seasonN!=="") r.seasonN=A.seasonN; if(A.rest!=="") r.rest=A.rest; }
       if(A.pgap!=="") r.pgap=A.pgap==="none"?"":A.pgap;
+      if(A.resK!==undefined&&A.resK!=="") r.resK=+A.resK;
       if(A.voice) r.voice=A.voice; if(A.rate!=="") r.rate=A.rate; if(A.len==="cur") r.len=""; else if(A.len!=="") r.len=A.len;
       if(A.launchMode){ r.launchMode=A.launchMode; if(A.launchMode==="fixed") r.launch=A.launch; }
       n++; });
