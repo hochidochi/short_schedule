@@ -1089,7 +1089,7 @@ table.simt td.sc0{white-space:nowrap}
 
 table.l3t td.tl[colspan]>.sxst{position:sticky;left:10px;display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:calc(100vw - 120px)}
 
-td.mlc{white-space:normal!important} td.mlc *{white-space:normal} td.mlc .mld{width:100%!important;font-weight:700} td.mlc .lnb{white-space:nowrap!important} td.mlc .mld:not(.auto){border-color:#2B6FD0;color:#1E4F9E;background:#EEF4FD} .mlt{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:2px;font-size:11px}
+td.mlc{white-space:normal!important} td.mlc *{white-space:normal} td.mlc .mld{width:100%!important;font-weight:700} td.mlc .lnb{white-space:nowrap!important;flex:0 0 auto!important;min-width:auto!important;max-width:none!important;padding:1px 7px!important;font-size:11px!important;overflow:visible!important;width:auto!important} td.mlc .mlt{flex-wrap:wrap!important;row-gap:3px} td.mlc .mlt>*{flex:0 0 auto!important} td.mlc .mlt{display:block!important} td.mlc .mlt>.lnt{display:table;margin-bottom:3px} td.mlc .mlt>.lnb{display:inline-block;margin-right:4px} td.mlc{padding-right:14px!important} td.mlc .mld:not(.auto){border-color:#2B6FD0;color:#1E4F9E;background:#EEF4FD} .mlt{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:2px;font-size:11px}
 .lnt{font-size:11px;font-weight:700;background:#E4EDFB;color:#1E4F9E;border-radius:5px;padding:0 5px} .lnt.auto{background:#F0F2F5;color:#5B6372;font-weight:600} .pok{display:block;color:#1D6B3F;font-weight:700}
 </style>
 </head>
@@ -2259,7 +2259,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.30-O";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="10.30-P";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
