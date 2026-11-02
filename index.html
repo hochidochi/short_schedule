@@ -1091,6 +1091,40 @@ table.l3t td.tl[colspan]>.sxst{position:sticky;left:10px;display:inline-flex;ali
 
 td.mlc{white-space:normal!important} td.mlc *{white-space:normal} td.mlc .mld{width:100%!important;font-weight:700} td.mlc .lnb{white-space:nowrap!important;flex:0 0 auto!important;min-width:auto!important;max-width:none!important;padding:1px 7px!important;font-size:11px!important;overflow:visible!important;width:auto!important} td.mlc .mlt{flex-wrap:wrap!important;row-gap:3px} td.mlc .mlt>*{flex:0 0 auto!important} td.mlc .mlt{display:block!important} td.mlc .mlt>.lnt{display:table;margin-bottom:3px} td.mlc .mlt>.lnb{display:inline-block;margin-right:4px} td.mlc{padding-right:14px!important} td.mlc .mld:not(.auto){border-color:#2B6FD0;color:#1E4F9E;background:#EEF4FD} .mlt{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:2px;font-size:11px}
 .lnt{font-size:11px;font-weight:700;background:#E4EDFB;color:#1E4F9E;border-radius:5px;padding:0 5px} .lnt.auto{background:#F0F2F5;color:#5B6372;font-weight:600} .pok{display:block;color:#1D6B3F;font-weight:700}
+
+/* 외주사 캘린더: 구글 캘린더처럼 — 날짜 숫자 · 오늘은 검은 원 · 일정은 한 줄 글자 */
+.vcal{border:1px solid #E3E5E8!important;border-radius:12px!important;overflow:hidden;background:#fff}
+.vch{background:#fff!important;border-bottom:1px solid #E3E5E8!important} .vch b{font-size:11.5px!important;font-weight:600;color:#70757A!important;padding:8px 10px!important}
+.vcd{min-height:150px!important;padding:6px 8px!important;border-right:1px solid #ECEEF1!important;border-bottom:1px solid #ECEEF1!important;background:#fff!important;gap:3px!important}
+.vcd:hover{background:#F8FAFD!important} .vcd.off{background:#FAFBFC!important}
+.vcn{font-size:12.5px!important;font-weight:600!important;color:#3C4043!important;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:12px;margin-bottom:2px;align-self:flex-start}
+.vcd.today .vcn{background:#121826;color:#fff!important} .vcd.today{background:#fff!important}
+.vcd.sel{outline:2px solid #2B6FD0!important;outline-offset:-2px;background:#F4F8FE!important}
+.vce{display:block!important;background:none!important;border:0!important;border-radius:4px!important;padding:1px 4px 1px 13px!important;position:relative;font-size:12px!important;line-height:1.45!important;color:#1A63C9!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vce::before{content:"";position:absolute;left:3px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--c,#2B6FD0)}
+.vce b{font-weight:700;color:#1A4FA0} .vce:hover{background:#EEF3FB!important}
+.vce.au{color:#5F6368!important} .vce.au b{color:#3C4043}
+.vcmore{font-size:11.5px!important;color:#70757A!important;padding-left:4px}
+
+/* 공정 기준 표: 공정 요약 문서 스타일 (내부 파랑 · 외부 주황 · 구간 줄) */
+table.std.stdx{max-width:none;font-size:13px;background:#fff;border:1px solid #E3E6EC;border-radius:14px;border-collapse:separate;border-spacing:0;overflow:hidden}
+table.std.stdx thead th{background:#F5F7FA;color:#4A5263;font-weight:700;font-size:12px;padding:9px 10px;border-bottom:1px solid #E3E6EC}
+table.std.stdx thead tr.sgrp th{text-align:center;border-bottom:0;padding:8px 10px 2px}
+table.std.stdx th.gi{background:#EAF1FC!important;color:#2B6FD0!important;text-align:center!important}
+table.std.stdx th.ge{background:#FCF1E3!important;color:#B5651D!important;text-align:center!important}
+table.std.stdx tbody td{padding:8px 10px;border-bottom:1px solid #EEF0F4;vertical-align:middle}
+table.std.stdx tbody td:nth-child(3),table.std.stdx tbody td:nth-child(4){background:#F7FAFE;text-align:center}
+table.std.stdx tbody td:nth-child(5),table.std.stdx tbody td:nth-child(6){background:#FFFAF3;text-align:center}
+table.std.stdx tbody td:first-child{font-weight:700;color:#121826;white-space:normal;min-width:200px}
+table.std.stdx tbody td:first-child .hint{font-weight:400;font-size:11.5px;color:#8A91A0;margin-top:1px}
+table.std.stdx tr.sph td{background:#FAFBFC!important;font-weight:800;font-size:12px;color:#4A5263;padding:10px 10px 6px;border-bottom:1px solid #E3E6EC;text-align:left!important}
+table.std.stdx td:nth-child(n+3):nth-child(-n+6) input.in.n{border:1px solid transparent;background:transparent;text-align:center;font-weight:700;font-size:13.5px;color:#121826}
+table.std.stdx td:nth-child(n+3):nth-child(-n+6) input.in.n:hover{border-color:#D5DAE3;background:#fff} table.std.stdx td:nth-child(n+3):nth-child(-n+6) input.in.n:focus{border-color:#2B6FD0;background:#fff;outline:none}
+table.std.stdx td:nth-child(n+3):nth-child(-n+6) input.in.n[value="0"]{color:#C3C8D1;font-weight:400}
+table.std.stdx td input.in:not(.n){border:1px solid transparent;background:transparent;color:#4A5263}
+table.std.stdx td input.in:not(.n):hover{border-color:#D5DAE3;background:#fff}
+table.std.stdx tfoot td{background:#121826;color:#fff;font-weight:800;border-top:0;padding:10px}
+table.std.stdx tfoot td:nth-child(n+3){text-align:center;font-size:15px}
 </style>
 </head>
 <body>
@@ -1210,24 +1244,24 @@ const DEFAULT_CONF={
     {k:"preP",    n:"프리프로덕션",           s:"프리프로덕션",   team:"외부 제작사", v:{ih:0,ia:0,eh:8,ea:8}, sc:"work", pre:true, tx:"시즌 1 각색 · 연출 정리 (약 1.5주)"},   // 10/28 외부: 영상 1차 전 3주
     {k:"preRv",   n:"각색 · 연출 보고 · 피드백 반영", s:"보고 · 피드백", team:"외부 제작사 · 당사 피드백", v:{ih:0,ia:0,eh:7,ea:7}, sc:"work", pre:true, tx:"정리본 보고 → 당사 피드백 → 반영 (약 1.5주)"},
     {k:"prod1",   n:"영상 1차 제작",     s:"영상 1차",    team:"내부 제작팀",      v:{ih:7, ia:7, eh:5, ea:5},  sc:"ep",    seq:true},    // 기본값 — 작품별 '회차당 1차 제작'이 우선
-    {k:"imgcut",  n:"1화 이미지 컷 확인", s:"이미지 컷",   team:"제작사 공유 · 당사 피드백 1일", v:{ih:0,ia:0,eh:2,ea:2}, sc:"work", gate:"info", anchor:{stage:"prod1",offset:0}},   // 외부: 1화 1일째 주요 컷 3~5장 공유 → 1일 내 피드백 (일정 영향 없음)
+    {k:"imgcut",  n:"1화 키컷 이미지 공유", s:"1화 키컷",   team:"제작사 공유 · 당사 피드백", v:{ih:0,ia:0,eh:2,ea:2}, sc:"work", gate:"info", anchor:{stage:"preRv",offset:0}, tx:"영상 1차 전 · 각색·연출 보고와 병렬"},   // 11/02: 1화 키컷 확인 OK → 영상 1차 시작   // 11/02: 이미지 컷 확인 삭제 → 1화 영상 공유로 대체   // 외부: 1화 1일째 주요 컷 3~5장 공유 → 1일 내 피드백 (일정 영향 없음)
     {k:"fb3",     n:"1~3화 통합 피드백", s:"통합 피드백", team:"작가·내부관계자",  v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3},   // 내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)
     {k:"fix3",    n:"1~3화 통합 수정",   s:"통합 수정",   team:"내부 제작팀",      v:{ih:10,ia:10,eh:10,ea:10}, sc:"grp",   grp:3, tx:"외부 제작사"},   // 내부·외부: 피드백 반영해 1~3화 한 번에 수정
-    {k:"author",  n:"작가 승인",         s:"작가 승인",   team:"작가",             v:{ih:5, ia:5, eh:10,ea:10}, sc:"ep",    upto:3},      // 내부: 작가+내부 = 10
-    {k:"intAppr", n:"내부 승인",         s:"내부 승인",   team:"내부관계자",       v:{ih:5, ia:5, eh:2, ea:2},  sc:"ep",    upto:{i:3,e:0}, conc:"ext"},   // 내부: 작가+내부 = 10 (1~3화) · 외부: 1~3화 병렬, 4화부터 2일   // 내부: 1~3화만 · 외부: 전 회차 (1~3화는 작가 승인과 병렬)
+    {k:"author",  n:"작가 승인",         s:"작가 승인",   team:"작가",             v:{ih:10, ia:10, eh:10,ea:10}, sc:"ep",    upto:3},      // 내부: 작가+내부 = 10
+    {k:"intAppr", n:"내부 승인",         s:"내부 승인",   team:"내부관계자",       v:{ih:10, ia:10, eh:2, ea:2},  sc:"ep",    upto:{i:3,e:0}, conc:"author"},   // 11/02: 내부는 작가 승인과 묶어서 10일 (동시 진행)   // 내부: 작가+내부 = 10 (1~3화) · 외부: 1~3화 병렬, 4화부터 2일   // 내부: 1~3화만 · 외부: 전 회차 (1~3화는 작가 승인과 병렬)
     {k:"ratingFb",n:"등급 분류 피드백",   s:"등급 피드백", team:"내부관계자",       v:{ih:2, ia:2, eh:2, ea:2},  sc:"ep",    upto:3, conc:"author"},   // 1~3화만 · 승인과 병렬 (추가 기간 없음)
     {k:"prodF",   n:"영상 최종 수정",     s:"영상 최종",   sx:"영상 수정", team:"내부 제작팀", tx:"외부 제작사", v:{ih:5, ia:5, eh:3, ea:3},  sc:"ep",    upto:{i:3,e:0}},   // 외부: 4화부터 내부 승인 뒤 3영업일 안에 수정   // 내부: 1~3화만 · 외부: 전 회차
     {k:"enshare", n:"EN 컨텐츠 공유",     s:"EN 공유",     team:"CSOP", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", mirror:["script","dub"], gate:"info"},   // 공유만 · 일본어 녹음 보내는 묶음·날짜를 그대로 표시 (일정 영향 없음)
-    {k:"trans",   n:"대사 번역",         s:"대사 번역",   team:"CSOP",       v:{ih:5, ia:5, eh:0, ea:0},  sc:"batch"},  // 5회차씩 · 외부: 제작사가 대사·녹음 대본 준비 → 없음
+    {k:"trans",   n:"대사 번역",         s:"대사 번역",   team:"CSOP",       v:{ih:5, ia:5, eh:5, ea:5},  sc:"batch"},  // 5회차씩 · 외부: 제작사가 대사·녹음 대본 준비 → 없음
     {k:"vtrans",  n:"영상 번역 (번인)",   s:"영상 번역",   team:"미정 (업체 선정 중)", v:{ih:0,ia:0,eh:0,ea:0}, sc:"batch", conc:true, par:true, tbdDur:true},   // 대사 번역과 동시 시작 · 기간 미정 (업체 정해지면 공정 기준에서 일수 입력)
-    {k:"script",  n:"성우 대사집 확정",   s:"대사집 확정", team:"외부 성우 사무소",  v:{ih:7, ia:0, eh:0, ea:0},  sc:"batch"},  // ┐ 외부는 '더빙·믹싱'에 포함
-    {k:"subtr",   n:"자막 번역",         s:"자막 번역",   team:"CSOP",       v:{ih:2, ia:2, eh:0, ea:0},  sc:"batch", par:true},   // │ 병렬 (5회차씩)
-    {k:"casting", n:"성우 캐스팅",       s:"성우 캐스팅", team:"외부 성우 사무소",  v:{ih:2, ia:0, eh:3, ea:0},  sc:"work",  gate:"next", atStart:{e:true}, tx:"제작사 후보 · 당사 피드백 2일"},   // │ 사운드 통으로 30 + 최초 묶음만 캐스팅 2일
+    {k:"script",  n:"성우 대사집 확정",   s:"대사집 확정", team:"외부 성우 사무소",  v:{ih:7, ia:0, eh:7, ea:0},  sc:"batch"},  // ┐ 외부는 '더빙·믹싱'에 포함
+    {k:"subtr",   n:"자막 번역",         s:"자막 번역",   team:"CSOP",       v:{ih:2, ia:2, eh:2, ea:2},  sc:"batch", par:true},   // │ 병렬 (5회차씩)
+    {k:"casting", n:"성우 캐스팅",       s:"성우 캐스팅", team:"외부 성우 사무소",  v:{ih:2, ia:0, eh:2, ea:0},  sc:"work",  gate:"next"},   // │ 사운드 통으로 30 + 최초 묶음만 캐스팅 2일
     {k:"castFb",  n:"작가 피드백 · 성우 캐스팅", s:"작가 피드백", team:"PMO 취합 (작가)", v:{ih:3, ia:0, eh:3, ea:0}, sc:"work", gate:"next", tx:"캐스팅 안 작가 확인 · 최초 1회"},   // 10/27 작가 피드백 (성우 캐스팅 최초 1회)
-    {k:"dub",     n:"성우 더빙",         s:"성우 더빙",   team:"외부 성우 사무소",  v:{ih:18,ia:0, eh:20,ea:0}, vf:{eh:30}, sc:"batch", seq:{i:false,e:true}, sx:"더빙·믹싱", tx:"제작사 (자체 진행)", scale:{e:true}},  // │ 외부: 첫 묶음 30 · 이후 20 · 한 묶음씩
-    {k:"dubchk",  n:"1화 더빙본 확인",    s:"더빙본 확인", team:"제작사 공유 · 당사 피드백 3일", v:{ih:0,ia:0,eh:4,ea:0}, sc:"work", gate:"info", anchor:{stage:"dub",offset:5}},   // 외부: 첫 묶음 사운드 6일차 공유 → 3일 내 피드백 → 믹싱 (일정 영향 없음)
-    {k:"mix",     n:"사운드 믹싱 최종본", s:"믹싱 최종본", team:"외부 성우 사무소",  v:{ih:5, ia:2, eh:0, ea:0},  sc:"batch"},  // ┘ 외부 AI 성우: 별도 사운드 과정 없음 (AI 성우는 믹싱 2일만)
-    {k:"mixFb",   n:"작가 피드백 · 믹싱 최종본", s:"작가 피드백", team:"PMO 취합 (작가)", v:{ih:3, ia:3, eh:3, ea:3}, sc:"ep", upto:3, tx:"1~3화 믹싱 최종본 작가 확인"},   // 10/27 작가 피드백 (믹싱 최종본 1~3화)
+    {k:"dub",     n:"성우 더빙",         s:"성우 더빙",   team:"외부 성우 사무소",  v:{ih:18,ia:0, eh:18,ea:0}, sc:"batch"},   // 11/02: 외부도 내부와 같은 번역·사운드 일정  // │ 외부: 첫 묶음 30 · 이후 20 · 한 묶음씩
+    {k:"dubchk",  n:"1화 더빙본 확인",    s:"더빙본 확인", team:"제작사 공유 · 당사 피드백 3일", v:{ih:0,ia:0,eh:0,ea:0}, sc:"work", gate:"info", anchor:{stage:"dub",offset:5}},   // 외부: 첫 묶음 사운드 6일차 공유 → 3일 내 피드백 → 믹싱 (일정 영향 없음)
+    {k:"mix",     n:"사운드 믹싱 최종본", s:"믹싱 최종본", team:"외부 성우 사무소",  v:{ih:5, ia:2, eh:5, ea:2},  sc:"batch"},  // ┘ 외부 AI 성우: 별도 사운드 과정 없음 (AI 성우는 믹싱 2일만)
+    {k:"mixFb",   n:"작가 피드백 · 믹싱 최종본 (1~3화)", s:"작가 피드백", team:"PMO 취합 (작가)", v:{ih:3, ia:3, eh:3, ea:3}, sc:"ep", upto:3, tx:"1~3화 믹싱 최종본 작가 확인"},   // 10/27 작가 피드백 (믹싱 최종본 1~3화)
     {k:"burn",    n:"자막 최종 영상본",   s:"자막 최종본", team:"내부 제작팀",      v:{ih:1, ia:1, eh:1, ea:1},  sc:"ep", seq:{i:false,e:true}, sx:"자막 (당사)", tx:"당사 · 자막 번역·입히기"},   // 외부: 사운드 납품 후 회차당 1일씩
     {k:"rating",  n:"영상 등급분류",     s:"등급분류",    team:"영등위",           v:{ih:15,ia:15,eh:15,ea:15}, sc:"batch", from:"2027-10-01"},   // 광고 모델 적용: 27.10 이후 공개분부터
   ]
@@ -1240,7 +1274,7 @@ function normConf(c){
   return {pv:PV,contCount:false,ext4:!!c.ext4,staff:{n:c.staff&&c.staff.n!=null?+c.staff.n:2,order:c.staff&&Array.isArray(c.staff.order)?c.staff.order:[]},lockBD:c.lockBD!=null?+c.lockBD:DEFAULT_CONF.lockBD, migr:Array.isArray(c.migr)?c.migr:[],
     hol:Array.isArray(c.hol)&&c.hol.length?c.hol:clone(DEFAULT_HOL),
     stages:DEFAULT_CONF.stages.map(d=>{const x=saved.find(y=>y.k===d.k)||{};
-      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:x.anchor||d.anchor,tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:((d.k==="castFb"||d.k==="mixFb")&&x.team==="작가")?d.team:TEAM_REN(x.team||d.team),upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror,pre:d.pre};})};
+      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:d.k==="imgcut"?d.anchor:(x.anchor||d.anchor),tx:d.k==="imgcut"?d.tx:(x.tx||d.tx),tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:((d.k==="castFb"||d.k==="mixFb")&&x.team==="작가")?d.team:TEAM_REN(x.team||d.team),upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror,pre:d.pre};})};
 }
 
 /* ---------- 기본 작품 (기존 HTML 값 이관) ---------- */
@@ -1664,6 +1698,17 @@ function runMigrations0(){
       edit(w.id,[{p:["cev"],v:l}],true); }
     CONF.migr.push("nightrun-tease-1019"); dirty=true;
   }
+  if(!has("snd-same-1102")){   // 11/02: 외부 번역·사운드 = 내부와 동일 · 내부 작가 승인 + 내부 승인 묶어서 10일
+    const S=(k)=>CONF.stages.find(x=>x.k===k);
+    ["trans","script","subtr","casting","castFb","dub","dubchk","mix","mixFb"].forEach(k=>{ const st=S(k); if(!st) return; st.v={...st.v,eh:st.v.ih,ea:st.v.ia}; });
+    const dub=S("dub"); if(dub){ dub.vf=null; dub.seq=false; dub.scale=null; dub.sx=""; dub.tx=""; }
+    const cs=S("casting"); if(cs){ cs.atStart=null; }
+    const au=S("author"); if(au) au.v={...au.v,ih:10,ia:10};
+    const ia=S("intAppr"); if(ia){ ia.v={...ia.v,ih:10,ia:10}; ia.conc="author"; }
+    const mf=S("mixFb"); if(mf){ mf.upto=3; mf.sc="ep"; }   // 작가 피드백 · 믹싱 최종본은 1~3화만
+    CONF.migr.push("snd-same-1102"); dirty=true; if(MIG) MIG.conf=true;
+  }
+  if(!has("mixfb-13-1102")){ const mf=CONF.stages.find(x=>x.k==="mixFb"); if(mf){ mf.upto=3; mf.sc="ep"; } CONF.migr.push("mixfb-13-1102"); dirty=true; if(MIG) MIG.conf=true; }
   if(dirty) saveConf();
 }
 const normW=(w)=>(w=>({...w,voice:w.voice==="ai"?"ai":"human",cont:w.cont!==false}))({n:"새 작품",owner:"",voice:"human",done:0,rate:7,start:key(TODAY),b1:BATCH,total:SEASON_N,
@@ -1774,7 +1819,7 @@ function scheduleCore(w,useOv=true){
       const o=ov[`w:${s.k}`]||null; let d=durO(o,base);
       if(s.gate==="info"){   // 확인 단계: 다른 단계 기준으로 날짜만 표시, 일정에는 영향 없음
         const ref=s.anchor&&eps[1]&&eps[1].cells[s.anchor.stage];
-        let st=ref&&(ref.s||ref.e)?addBD(snapBD(ref.s||ref.e),+(s.anchor.offset||0)):start0;
+        let st=ref&&(ref.s||ref.e)?(s.anchor.atEnd&&ref.e?addBD(nextBD(ref.e),+(s.anchor.offset||0)):addBD(snapBD(ref.s||ref.e),+(s.anchor.offset||0))):start0;
         let e=d>0?addBD(st,d-1):st;
         if(o&&o.f){ e=fixD(o.f); if(e<st) st=null; }
         const cell={s:st,e,d,base,kind:mkKind(o),m:o&&o.m||"",work:true,gate:"info"};
@@ -2086,7 +2131,7 @@ const JA_PHRASE={
 "소요일 변경":"所要日数変更","칸 오른쪽 동그라미 = 완료 처리":"セル右の丸 = 完了処理","예정일 지남 · 완료 확인 필요":"予定日超過・完了確認が必要","완료일 지정":"完了日指定",
 "마우스를 올리거나 눌러서 확인":"マウスを乗せるかクリックで確認","기본 공정보다 늦어진 영업일":"基本工程より遅れた営業日","음영 열 = 5화 묶음 · 작품 1회 단계":"網掛け列 = 5話バッチ・作品1回の工程",
 "회차":"話","길이":"尺","분:초":"分:秒","최종본 완료":"最終版完了","오픈일":"公開日","오픈":"公開","영업일 전까지":"営業日前まで","매주":"毎週",
-"계약 체결":"契約締結","영상 1차":"映像一次","영상 1차 제작":"映像一次制作","이미지 컷":"イメージカット","1화 이미지 컷 확인":"第1話イメージカット確認","작가 승인":"作家承認","1~3화 통합 피드백":"第1〜3話 一括フィードバック","1~3화 통합 수정":"第1〜3話 一括修正","통합 피드백":"一括FB","통합 수정":"一括修正","1~3화 한번에":"第1〜3話まとめて","작가·내부관계자":"作家・社内関係者","1~3화 피드백":"第1〜3話FB","한 번에 (피드백 → 수정)":"まとめて (FB → 修正)","회차별 (예전 방식)":"話ごと (旧方式)","내부 승인":"社内承認",
+"계약 체결":"契約締結","영상 1차":"映像一次","영상 1차 제작":"映像一次制作","이미지 컷":"イメージカット","1화 이미지 컷 확인":"第1話イメージカット確認","1화 영상 공유":"第1話映像共有","1화 키컷 이미지 공유":"第1話キーカット画像共有","1화 키컷":"第1話キーカット","영상 1차 전 · 각색·연출 보고와 병렬":"映像一次の前・脚色/演出報告と並行","작가 승인":"作家承認","1~3화 통합 피드백":"第1〜3話 一括フィードバック","1~3화 통합 수정":"第1〜3話 一括修正","통합 피드백":"一括FB","통합 수정":"一括修正","1~3화 한번에":"第1〜3話まとめて","작가·내부관계자":"作家・社内関係者","1~3화 피드백":"第1〜3話FB","한 번에 (피드백 → 수정)":"まとめて (FB → 修正)","회차별 (예전 방식)":"話ごと (旧方式)","내부 승인":"社内承認",
 "등급 피드백":"レーティングFB","등급 분류 피드백":"レーティング分類フィードバック","영상 최종":"映像最終","영상 최종 수정":"映像最終修正","대사 번역":"セリフ翻訳","대사집 확정":"台本確定","성우 대사집 확정":"声優台本確定",
 "자막 번역":"字幕翻訳","성우 캐스팅":"声優キャスティング","성우 더빙":"声優吹替","더빙·믹싱":"吹替・ミキシング","더빙본 확인":"吹替版確認","1화 더빙본 확인":"第1話吹替版確認","믹싱 최종본":"ミキシング最終版","사운드 믹싱 최종본":"サウンドミキシング最終版",
 "자막 최종본":"字幕最終版","자막 최종 영상본":"字幕入り最終映像","자막 (당사)":"字幕 (当社)","등급분류":"レーティング審査","영상 등급분류":"映像レーティング審査",
@@ -2259,7 +2304,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="10.30-T";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.02-H";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3457,14 +3502,17 @@ function renderStd(){
   const VK=["ih","ia","eh","ea"];
   // 1화 기준 합계: 병렬·동시 시작·제작 시작과 함께 하는 단계는 빼고, 첫 묶음 기간으로 계산
   const tot=(v)=>{ const w0={line:v[0]==="e"?"ext":"int",voice:v[1]==="a"?"ai":"human",n:""};
-    return st.filter(x=>x.k!=="contract"&&!FB3_OLD.includes(x.k)&&!x.par&&!concOf(x,w0,1)&&!(x.atStart&&x.atStart[v[0]]))
+    return st.filter(x=>x.k!=="contract"&&x.gate!=="info"&&!FB3_OLD.includes(x.k)&&!x.par&&!concOf(x,w0,1)&&!(x.atStart&&x.atStart[v[0]]))
       .reduce((a,x)=>a+(+(x.vf&&x.vf[v]!=null?x.vf[v]:x.v[v])||0),0); };
   let h=`<h2>회차당 공정 (영업일 · 주말·한국 공휴일 제외)</h2>
   <div class="card"><p class="hint" style="margin:0 0 10px">작품마다 <b>제작 라인(내부/외부)</b>과 <b>성우(인간/AI)</b>에 맞는 열이 적용됩니다. 기본은 인간 성우이고, 제작 일정 탭에서 작품별로 AI 성우를 고를 수 있어요. 0은 그 프로세스에 없는 단계예요.</p>
-  <table class="std"><thead><tr><th>단계</th><th>담당 부서</th>${VK.map(k=>`<th class="r">${VAR_LABEL[k]}</th>`).join("")}<th>진행 단위</th><th title="비우면 전 회차">적용 회차</th><th title="다음 단계를 막지 않고 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병렬</th><th title="앞 단계와 같은 날 시작">동시 시작</th></tr></thead><tbody>`;
+  <table class="std stdx"><thead><tr class="sgrp"><th colspan="2"></th><th class="gi" colspan="2">내부 제작</th><th class="ge" colspan="2">외부 제작</th><th colspan="4"></th></tr><tr><th>단계</th><th>담당 부서</th>${VK.map(k=>`<th class="r ${k[0]==="i"?"gi":"ge"}">${k[1]==="h"?"인간 성우":"AI 성우"}</th>`).join("")}<th>진행 단위</th><th title="비우면 전 회차">적용 회차</th><th title="다음 단계를 막지 않고 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병렬</th><th title="앞 단계와 같은 날 시작">동시 시작</th></tr></thead><tbody>`;
+  const PH_OF=(k)=>["contract","preP","preRv"].includes(k)?"준비":(k==="prod1"||k==="imgcut")?"영상 제작":["fb3","fix3","author","intAppr","ratingFb","prodF"].includes(k)?"1~3화 검수":["burn","rating"].includes(k)?"마감":"번역 · 사운드";
+  let lastPh="";
   st.forEach((s,i)=>{
+    const ph=PH_OF(s.k); if(ph!==lastPh){ h+=`<tr class="sph"><td colspan="10">${ph}</td></tr>`; lastPh=ph; }
     const num=(k)=>`<input class="in n" style="width:58px" type="number" min="0" max="120" data-i="${i}" data-c="v" data-var="${k}" value="${s.v[k]}">`;
-    h+=`<tr><td>${esc(s.n)}${s.k==="prod1"?`<div class="hint">작품별 설정이 우선 · 새 작품 기본값</div>`:s.k==="contract"?`<div class="hint">제작 시작 N영업일 전까지 (일정 영향 없음)</div>`:s.k==="casting"?`<div class="hint">내부: 첫 묶음만 +2일 · 외부: 제작 시작과 함께 3일 (일정 영향 없음)</div>`:s.k==="dub"?`<div class="hint">외부: '더빙·믹싱' 통으로 · 한 번에 한 묶음씩 · 5화 미만 묶음은 비례 단축</div>`:s.k==="imgcut"?`<div class="hint">외부 1화만 · 1일째 공유 + 1일 피드백 (영상 1차와 동시)</div>`:s.k==="dubchk"?`<div class="hint">외부 1화만 · 첫 묶음 사운드 6일차 공유 + 3일 피드백</div>`:s.k==="burn"?`<div class="hint">외부: 사운드 납품 후 당사가 회차당 1일씩 (자막 번역·입히기)</div>`:s.k==="trans"?`<div class="hint">외부: 제작사가 대사·녹음 대본 준비 (0일)</div>`:s.k==="fb3"?`<div class="hint">내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)</div>`:s.k==="fix3"?`<div class="hint">내부·외부 (외부는 제작사): 피드백 반영해 1~3화 한 번에 수정</div>`:FB3_OLD.includes(s.k)?`<div class="hint">1~3화는 '회차별'로 둔 작품만 적용${s.k==="intAppr"?" · 외부는 4화부터 회차별로 계속":s.k==="prodF"?" · 외부 4화부터는 아래 체크를 켤 때만":""}</div>`:s.k==="rating"&&s.from?`<div class="hint"><b>${s.from.slice(2,4)}.${+s.from.slice(5,7)} 이후 공개분부터</b> 적용 (광고 모델) · 그 전 공개 회차는 0일</div>`:s.k==="vtrans"?`<div class="hint">대사 번역과 동시 시작 · 영상 속 글자 번역·번인 · <b>기간 미정</b>(0이면 일정 영향 없음, 업체 정해지면 일수 입력)</div>`:""}</td>
+    h+=`<tr><td>${esc(s.n)}${s.k==="prod1"?`<div class="hint">작품별 설정이 우선 · 새 작품 기본값</div>`:s.k==="contract"?`<div class="hint">제작 시작 N영업일 전까지 (일정 영향 없음)</div>`:s.k==="casting"?`<div class="hint">작품 1회 · 첫 묶음 전</div>`:s.k==="dub"?`<div class="hint">내부 · 외부 같은 일정 (5화 묶음)</div>`:s.k==="imgcut"?`<div class="hint">외부 1화만 · 영상 1차 전 (각색 · 연출 보고와 병렬)</div>`:s.k==="dubchk"?`<div class="hint">현재 사용 안 함 (0일)</div>`:s.k==="burn"?`<div class="hint">외부: 사운드 납품 후 당사가 회차당 1일씩 (자막 번역·입히기)</div>`:s.k==="trans"?`<div class="hint">내부 · 외부 같은 일정</div>`:s.k==="fb3"?`<div class="hint">내부·외부: 1~3화 영상 1차가 다 나오면 한 번에 피드백 (작가·내부 승인·등급 피드백 포함)</div>`:s.k==="fix3"?`<div class="hint">내부·외부 (외부는 제작사): 피드백 반영해 1~3화 한 번에 수정</div>`:FB3_OLD.includes(s.k)?`<div class="hint">1~3화는 '회차별'로 둔 작품만 적용${s.k==="intAppr"?" · 외부는 4화부터 회차별로 계속":s.k==="prodF"?" · 외부 4화부터는 아래 체크를 켤 때만":""}</div>`:s.k==="rating"&&s.from?`<div class="hint"><b>${s.from.slice(2,4)}.${+s.from.slice(5,7)} 이후 공개분부터</b> 적용 (광고 모델) · 그 전 공개 회차는 0일</div>`:s.k==="vtrans"?`<div class="hint">대사 번역과 동시 시작 · 영상 속 글자 번역·번인 · <b>기간 미정</b>(0이면 일정 영향 없음, 업체 정해지면 일수 입력)</div>`:""}</td>
       <td><input class="in" style="width:130px" data-i="${i}" data-c="team" value="${esc(s.team)}" aria-label="${esc(s.n)} 담당 부서"></td>
       ${VK.map(k=>`<td class="r">${num(k)}${s.vf&&s.vf[k]!=null?`<div class="hint" style="white-space:nowrap">첫 묶음 <input class="in n" style="width:46px;min-height:24px;padding:1px 4px" type="number" min="0" max="120" data-i="${i}" data-c="vf" data-var="${k}" value="${s.vf[k]}"></div>`:""}</td>`).join("")}
       <td>${s.sc==="grp"?`<span class="hint">1~${s.grp||3}화 한번에</span>`:s.k==="contract"?`<span class="hint">작품 1회 · 기한</span>`:s.k==="prod1"?`<span class="hint">회차별 · 순차</span>`:`<select class="in" data-i="${i}" data-c="sc">${Object.entries(SC_LABEL).map(([v,t])=>`<option value="${v}"${s.sc===v?" selected":""}>${t}</option>`).join("")}</select>`}</td>
@@ -3475,7 +3523,7 @@ function renderStd(){
   h+=`</tbody><tfoot><tr><td>1화 기준 합계</td><td class="hint">병렬·동시 진행 제외 · 첫 묶음 기준</td>${VK.map(k=>`<td class="r">${tot(k)}</td>`).join("")}<td colspan="4"></td></tr></tfoot></table>
     <p class="hint" style="margin:10px 0 0">
     <b>영상 등급분류</b>는 광고 모델 적용으로 <b>27.10 이후 공개분부터 15영업일</b>이에요. 그 전에 공개되는 회차는 0일로 계산돼요.<br>
-    <b>사운드 (내부)</b>: 대사집 확정 7 + 성우 더빙 18 + 믹싱 5 = 30일(5회차씩), 첫 묶음에만 성우 캐스팅 2일. <b>사운드 (외부)</b>: 더빙·믹싱 통으로 첫 묶음 30일 · 이후 20일, 한 번에 한 묶음씩(앞 묶음 납품 후 시작), 캐스팅은 제작 시작 1~3일차. AI 성우는 믹싱 2일만 있어요.<br>
+    <b>사운드 (내부)</b>: 대사집 확정 7 + 성우 더빙 18 + 믹싱 5 = 30일(5회차씩), 첫 묶음에만 성우 캐스팅 2일. <b>사운드 (외부)</b>: 11/2부터 내부와 같은 일정 (대사 번역 5 · 대사집 7 · 더빙 18 · 믹싱 5, 5화 묶음). AI 성우는 믹싱 2일만 있어요.<br>
     <b>병렬</b>: 뒤 단계를 막지 않고 동시에 진행하며, 자막 최종 영상본 전까지만 끝나면 됩니다 (자막 번역).<br>
     <b>동시 시작</b>: 1~3화는 작가 승인과 같은 날 시작해서 추가 기간이 없어요. 등급 분류 피드백(1~3화만)과 외부 제작의 내부 승인(4화부터는 2일)이 여기에 해당해요.<br>
     <b>적용 회차</b>: 작가 승인·등급 피드백은 1~3화만. 내부 승인과 영상 최종 수정은 내부 제작 1~3화만, 외부 제작은 전 회차. <b>${BATCH}회차씩</b>: 묶음 안 모든 회차가 준비돼야 시작하고 묶음 전체가 같은 날 끝납니다.</p></div>
@@ -4147,16 +4195,18 @@ function vNextBoard(all){
     ${rows.length>LIM?`<button type="button" class="btn vnbm" style="padding:2px 10px;font-size:12px">${VNB_MORE?"접기":`외 ${rows.length-LIM}곳 더 보기`}</button>`:""}</div>`;
 }
 function vChkToggle(v,k,on){ const c={...vChk(v)}; if(on) c[k]=key(TODAY); else delete c[k]; vEdit({op:"set",id:v.id,v:{chk:c}}); }
-function vChkEditor(v,anchor){
+function vChkEditor(v,anchor,keep){
   const c=vChk(v), pop=$("pop");
   pop.innerHTML=`<h4>${esc(v.name)} · 계약 준비</h4><p class="ps">순서대로 안 해도 돼요. 한 것만 체크하면 날짜가 남아요.</p>
     <ul class="vchl">${V_CHK.map(([k,l],i)=>`<li class="${k in c?"on":""}"><label><input type="checkbox" data-ck="${k}"${k in c?" checked":""}> <span class="no">${i+1}</span> ${l}</label>
       ${k in c?`<input type="date" class="vchd" data-cd="${k}" value="${esc(c[k]||"")}" title="한 날">`:""}</li>`).join("")}</ul>
     <div class="acts"><button type="button" class="btn" id="chX">닫기</button></div>`;
-  pop.hidden=false; const r=anchor.getBoundingClientRect(); pop.style.left=Math.max(8,r.left+window.scrollX)+"px"; pop.style.top=(r.bottom+window.scrollY+4)+"px";
+  pop.hidden=false;
+  if(keep){ pop.style.left=keep.left; pop.style.top=keep.top; }   // 체크할 때 창이 왼쪽 위로 튀지 않게 그 자리 유지
+  else { const r=anchor.getBoundingClientRect(); pop.style.left=Math.max(8,r.left+window.scrollX)+"px"; pop.style.top=(r.bottom+window.scrollY+4)+"px"; }
   $("chX").onclick=closePop;
-  pop.querySelectorAll("[data-ck]").forEach(el=>el.onchange=()=>{ vChkToggle(VENDORS.find(x=>x.id===v.id),el.dataset.ck,el.checked); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor); });
-  pop.querySelectorAll("[data-cd]").forEach(el=>el.onchange=()=>{ const vv=VENDORS.find(x=>x.id===v.id), cc={...vChk(vv),[el.dataset.cd]:el.value}; vEdit({op:"set",id:v.id,v:{chk:cc}}); });
+  pop.querySelectorAll("[data-ck]").forEach(el=>el.onchange=()=>{ const keepPos={left:pop.style.left,top:pop.style.top}, sy=window.scrollY; vChkToggle(VENDORS.find(x=>x.id===v.id),el.dataset.ck,el.checked); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor,keepPos); if(window.scrollY!==sy) window.scrollTo(0,sy); });
+  pop.querySelectorAll("[data-cd]").forEach(el=>el.onchange=()=>{ const keepPos={left:pop.style.left,top:pop.style.top}, sy=window.scrollY; const vv=VENDORS.find(x=>x.id===v.id), cc={...vChk(vv),[el.dataset.cd]:el.value}; vEdit({op:"set",id:v.id,v:{chk:cc}}); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor,keepPos); if(window.scrollY!==sy) window.scrollTo(0,sy); });
 }
 function renderVendors(){
   const L=vFiltered(), all=VENDORS.filter(v=>!VF.kind||vKind(v)===VF.kind), cnt=(f,k)=>all.filter(v=>f(v)===k).length;
@@ -6022,7 +6072,7 @@ function renderVCal(){ const v=$("v-vcal"); if(!VC.m) VC.m=key(TODAY).slice(0,7)
   h+=`<div class="vcal"><div class="vch">${["일","월","화","수","목","금","토"].map((d,i)=>`<b${i===0||i===6?' style="color:#C2272D"':""}>${d}</b>`).join("")}</div><div class="vcg">`;
   for(let i=0;i<startW;i++) h+=`<div class="vcd off"></div>`;
   for(let d=1;d<=dim;d++){ const k=`${VC.m}-${String(d).padStart(2,"0")}`, L=(byD[k]||[]).sort((a,b)=>(a.auto?1:0)-(b.auto?1:0)), wd=(startW+d-1)%7;
-    h+=`<div class="vcd${k===key(TODAY)?" today":""}${VC.sel===k?" sel":""}${wd===0||wd===6?" we":""}" data-vcd="${k}"><span class="vcn">${d}</span>${L.slice(0,4).map((e,ix)=>`<span class="vce${e.auto?" au":""}" data-vce="${k}|${ix}" style="border-left-color:${col(e.v)}" title="${esc(`${e.v.name} · ${e.full||e.t}`)}"><b data-notr>${esc(e.v.name)}</b> ${esc(e.t)}</span>`).join("")}${L.length>4?`<span class="vcmore">+${L.length-4}</span>`:""}</div>`; }
+    h+=`<div class="vcd${k===key(TODAY)?" today":""}${VC.sel===k?" sel":""}${wd===0||wd===6?" we":""}" data-vcd="${k}"><span class="vcn">${d}</span>${L.slice(0,7).map((e,ix)=>`<span class="vce${e.auto?" au":""}" data-vce="${k}|${ix}" style="--c:${col(e.v)}" title="${esc(`${e.v.name} · ${e.full||e.t}`)}"><b data-notr>${esc(e.v.name)}</b> ${esc(e.t)}</span>`).join("")}${L.length>7?`<span class="vcmore">+${L.length-7}건 더</span>`:""}</div>`; }
   h+=`</div></div>`;
   // 아래 패널: 선택한 날짜 일정 + 추가 폼
   const k=VC.sel;
