@@ -2323,7 +2323,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.04-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.04-F";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -6158,13 +6158,9 @@ function smpSeed(){ if(!WL||WL_META.smp1028||!VENDORS.length) return; WL_META.sm
 /* 선택한 작품을 메일에 붙여넣기 좋은 텍스트로 복사 */
 function wlCopySel(rows){ rows=rows||WL.map(r=>({r,...wlInfo(r)})); const L=rows.filter(x=>WLSEL.has(x.r.id)); if(!L.length) return;
   const stL=(k)=>(WL_STEPS.find(x=>x[0]===k)||[,""])[1], fd=(d)=>d?`${d.getUTCFullYear()}.${d.getUTCMonth()+1}.${d.getUTCDate()}`:"";
-  const lines=L.map((x,i)=>{ const r=x.r, tg=wlTgt(r), parts=[`${i+1}. ${r.name} (${[tg,r.genre].filter(Boolean).join(" · ")||"장르 미정"})`, `   - 구분: ${r.cat} · 판권: ${r.rights||"미확인"} · 진행 단계: ${stL(x.step)}`];
-    if(x.vs.length) parts.push(`   - 샘플 테스트: ${x.vs.map(o=>`${o.v.name} ${o.done?"완료":"진행 중"}`).join(", ")}`);
-    if(x.w&&x.S) parts.push(`   - 제작: ${lineOf(x.w)==="ext"?"외부":"내부"} 제작 · ${x.S.held?(+x.w.done?"중단":"착수 대기"):`${fd(x.S.L)} 런칭 예정`}`);
-    [["ani","애니화 적합"],["merch","상품화"],["game","게임화"]].forEach(([k,l])=>{ if(r[k]) parts.push(`   - ${l}: ${r[k]}`); });
-    return parts.join("\n"); });
+  const lines=L.map(x=>`* ${x.r.name}`);   // 11/04: 작품명만 복사
   const txt=lines.join("\n");
-  const done=()=>toast(`${L.length}작품을 복사했어요 — 메일에 붙여넣기`);
+  const done=()=>toast(`${L.length}작품 목록을 복사했어요`);
   (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(done).catch(()=>{ const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); done(); }); }
 document.addEventListener("keydown",(e)=>{ if(TAB!=="wl"||!WLSEL.size) return; if(!(e.metaKey||e.ctrlKey)||(e.key!=="c"&&e.key!=="C")) return; const t=e.target; if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable)) return; if(String(window.getSelection())) return; e.preventDefault(); wlCopySel(); });
 document.addEventListener("keydown",(e)=>{ if(TAB==="wl"&&e.key==="Escape"&&WLSEL.size){ WLSEL.clear(); render(); } });
