@@ -1155,6 +1155,18 @@ table.sot td.sonm{min-width:150px;white-space:nowrap} table.sot tr.sogrp td{back
 .sorr{display:block;margin-top:4px;font-size:11.5px;color:var(--ink2);white-space:nowrap} .sorh{color:#C2272D}
 .sox{margin-left:4px;border:1px solid var(--line);background:#fff;border-radius:7px;font:inherit;font-size:11px;padding:2px 7px;cursor:pointer}
 #v-sim .simtw{max-height:none;overflow:visible}
+
+table.sot tr.so-int td.sonm{box-shadow:inset 4px 0 0 var(--int);background:var(--int-prod)} table.sot tr.so-ext td.sonm{box-shadow:inset 4px 0 0 var(--ext);background:var(--ext-prod)}
+table.sot tr.sogrp.so-int td{background:var(--int-bg);color:var(--int-ink);box-shadow:inset 4px 0 0 var(--int)} table.sot tr.sogrp.so-ext td{background:var(--ext-bg);color:var(--ext-ink);box-shadow:inset 4px 0 0 var(--ext)}
+table.sot tr.sogrp .sodot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:0}
+table.sot tr.sogrp.so-int .sodot{background:var(--int)} table.sot tr.sogrp.so-ext .sodot{background:var(--ext)}
+table.sot tr.so-int:not(.sogrp):hover td{background:#F5FAFD} table.sot tr.so-ext:not(.sogrp):hover td{background:#FEF8F3}
+
+.winfo .fields.one{flex-wrap:nowrap;gap:10px;overflow-x:auto}
+.winfo .fields.one label{white-space:nowrap;flex:0 1 auto;min-width:0}
+.winfo .fields.one .in{min-width:0}
+.winfo .fields.one select.in{max-width:150px} .winfo .fields.one input[type=text].in{width:120px}
+.winfo .fields.one input[type=number].in{width:64px} .winfo .fields.one input[type=date].in{width:132px}
 </style>
 </head>
 <body>
@@ -2170,7 +2182,7 @@ const JA_PHRASE={
 "끊김 없이 나가는 회차":"途切れず公開できる話","첫 휴재":"最初の休載","완결까지 휴재":"完結までの休載","휴재 없이 가려면":"休載なしにするには","가능":"可能","불가":"不可","작품별 운영":"作品別運営",
 // 제작 일정
 "작품 추가":"作品追加","작품 삭제":"作品削除","제작 라인":"制作ライン","연령 등급":"年齢区分","성우":"声優","인간 성우":"人間声優","AI 성우":"AI声優","담당자":"担当者",
-"1차 제작 완료 회차":"一次制作完了話数","다음 회차 착수일":"次の話の着手日","회차당 1차 제작(영업일)":"1話あたり一次制作(営業日)","첫 더빙 묶음 회차 수":"最初の吹替バッチ話数",
+"1차 제작 완료 회차":"一次制作完了話数","다음 회차 착수일":"次の話の着手日","회차당 1차 제작(영업일)":"1話あたり一次制作(営業日)","첫 더빙 묶음 회차 수":"最初の吹替バッチ話数","1차 완료 회차":"一次完了話数","다음 착수일":"次の着手日","회차당 제작(영업일)":"1話あたり制作(営業日)","첫 더빙 묶음":"最初の吹替バッチ",
 "운영":"運営","제작":"制作","런칭일":"ローンチ日","가장 빠른 날 (자동)":"最短日 (自動)","목표일 이후로":"目標日以降","총 회차":"総話数","오픈 방식":"公開方式",
 "이후 주 1회":"以降週1回","휴재 없음":"休載なし","예상 런칭 (휴재 없는 최단)":"予想ローンチ (休載なし最短)","런칭일을 정하는 조건":"ローンチ日を決める条件","적용 공정":"適用工程",
 "평균 길이":"平均尺","총 러닝타임":"総ランタイム","입력한":"入力済み","초 단위 합산":"秒単位で合算","평균 기준":"平均基準","예상":"予想","최소":"最小","최대":"最大",
@@ -2351,7 +2363,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.04-M";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.04-N";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2748,7 +2760,7 @@ function renderSim(){
       return `<td class="sod"><input type="date" class="in" data-sr="${rg}|${z.w.id}|launch" value="${fx?esc(r.launch):""}" aria-label="${rg} 1화 오픈일">${fx?`<button type="button" class="sox" data-sra="${rg}|${z.w.id}" title="자동(휴재 없는 가장 빠른 날)으로">자동</button>`:""}${res}</td>
         <td class="son"><input type="number" class="in n" min="1" max="10" data-sr="${rg}|${z.w.id}|openK" value="${esc(r.openK||3)}" aria-label="${rg} 오픈 회차 수"></td>
         <td class="son sol"><input type="number" class="in n" min="0" max="30" data-sr="${rg}|${z.w.id}|buf" value="${esc(r.buf||0)}" aria-label="${rg} 버퍼 회차 수"></td>`; };
-    const rowsH=GR.map(([k,l,list])=>list.length?`<tr class="sogrp"><td colspan="10">${l} <span class="hint">${list.length}</span></td></tr>`+list.map(z=>`<tr><td class="sonm"><b>${esc(z.w.n||"미정")}</b></td>${SIMREGS.map(([rg])=>cell(rg,z)).join("")}</tr>`).join(""):"").join("");
+    const rowsH=GR.map(([k,l,list])=>list.length?`<tr class="sogrp so-${k}"><td colspan="10"><i class="sodot"></i>${l} <span class="hint">${list.length}</span></td></tr>`+list.map(z=>`<tr class="so-${k}"><td class="sonm"><b>${esc(z.w.n||"미정")}</b></td>${SIMREGS.map(([rg])=>cell(rg,z)).join("")}</tr>`).join(""):"").join("");
     h+=`<div class="card sobox"><div class="sohd"><h2>작품별 오픈 설정</h2><span class="hint">지역마다 1화 오픈일 · 오픈 회차 수 · 버퍼 회차 수만 정해요 · 날짜를 비우면 휴재 없는 가장 빠른 날 · 버퍼 = 1화 오픈 때 미리 완성해 둘 회차</span></div>
       <table class="sot"><thead><tr><th rowspan="2" class="sonm">작품</th>${SIMREGS.map(([rg,l])=>`<th colspan="3" class="sorg">${l}</th>`).join("")}</tr>
       <tr>${SIMREGS.map(()=>`<th class="sod">1화 오픈일</th><th class="son">오픈 회차</th><th class="son sol">버퍼</th>`).join("")}</tr></thead><tbody>${rowsH}</tbody></table></div>`; }
@@ -3340,16 +3352,16 @@ function renderProd(){
       <button type="button" class="btn" id="winfoT" style="padding:3px 10px">${PINFO?"작품 정보 접기 ▴":"작품 정보 펼치기 ▾"}</button>
       <button type="button" class="btn danger" id="delW">작품 삭제</button></div>
     <div class="winfo${PINFO?" open":""}"><div class="fgrid">
-      <div class="gl">제작</div><div class="fields">
+      <div class="gl">제작</div><div class="fields one">
         <label>제작 라인<select class="in" data-sel="line"><option value="int"${lineOf(w)==="int"?" selected":""}>내부 제작</option><option value="ext"${lineOf(w)==="ext"?" selected":""}>외부 제작</option></select></label>
         <label>연령 등급${ageSel("",w.age,'data-sel="age"')}</label>
         ${true?`<label>1~3화 피드백<select class="in" data-sel="fb3"><option value="1"${fb3On(w)?" selected":""}>한 번에 (피드백 → 수정)</option><option value="0"${fb3On(w)?"":" selected"}>회차별 (예전 방식)</option></select></label>`:""}
         <label>성우<select class="in" data-sel="voice"><option value="human"${w.voice!=="ai"?" selected":""}>인간 성우</option><option value="ai"${w.voice==="ai"?" selected":""}>AI 성우</option></select></label>
         ${f("담당자","owner","text")}
-        ${f("1차 제작 완료 회차","done","number",`min="0" max="${S.N}"`)}
-        ${f("다음 회차 착수일","start","date")}
-        ${f("회차당 1차 제작(영업일)","rate","number",`min="1" max="60"`)}
-        ${f("첫 더빙 묶음 회차 수","b1","number",`min="1" max="${S.N}" title="이미 보낸 1차 묶음이 5화가 아닐 때만 바꾸세요. 이후는 5화씩 묶입니다."`)}
+        ${f("1차 완료 회차","done","number",`min="0" max="${S.N}" title="1차 제작 완료 회차"`)}
+        ${f("다음 착수일","start","date",`title="다음 회차 착수일"`)}
+        ${f("회차당 제작(영업일)","rate","number",`min="1" max="60" title="회차당 1차 제작(영업일)"`)}
+        ${f("첫 더빙 묶음","b1","number",`min="1" max="${S.N}" title="첫 더빙 묶음 회차 수 — 이미 보낸 1차 묶음이 5화가 아닐 때만 바꾸세요. 이후는 5화씩 묶입니다."`)}
       </div>
       <div class="gl">운영</div><div class="fields">
         <label>런칭일<span style="display:flex;gap:6px;align-items:center">
