@@ -1125,6 +1125,10 @@ table.std.stdx td input.in:not(.n){border:1px solid transparent;background:trans
 table.std.stdx td input.in:not(.n):hover{border-color:#D5DAE3;background:#fff}
 table.std.stdx tfoot td{background:#121826;color:#fff;font-weight:800;border-top:0;padding:10px}
 table.std.stdx tfoot td:nth-child(n+3){text-align:center;font-size:15px}
+
+table.wt th.wck,table.wt td.wck{width:34px;padding-left:12px!important;padding-right:0!important;text-align:center}
+table.wt td.wck input,table.wt th.wck input{width:16px;height:16px;cursor:pointer;accent-color:#121826}
+#wlCopySel[disabled]{opacity:.45;cursor:default}
 </style>
 </head>
 <body>
@@ -1274,7 +1278,7 @@ function normConf(c){
   return {pv:PV,contCount:false,ext4:!!c.ext4,staff:{n:c.staff&&c.staff.n!=null?+c.staff.n:2,order:c.staff&&Array.isArray(c.staff.order)?c.staff.order:[]},lockBD:c.lockBD!=null?+c.lockBD:DEFAULT_CONF.lockBD, migr:Array.isArray(c.migr)?c.migr:[],
     hol:Array.isArray(c.hol)&&c.hol.length?c.hol:clone(DEFAULT_HOL),
     stages:DEFAULT_CONF.stages.map(d=>{const x=saved.find(y=>y.k===d.k)||{};
-      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:d.k==="imgcut"?d.anchor:(x.anchor||d.anchor),tx:d.k==="imgcut"?d.tx:(x.tx||d.tx),tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:((d.k==="castFb"||d.k==="mixFb")&&x.team==="작가")?d.team:TEAM_REN(x.team||d.team),upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror,pre:d.pre};})};
+      return {...d,v:{...d.v,...(x.v||{})},h:(x.v||d.v).ih,sc:x.sc||d.sc,gate:x.gate||d.gate,seq:x.seq!=null?x.seq:(d.seq||false),vf:x.vf||d.vf,atStart:x.atStart||d.atStart,sx:x.sx||d.sx,tx:x.tx||d.tx,scale:x.scale||d.scale,anchor:d.k==="imgcut"?d.anchor:(x.anchor||d.anchor),tx:d.k==="imgcut"?d.tx:(x.tx||d.tx),tbdDur:d.tbdDur,from:x.from!==undefined?x.from:d.from,team:((d.k==="castFb"||d.k==="mixFb")&&x.team==="작가")?d.team:TEAM_REN(x.team||d.team),upto:x.upto!=null?(typeof x.upto==="object"?x.upto:+x.upto):(d.upto||0),par:x.par!=null?!!x.par:!!d.par,side:x.side!=null?!!x.side:!!d.side,conc:x.conc!=null?x.conc:(d.conc||false),mirror:d.mirror,pre:d.pre};})};
 }
 
 /* ---------- 기본 작품 (기존 HTML 값 이관) ---------- */
@@ -1709,6 +1713,14 @@ function runMigrations0(){
     CONF.migr.push("snd-same-1102"); dirty=true; if(MIG) MIG.conf=true;
   }
   if(!has("mixfb-13-1102")){ const mf=CONF.stages.find(x=>x.k==="mixFb"); if(mf){ mf.upto=3; mf.sc="ep"; } CONF.migr.push("mixfb-13-1102"); dirty=true; if(MIG) MIG.conf=true; }
+  if(!has("mtg-1104")){   // 11/04 회의 협의 완료: 통합 피드백 5 · 캐스팅 병렬 · 대사 번역/대사집 1차본 기준 병행 · 완제 공유 생략
+    const S=(k)=>CONF.stages.find(x=>x.k===k);
+    const f3=S("fb3"); if(f3) f3.v={...f3.v,ih:5,ia:5,eh:5,ea:5};
+    ["casting","castFb"].forEach(k=>{ const st=S(k); if(st) st.atStart={i:true,e:true}; });
+    ["trans","script"].forEach(k=>{ const st=S(k); if(st) st.side=true; });
+    const mf=S("mixFb"); if(mf) mf.v={...mf.v,ih:0,ia:0,eh:0,ea:0};
+    CONF.migr.push("mtg-1104"); dirty=true; if(MIG) MIG.conf=true;
+  }
   if(dirty) saveConf();
 }
 const normW=(w)=>(w=>({...w,voice:w.voice==="ai"?"ai":"human",cont:w.cont!==false}))({n:"새 작품",owner:"",voice:"human",done:0,rate:7,start:key(TODAY),b1:BATCH,total:SEASON_N,
@@ -1787,6 +1799,7 @@ function scheduleCore(w,useOv=true){
 
   const PAR_JOIN="burn";                       // 병행 단계는 '자막 최종 영상본' 전에 합류
   const parEnds=Array(N+1).fill(null);
+  const sideEnd=Array(N+1).fill(null);   // 11/04: 1차본 기준 병행 단계(대사 번역 · 대사집) — 영상 1차 끝나면 시작, 성우 더빙 전에 합류
   const lastMain=Array(N+1).fill(null);   // 직전 '본 단계' 시작일 — 동시 시작(conc) 단계가 씀
   const markMain=(s,k,c)=>{ if(!s.par&&!concOf(s,w,k)) lastMain[k]=c.s||c.e; };
   ST.forEach(s=>{
@@ -1857,14 +1870,18 @@ function scheduleCore(w,useOv=true){
         let bBase=vf!=null?vf:base;
         const n=b-a+1; if(s.scale&&s.scale[LN(w)]&&n<BATCH) bBase=Math.max(1,Math.ceil(bBase*n/BATCH));   // 5화보다 적은 묶음은 기간 비례 단축
         const o=ov[`${a}:${s.k}`]||null; let d=durO(o,bBase);
-        let st=null; for(let k=a;k<=b;k++){const x=conc?(lastMain[k]||start0):(prev[k]?nextBD(prev[k]):start0); if(!st||x>st) st=x;}
+        let st=null; for(let k=a;k<=b;k++){ let x;
+          if(s.side){ const p1=eps[k].cells.prod1; const ref=sideEnd[k]||(p1&&p1.e)||prev[k]; x=ref?nextBD(ref):start0; }
+          else { x=conc?(lastMain[k]||start0):(prev[k]?nextBD(prev[k]):start0); if(sideEnd[k]&&!conc){ const y=nextBD(sideEnd[k]); if(y>x) x=y; } }
+          if(!st||x>st) st=x;}
         if(seqOf(s,w)&&ends.length>=SLn){const x=nextBD(ends[ends.length-SLn]); if(x>st) st=x;}   // 한 번에 SLn 묶음씩
         if(o&&o.s) st=snapBD(D(o.s));   // 직접 정한 시작일
         let na=false;   // 적용 시작일(from) 전에 공개되는 묶음은 이 단계 없음 (예: 영상 등급분류는 광고 모델 적용 27.10부터)
         if(s.from&&st&&!(o&&(o.d!=null||o.f))&&key(addBD(st,(+bBase||0)+(+CONF.lockBD||5)))<s.from){ d=0; na=true; }
         let e=d>0?addBD(st,d-1):(s.tbdDur?st:prevBD(st));   // 기간 미정 단계는 시작일만 표시
         let slip=false, pin=null; if(o&&o.f){ pin=fixD(o.f); if(st&&pin<st&&!o.ok&&!o.lock&&!conc&&!s.par) slip=true; else { e=pin; if(e<st) st=null; else d=bdDiff(st,e)+1; } }   // 앞 단계가 늦어져 지정일을 못 지키면 밀림
-        for(let k=a;k<=b;k++){ eps[k].cells[s.k]={s:st,e,d,base:bBase,kind:mkKind(o),m:o&&o.m||"",batch:[a,b],slip,pin,par:!!s.par,tbd:!!s.tbdDur&&d===0&&!(o&&o.f),na};
+        for(let k=a;k<=b;k++){ eps[k].cells[s.k]={s:st,e,d,base:bBase,kind:mkKind(o),m:o&&o.m||"",batch:[a,b],slip,pin,par:!!s.par||!!s.side,tbd:!!s.tbdDur&&d===0&&!(o&&o.f),na};
+          if(s.side){ if(d>0) sideEnd[k]=e; continue; }
           if(s.par){ if(!parEnds[k]||e>parEnds[k]) parEnds[k]=e; } else { bump(k,e); markMain(s,k,eps[k].cells[s.k]); } }
         prevB=e; ends.push(e);
       });
@@ -1875,6 +1892,7 @@ function scheduleCore(w,useOv=true){
       const o=ov[`${k}:${s.k}`]||null; let d=durO(o,base);
       const cK=concOf(s,w,k);
       let st=cK?(lastMain[k]||start0):(prev[k]?nextBD(prev[k]):start0);
+      if(!cK&&sideEnd[k]){ const y=nextBD(sideEnd[k]); if(y>st) st=y; }   // 1차본 기준 병행 단계가 끝나야 시작
       if(seqOf(s,w)&&k>1&&!eps[k-1].cells[s.k].skip){const x=nextBD(eps[k-1].cells[s.k].e); if(x>st) st=x;}
       if(o&&o.s) st=snapBD(D(o.s));   // 직접 정한 시작일
       let e=d>0?addBD(st,d-1):(prev[k]||prevBD(st));
@@ -2305,7 +2323,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.04-A";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.04-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3320,7 +3338,7 @@ function renderProd(){
       <span style="background:#F4F3EC;padding:0 6px;border-radius:4px">음영 열 = ${BATCH}화 묶음 · 작품 1회 단계</span>
     </div></div>
     <div class="gridwrap"><table class="eg"><thead><tr><th class="ep">회차</th><th class="lenh">길이<small>분:초</small></th>`;
-  S.ST.forEach(s=>h+=`<th class="${s.sc!=="ep"&&s.k!=="prod1"?"dubh":""}" title="${esc(s.n)} · ${SC_LABEL[s.k==="prod1"?"ep":s.sc]}${s.sc==="ep"&&uptoOf(s,w)>0?` · 1~${uptoOf(s,w)}화만`:""}${s.sc==="work"?(s.gate==="open"?" · 런칭 전까지 완료":" · 다음 단계가 기다림"):""}">${esc(labelOf(s,w))}${s.sc==="ep"&&uptoOf(s,w)>0?` <span class="upto">1~${uptoOf(s,w)}화</span>`:""}${s.tbdDur&&!(durOf(s,w)>0)?` <span class="upto" style="background:var(--warn-bg);color:var(--warn)" title="업체·기간 미정 — 작업 챙기기용 (일정에는 영향 없음)">기간 미정</span>`:""}${fb3On(w)&&ext4Keep(s,w)?` <span class="upto" title="1~3화는 통합 피드백으로 대신">4화부터</span>`:""}${!fb3On(w)&&concOf(s,w)&&(s.conc==="ext"||s.conc==="author")?` <span class="upto" title="1~3화는 작가 승인과 동시에 진행(추가 기간 없음) · 4화부터 ${durOf(s,w)}일 따로">1~3화 병렬</span>`:""}${s.sc==="grp"?` <span class="upto" title="1~${s.grp||3}화 영상 1차가 모두 끝나면 한 번에 진행">1~${s.grp||3}화 한번에</span>`:""}${s.par?` <span class="upto" title="다음 단계와 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병행</span>`:""}<small>${esc(teamOf(s,w))}</small></th>`);
+  S.ST.forEach(s=>h+=`<th class="${s.sc!=="ep"&&s.k!=="prod1"?"dubh":""}" title="${esc(s.n)} · ${SC_LABEL[s.k==="prod1"?"ep":s.sc]}${s.sc==="ep"&&uptoOf(s,w)>0?` · 1~${uptoOf(s,w)}화만`:""}${s.sc==="work"?(s.gate==="open"?" · 런칭 전까지 완료":" · 다음 단계가 기다림"):""}">${esc(labelOf(s,w))}${s.sc==="ep"&&uptoOf(s,w)>0?` <span class="upto">1~${uptoOf(s,w)}화</span>`:""}${s.tbdDur&&!(durOf(s,w)>0)?` <span class="upto" style="background:var(--warn-bg);color:var(--warn)" title="업체·기간 미정 — 작업 챙기기용 (일정에는 영향 없음)">기간 미정</span>`:""}${fb3On(w)&&ext4Keep(s,w)?` <span class="upto" title="1~3화는 통합 피드백으로 대신">4화부터</span>`:""}${!fb3On(w)&&concOf(s,w)&&(s.conc==="ext"||s.conc==="author")?` <span class="upto" title="1~3화는 작가 승인과 동시에 진행(추가 기간 없음) · 4화부터 ${durOf(s,w)}일 따로">1~3화 병렬</span>`:""}${s.sc==="grp"?` <span class="upto" title="1~${s.grp||3}화 영상 1차가 모두 끝나면 한 번에 진행">1~${s.grp||3}화 한번에</span>`:""}${s.par?` <span class="upto" title="다음 단계와 동시에 진행 — 자막 최종 영상본 전까지만 끝나면 됨">병행</span>`:""}${s.side?` <span class="upto" title="영상 1차가 끝나면 1차본 기준으로 시작 · 성우 더빙 전까지 끝나면 됨">1차본 기준 병행</span>`:""}<small>${esc(teamOf(s,w))}</small></th>`);
   h+=`<th class="rd">최종본 완료<small>오픈 ${CONF.lockBD}영업일 전까지</small></th><th class="op">오픈일<small>${S.held?"런칭 미정":`매주 ${WD[S.L.getUTCDay()]}요일`}</small></th></tr></thead><tbody>`;
   const NR=S.held?(S.N0||0):S.N;   // 실제 계산된 회차 수
   const lim=SHOWALL?NR:Math.min(NR,Math.max(40,(S.crit||0)+2));   // 10/30: 시즌 회차(25·30화)는 접지 않고 다 보이게
@@ -3501,7 +3519,7 @@ function renderStd(){
   const VK=["ih","ia","eh","ea"];
   // 1화 기준 합계: 병렬·동시 시작·제작 시작과 함께 하는 단계는 빼고, 첫 묶음 기간으로 계산
   const tot=(v)=>{ const w0={line:v[0]==="e"?"ext":"int",voice:v[1]==="a"?"ai":"human",n:""};
-    return st.filter(x=>x.k!=="contract"&&x.gate!=="info"&&!FB3_OLD.includes(x.k)&&!x.par&&!concOf(x,w0,1)&&!(x.atStart&&x.atStart[v[0]]))
+    return st.filter(x=>x.k!=="contract"&&x.gate!=="info"&&!FB3_OLD.includes(x.k)&&!x.par&&!x.side&&!concOf(x,w0,1)&&!(x.atStart&&x.atStart[v[0]]))
       .reduce((a,x)=>a+(+(x.vf&&x.vf[v]!=null?x.vf[v]:x.v[v])||0),0); };
   let h=`<h2>회차당 공정 (영업일 · 주말·한국 공휴일 제외)</h2>
   <div class="card"><p class="hint" style="margin:0 0 10px">작품마다 <b>제작 라인(내부/외부)</b>과 <b>성우(인간/AI)</b>에 맞는 열이 적용됩니다. 기본은 인간 성우이고, 제작 일정 탭에서 작품별로 AI 성우를 고를 수 있어요. 0은 그 프로세스에 없는 단계예요.</p>
@@ -3516,7 +3534,7 @@ function renderStd(){
       ${VK.map(k=>`<td class="r">${num(k)}${s.vf&&s.vf[k]!=null?`<div class="hint" style="white-space:nowrap">첫 묶음 <input class="in n" style="width:46px;min-height:24px;padding:1px 4px" type="number" min="0" max="120" data-i="${i}" data-c="vf" data-var="${k}" value="${s.vf[k]}"></div>`:""}</td>`).join("")}
       <td>${s.sc==="grp"?`<span class="hint">1~${s.grp||3}화 한번에</span>`:s.k==="contract"?`<span class="hint">작품 1회 · 기한</span>`:s.k==="prod1"?`<span class="hint">회차별 · 순차</span>`:`<select class="in" data-i="${i}" data-c="sc">${Object.entries(SC_LABEL).map(([v,t])=>`<option value="${v}"${s.sc===v?" selected":""}>${t}</option>`).join("")}</select>`}</td>
       <td>${typeof s.upto==="object"&&s.upto?["i","e"].map(L=>`<div style="white-space:nowrap"><span class="hint">${L==="i"?"내부":"외부"}</span> 1~<input class="in n" style="width:52px" type="number" min="0" max="300" data-i="${i}" data-c="uptoL" data-l="${L}" value="${s.upto[L]||""}" placeholder="전체">화</div>`).join(""):s.sc==="ep"&&s.k!=="prod1"?`1~<input class="in n" style="width:52px" type="number" min="0" max="300" data-i="${i}" data-c="upto" value="${s.upto||""}" placeholder="전체">화`:`<span class="hint">전체</span>`}</td>
-      <td>${s.sc!=="work"&&s.k!=="prod1"&&s.k!=="burn"?`<input type="checkbox" data-i="${i}" data-c="par"${s.par?" checked":""} aria-label="${esc(s.n)} 병렬">`:""}</td>
+      <td>${s.side?`<span class="hint" title="영상 1차가 끝나면 1차본 기준으로 시작 · 성우 더빙 전까지 끝나면 됨 (11/04 회의)">1차본 기준<br>병행</span>`:s.sc!=="work"&&s.k!=="prod1"&&s.k!=="burn"?`<input type="checkbox" data-i="${i}" data-c="par"${s.par?" checked":""} aria-label="${esc(s.n)} 병렬">`:""}</td>
       <td>${s.conc==="ext"?`<span class="hint">외부 1~3화<br>(작가 승인과)</span>`:s.conc==="author"?`<span class="hint">1~3화<br>(승인과 병렬)</span>`:s.k!=="prod1"&&s.k!=="contract"?`<input type="checkbox" data-i="${i}" data-c="conc"${s.conc===true?" checked":""} aria-label="${esc(s.n)} 동시 시작">`:""}</td></tr>`;
   });
   h+=`</tbody><tfoot><tr><td>1화 기준 합계</td><td class="hint">병렬·동시 진행 제외 · 첫 묶음 기준</td>${VK.map(k=>`<td class="r">${tot(k)}</td>`).join("")}<td colspan="4"></td></tr></tfoot></table>
@@ -6160,7 +6178,7 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   const stepHit=(x,k)=>k==="agree"?/작가 동의/.test(x.r.rights||""):x.step===k;   // 판권 '미확인'은 작가 동의 확보 목록에서 제외
   const tgtOf=(x)=>wlTgt(x.r)||"미정";
   const L=rows.filter(x=>(!WLV.tgt||tgtOf(x)===WLV.tgt)&&(!WLV.cat||x.r.cat===WLV.cat)&&(!WLV.step||stepHit(x,WLV.step))&&(!WLV.genre||gOf(x)===WLV.genre)&&(!WLV.q||wlNorm(x.r.name).includes(wlNorm(WLV.q))));
-  window.__WL_NAMES=L.map(x=>x.r.name);
+  window.__WL_NAMES=L.map(x=>x.r.name); window.__WL_ROWS=L.map(x=>x.r);
   const fd=(d)=>d?`${d.getUTCFullYear()%100}.${d.getUTCMonth()+1}.${d.getUTCDate()}`:"";
   const prodTxt=(x)=>{ if(!x.w) return ""; const ln=lineOf(x.w)==="ext"?"외부 제작":"내부 제작"; if(x.S&&x.S.held) return `<span class="wpill p-gray">${ln} · ${+x.w.done?"중단":"착수 대기"}</span>`;
     return `<span class="wpill p-blue">${ln}</span>${x.S?`<span class="wsub">${fd(x.S.L)} 런칭 · ${+x.w.done||0}/${x.S.N}화</span>`:""}`; };
@@ -6177,14 +6195,15 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   let h=`<div class="whead"><h2>작품 리스트</h2>
       <div class="wchips"><button type="button" data-wc="" class="${!WLV.cat?"on":""}">전체 <b>${rows.length}</b></button>${cats.map(c=>`<button type="button" data-wc="${c}" class="${WLV.cat===c?"on":""}">${c} <b>${cnt(x=>x.r.cat===c)}</b></button>`).join("")}
       <span class="wsep"></span>${WL_STEPS.map(([k,l])=>`<button type="button" data-ws="${k}" class="${WLV.step===k?"on":""}"${k==="agree"?' title="작가 동의를 확보한 작품 전체 (샘플 테스트 · 제작 중 · 런칭 포함)"':""}>${l}${k==="agree"?" 전체":""} <b>${cnt(x=>stepHit(x,k))}</b></button>`).join("")}</div>
-      <span class="sp"></span><input class="in wq" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}"><button type="button" class="btn" id="wlCopyAll" title="지금 보이는 작품명을 '* 작품명' 목록으로 복사">목록 복사 (${L.length})</button><button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
+      <span class="sp"></span><input class="in wq" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}"><button type="button" class="btn" id="wlCopyAll" title="지금 보이는 작품명을 '* 작품명' 목록으로 복사">목록 복사 (${L.length})</button><button type="button" class="btn" id="wlCopySel" title="체크한 작품만 '* 작품명' 목록으로 복사"${WLSEL.size?"":" disabled"}>선택 복사 (${WLSEL.size})</button><button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
     <p class="wdesc">후보 → 판권 확인 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 순서로 관리해요. 샘플 테스트는 외주사 관리, 제작 상황은 제작 일정에서 자동으로 가져와요.</p>
     <div class="wcards">${bar("타겟",[["남성향","#3B8FD9"],["여성향","#D6458A"],["여·남","#7F56C2"],["미정","#B8BFCC"]].map(([t,c])=>[t,cnt(x=>tgtOf(x)===t),c,t]),"tgt")}${bar("구분",cats.map((c,i)=>[c,cnt(x=>x.r.cat===c),["#1F2A44","#E5A32B","#2E9B6A"][i],c]),"cat")}${bar("장르",genres,"genre")}${bar("진행 단계",WL_STEPS.map(([k,l])=>[l,cnt(x=>x.step===k),SC[k],k]),"step")}</div>`;
   const act=[WLV.tgt,WLV.cat,WLV.step&&(WLV.step==="agree"?"작가 동의 확보 (샘플 · 제작 · 런칭 포함)":WL_STEPS[si(WLV.step)][1]),WLV.genre,WLV.q&&`'${WLV.q}'`].filter(Boolean);
   if(WLSEL.size) h+=`<div class="wselbar"><b>${WLSEL.size}작품 선택</b><span class="hint">Ctrl/⌘ + C로 메일용 텍스트 복사</span><span class="sp"></span><button type="button" class="btn pri" id="wlCopy">복사</button><button type="button" class="btn" id="wlClr">선택 해제</button></div>`;
   if(act.length) h+=`<div class="wfil">${act.map(esc).join(" · ")}만 보는 중 · ${L.length}작품 <button type="button" class="btn" id="wlAll">전체 보기</button></div>`;
-  h+=`<div class="wtw"><table class="wt"><thead><tr><th class="wtgh">타겟</th><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
+  h+=`<div class="wtw"><table class="wt"><thead><tr><th class="wck"><input type="checkbox" id="wlCkAll" aria-label="보이는 작품 모두 선택"></th><th class="wtgh">타겟</th><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
     ${L.map(x=>{ const r=x.r, cur=r.rights||"미확인", opts=RO.includes(cur)?RO:[cur,...RO]; return `<tr>
+      <td class="wck"><input type="checkbox" data-wck="${r.id}"${WLSEL.has(r.id)?" checked":""} aria-label="${esc(r.name)} 선택"></td>
       <td class="wtgc">${(()=>{ const t=wlTgt(r); return `<select class="wtg ${t==="남성향"?"t-m":t==="여성향"?"t-f":t==="여·남"?"t-mf":"t-n"} wls" data-wid="${r.id}" data-wk="tgt" title="타겟">${["","남성향","여성향","여·남"].map(o=>`<option value="${o}"${t===o?" selected":""}>${o||"미정"}</option>`).join("")}</select>`; })()}</td>
       <td class="wtt${WLSEL.has(r.id)?" sel":""}" data-wsel="${r.id}"><div class="wnm" data-notr title="클릭: 선택 · Shift+클릭: 여러 개 선택 · 더블클릭: 이름 수정">${esc(r.name)}</div><div class="wsub">${esc(r.genre||"장르 미정")} · ${r.no}번</div></td>
       <td><select class="wsel ${catCls[r.cat]||"s-gray"} wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
@@ -6210,6 +6229,14 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   v.querySelectorAll("[data-wc]").forEach(b=>b.onclick=()=>{ WLV.cat=b.dataset.wc; render(); });
   v.querySelectorAll("[data-ws]").forEach(b=>b.onclick=()=>{ WLV.step=WLV.step===b.dataset.ws?"":b.dataset.ws; render(); });
   v.querySelectorAll("[data-wf]").forEach(b=>b.onclick=()=>{ const k=b.dataset.wf, val=b.dataset.wv; WLV[k]=WLV[k]===val?"":val; render(); });
+  const cpTxt=(txt,n)=>{ const done=()=>toast(`${n}작품 목록을 복사했어요`);
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,()=>{ const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); });
+    else { const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); } };
+  v.querySelectorAll("input[data-wck]").forEach(c=>c.onchange=()=>{ const id=c.dataset.wck; const key2=[...WLSEL].find(x=>String(x)===id); if(c.checked){ if(key2==null) WLSEL.add(isNaN(+id)?id:(window.__WL_ROWS.find(r=>String(r.id)===id)||{}).id??id); } else if(key2!=null) WLSEL.delete(key2); render(); });
+  if($("wlCkAll")){ const rows=window.__WL_ROWS||[]; const all=rows.length&&rows.every(r=>WLSEL.has(r.id)); $("wlCkAll").checked=!!all; $("wlCkAll").indeterminate=!all&&rows.some(r=>WLSEL.has(r.id));
+    $("wlCkAll").onchange=(e)=>{ rows.forEach(r=>{ if(e.target.checked) WLSEL.add(r.id); else WLSEL.delete(r.id); }); render(); }; }
+  if($("wlCopySel")) $("wlCopySel").onclick=()=>{ const all=(typeof WL!=="undefined"?WL:[]).map(r=>Array.isArray(r)?null:r).filter(Boolean); const order=(window.__WL_ROWS||[]);
+    const picked=[...order.filter(r=>WLSEL.has(r.id)), ...all.filter(r=>WLSEL.has(r.id)&&!order.includes(r))]; cpTxt(picked.map(r=>"* "+r.name).join("\n"),picked.length); };
   if($("wlCopyAll")) $("wlCopyAll").onclick=()=>{ const txt=(window.__WL_NAMES||[]).map(n=>"* "+n).join("\n"); const done=()=>toast(`${(window.__WL_NAMES||[]).length}작품 목록을 복사했어요`);
     if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,()=>{ const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); });
     else { const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); } };
