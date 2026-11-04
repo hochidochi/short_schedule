@@ -2323,7 +2323,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.04-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.04-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -6195,7 +6195,7 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   let h=`<div class="whead"><h2>작품 리스트</h2>
       <div class="wchips"><button type="button" data-wc="" class="${!WLV.cat?"on":""}">전체 <b>${rows.length}</b></button>${cats.map(c=>`<button type="button" data-wc="${c}" class="${WLV.cat===c?"on":""}">${c} <b>${cnt(x=>x.r.cat===c)}</b></button>`).join("")}
       <span class="wsep"></span>${WL_STEPS.map(([k,l])=>`<button type="button" data-ws="${k}" class="${WLV.step===k?"on":""}"${k==="agree"?' title="작가 동의를 확보한 작품 전체 (샘플 테스트 · 제작 중 · 런칭 포함)"':""}>${l}${k==="agree"?" 전체":""} <b>${cnt(x=>stepHit(x,k))}</b></button>`).join("")}</div>
-      <span class="sp"></span><input class="in wq" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}"><button type="button" class="btn" id="wlCopyAll" title="지금 보이는 작품명을 '* 작품명' 목록으로 복사">목록 복사 (${L.length})</button><button type="button" class="btn" id="wlCopySel" title="체크한 작품만 '* 작품명 · 장르 · 타겟' 목록으로 복사"${WLSEL.size?"":" disabled"}>선택 복사 (${WLSEL.size})</button><button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
+      <span class="sp"></span><input class="in wq" id="wlQ" placeholder="작품명 검색" value="${esc(WLV.q)}"><button type="button" class="btn" id="wlCopyAll" title="지금 보이는 작품명을 '* 작품명' 목록으로 복사">목록 복사 (${L.length})</button><button type="button" class="btn" id="wlCopySel" title="체크한 작품만 '* 작품명' 목록으로 복사"${WLSEL.size?"":" disabled"}>선택 복사 (${WLSEL.size})</button><button type="button" class="btn pri" id="wlAdd">+ 작품 추가</button></div>
     <p class="wdesc">후보 → 판권 확인 → 작가 동의 → 샘플 테스트 → 제작 → 런칭 순서로 관리해요. 샘플 테스트는 외주사 관리, 제작 상황은 제작 일정에서 자동으로 가져와요.</p>
     <div class="wcards">${bar("타겟",[["남성향","#3B8FD9"],["여성향","#D6458A"],["여·남","#7F56C2"],["미정","#B8BFCC"]].map(([t,c])=>[t,cnt(x=>tgtOf(x)===t),c,t]),"tgt")}${bar("구분",cats.map((c,i)=>[c,cnt(x=>x.r.cat===c),["#1F2A44","#E5A32B","#2E9B6A"][i],c]),"cat")}${bar("장르",genres,"genre")}${bar("진행 단계",WL_STEPS.map(([k,l])=>[l,cnt(x=>x.step===k),SC[k],k]),"step")}</div>`;
   const act=[WLV.tgt,WLV.cat,WLV.step&&(WLV.step==="agree"?"작가 동의 확보 (샘플 · 제작 · 런칭 포함)":WL_STEPS[si(WLV.step)][1]),WLV.genre,WLV.q&&`'${WLV.q}'`].filter(Boolean);
@@ -6229,7 +6229,7 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   v.querySelectorAll("[data-wc]").forEach(b=>b.onclick=()=>{ WLV.cat=b.dataset.wc; render(); });
   v.querySelectorAll("[data-ws]").forEach(b=>b.onclick=()=>{ WLV.step=WLV.step===b.dataset.ws?"":b.dataset.ws; render(); });
   v.querySelectorAll("[data-wf]").forEach(b=>b.onclick=()=>{ const k=b.dataset.wf, val=b.dataset.wv; WLV[k]=WLV[k]===val?"":val; render(); });
-  const wlLine=(r)=>`* ${r.name} · ${r.genre||"장르 미정"} · ${wlTgt(r)||"타겟 미정"}`;   // 작품명 · 장르 · 타겟
+  const wlLine=(r)=>`* ${r.name}`;   // 작품명만
   const cpTxt=(txt,n)=>{ const done=()=>toast(`${n}작품 목록을 복사했어요`);
     if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,()=>{ const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); });
     else { const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); done(); } };
