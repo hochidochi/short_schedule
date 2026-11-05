@@ -1167,6 +1167,10 @@ table.sot tr.so-int:not(.sogrp):hover td{background:#F5FAFD} table.sot tr.so-ext
 .winfo .fields.one .in{min-width:0}
 .winfo .fields.one select.in{max-width:150px} .winfo .fields.one input[type=text].in{width:120px}
 .winfo .fields.one input[type=number].in{width:64px} .winfo .fields.one input[type=date].in{width:132px}
+
+table.cal tr.aopr th.rl{background:#F3F0FF} table.cal tr.aopr td{font-size:13px;font-weight:700;background:#FAF8FF}
+table.cal tr.aopr td small{display:block;font-size:10px;font-weight:700;margin-top:1px}
+table.cal tr.aopr td.aok small{color:#1D6B3F} table.cal tr.aopr td.abad small{color:#C2272D} table.cal tr.aopr td.abad{background:#FDF1F1}
 </style>
 </head>
 <body>
@@ -2363,7 +2367,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.04-O";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.04-P";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2522,6 +2526,12 @@ function renderOpen(){
   const yb=(i)=>months[i].m===1?" y1":"";
   if(simST){ simTzs(simST).filter(t=>t.on&&t.date).sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{ const ti=mi(D(t.date)), nm=t.works||[];
       h+=`<tr class="sum tzxr"><th class="rl">${esc(t.name||"티저")} <span class="hint" style="font-weight:400">${esc(t.memo||`${nm.length}작품`)}</span></th>`+months.map((_,i)=>i===ti?`<td class="c${yb(i)} tzxc" title="${esc(`${t.date} ${t.name||"티저"}${t.memo?` · ${t.memo}`:""} · ${nm.join(" · ")}`)}"><b>${+t.date.slice(8)}일</b><small>티저</small></td>`:`<td class="c${yb(i)} z"></td>`).join("")+`</tr>`; }); }
+  // 11/04: AOP 제작플랜의 연재 작품 수 (연재 목표가 있으면 목표, 없으면 AOP 계산값) — 연재 중과 비교
+  if(L3===null){ L3=undefined; l3Load().then(()=>{ if(TAB==="open") safeRender(); }); }
+  if(L3){ try{ const MO3=l3Monthly(L3,l3Compute(L3)); const aopAt=(i)=>{ const mk=`${months[i].y}-${String(months[i].m).padStart(2,"0")}`, j=L3_M.indexOf(mk); if(j<0) return null;
+      const t=L3.target&&L3.target[j]; return t!=null&&t!==""?{v:+t,tg:true}:{v:+MO3.T.onair[j]||0,tg:false}; };
+    h+=`<tr class="sum aopr"><th class="rl">AOP 연재 목표 <span class="hint" style="font-weight:400">(작은 숫자 = 연재 중 − 목표)</span></th>`+months.map((_,i)=>{ const A=aopAt(i); if(!A||!A.v) return `<td class="c${yb(i)} z">–</td>`;
+      const d=(onAir[i]||0)-A.v; return `<td class="c${yb(i)} ${d>=0?"aok":"abad"}" title="AOP ${A.tg?"연재 목표":"계산"} ${A.v}작품 · 연재 중 ${onAir[i]||0}작품 (${d>=0?"+":""}${d})">${A.v}<small>${d>=0?"+":""}${d}</small></td>`; }).join("")+`</tr>`; }catch(e){ console.warn(e); } }
   h+=`<tr class="sum first"><th class="rl">신규 오픈</th>`+launchBy.map((a,i)=>`<td class="c${yb(i)}${a.length?" hot":" z"}" title="${a.map(x=>esc(x.w.n)).join(", ")}">${a.length||"–"}</td>`).join("")+`</tr>`;
   const COV=FORCE||OPEN_LINE!=="all"?null:coverageNow(), lowM=new Set((COV?COV.gaps:[]).map(x=>mi(x.t)));
   h+=`<tr class="sum last"><th class="rl">연재 중 <span class="hint" style="font-weight:400">${OPEN_LINE==="all"?`(빨강: ${MIN_ON_AIR}작품 미만인 주 있음)`:`(${LNLAB[OPEN_LINE]}만)`}</span></th>`+onAir.map((n,i)=>`<td class="c${yb(i)}${n?"":" z"}${lowM.has(i)?" low":""}" style="font-size:13px;font-weight:600;color:var(--ink2)" ${lowM.has(i)?`title="${MIN_ON_AIR}작품 미만인 주가 있습니다"`:""}>${n||"–"}</td>`).join("")+`</tr>`;
