@@ -1180,6 +1180,12 @@ table.cal tr.actr td.aok small{color:#1D6B3F} table.cal tr.actr td.abad small{co
 table.cal tr.lnr td{font-size:12px;font-weight:600;color:var(--ink2)}
 table.cal tr.lnr.int th.rl{box-shadow:inset 3px 0 0 var(--int)} table.cal tr.lnr.ext th.rl{box-shadow:inset 3px 0 0 var(--ext)}
 .lndot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:0} .lndot.int{background:var(--int)} .lndot.ext{background:var(--ext)}
+
+table.cal tr.lnaop td{font-size:12px;font-weight:600;color:#8A91A0;background:#FAFAFB}
+table.cal tr.lnaop.int th.rl,table.cal tr.lnaop.ext th.rl{font-weight:600;font-size:12px;color:#7A8293}
+table.cal tr.lnaop.int th.rl{box-shadow:inset 3px 0 0 var(--int)} table.cal tr.lnaop.ext th.rl{box-shadow:inset 3px 0 0 var(--ext)}
+table.cal tr.lnr td small{display:block;font-size:10px;font-weight:700;margin-top:1px}
+table.cal tr.lnr td.lok small{color:#1D6B3F} table.cal tr.lnr td.lbad small{color:#C2272D}
 </style>
 </head>
 <body>
@@ -2376,7 +2382,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.05-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.05-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2544,24 +2550,33 @@ function renderOpen(){
     for(let i=Math.max(0,lm);i<=Math.min(em,NM-1);i++){ onL.all[i]++; onL[ln][i]++; }
     if(lm>=0&&lm<NM){ laL.all[lm].push(w.n); laL[ln][lm].push(w.n); } });
   let aopOn=months.map(()=>null), aopLa=months.map(()=>null);
+  const aopOnL={int:months.map(()=>null),ext:months.map(()=>null)}, aopLaL={int:months.map(()=>null),ext:months.map(()=>null)};
+  const TMS={int:["내부 1","내부 2","내부 3"],ext:["외부 일본","외부 일본 외"]};
   if(L3){ try{ const MO3=l3Monthly(L3,l3Compute(L3)); months.forEach((mm,i)=>{ const mk=`${mm.y}-${String(mm.m).padStart(2,"0")}`, j=L3_M.indexOf(mk); if(j<0) return;
-      const t=L3.target&&L3.target[j]; aopOn[i]=t!=null&&t!==""?+t:(+MO3.T.onair[j]||null); aopLa[i]=+MO3.T.launch[j]||0; }); }catch(e){ console.warn(e); } }
+      const t=L3.target&&L3.target[j]; aopOn[i]=t!=null&&t!==""?+t:(+MO3.T.onair[j]||null); aopLa[i]=+MO3.T.launch[j]||0;
+      ["int","ext"].forEach(ln=>{ aopOnL[ln][i]=aopLineTarget(ln,mk); aopLaL[ln][i]=TMS[ln].reduce((a,t)=>a+(+((MO3.R.launch[t]||[])[j])||0),0); }); }); }catch(e){ console.warn(e); } }
   const COV=FORCE?null:coverageNow(), lowM=new Set((COV?COV.gaps:[]).map(x=>mi(x.t)));
   const grpRow=(t,hint)=>`<tr class="sum sgh"><th class="rl" title="${esc(hint||"")}">${t}</th>${months.map((_,i)=>`<td class="c${yb(i)}"></td>`).join("")}</tr>`;
   const aopRow=(arr,lab)=>`<tr class="sum aopr"><th class="rl"><span class="sgi">ㄴ</span> ${lab}</th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
   const actRow=(arr,aop,lab,list,low)=>`<tr class="sum actr"><th class="rl"><span class="sgi">ㄴ</span> ${lab}</th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop[i], has=A!=null&&A>0, d=has?n-A:0;
       return `<td class="c${yb(i)}${n?"":" z"}${has?(d>=0?" aok":" abad"):""}${low&&low.has(i)?" low":""}" title="${list?esc(list[i].join(", ")):""}${has?` · AOP ${A} (${d>=0?"+":""}${d})`:""}">${n||"–"}${has?`<small>${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}</tr>`;
-  const lnRow=(arr,ln,lab,list)=>`<tr class="sum lnr ${ln}"><th class="rl"><span class="sgi">ㄴ</span> <i class="lndot ${ln}"></i>${lab}</th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x; return `<td class="c${yb(i)}${n?"":" z"}" title="${list?esc(list[i].join(", ")):""}">${n||"–"}</td>`; }).join("")}</tr>`;
+  const lnRow=(arr,ln,lab,list,aop)=>`<tr class="sum lnr ${ln}"><th class="rl"><span class="sgi">ㄴ</span> <i class="lndot ${ln}"></i>${lab}</th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop?aop[i]:null, has=A!=null&&A>0, d=has?n-A:0;
+      return `<td class="c${yb(i)}${n?"":" z"}${has?(d>=0?" lok":" lbad"):""}" title="${list?esc(list[i].join(", ")):""}${has?` · AOP ${A} (${d>=0?"+":""}${d})`:""}">${n||"–"}${has?`<small>${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}</tr>`;
+  const lnAop=(arr,ln,lab)=>`<tr class="sum lnaop ${ln}"><th class="rl"><span class="sgi">ㄴ</span> <i class="lndot ${ln}"></i>${lab}</th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
   h+=grpRow("연재 작품 수","그 달 연재 중 · 작은 숫자 = Actual − AOP");
   h+=aopRow(aopOn,"AOP");
   h+=actRow(onL.all,aopOn,"Actual",null,lowM);
-  h+=lnRow(onL.int,"int","내부 Actual");
-  h+=lnRow(onL.ext,"ext","외부 Actual");
+  h+=lnAop(aopOnL.int,"int","내부 AOP");
+  h+=lnRow(onL.int,"int","내부 Actual",null,aopOnL.int);
+  h+=lnAop(aopOnL.ext,"ext","외부 AOP");
+  h+=lnRow(onL.ext,"ext","외부 Actual",null,aopOnL.ext);
   h+=grpRow("런칭 작품 수","그 달 1화 오픈 · 칸에 마우스를 올리면 작품명");
   h+=aopRow(aopLa,"AOP");
   h+=actRow(laL.all,aopLa,"Actual",laL.all);
-  h+=lnRow(laL.int,"int","내부 Actual",laL.int);
-  h+=lnRow(laL.ext,"ext","외부 Actual",laL.ext).replace('<tr class="sum lnr ext">','<tr class="sum lnr ext last">');
+  h+=lnAop(aopLaL.int,"int","내부 AOP");
+  h+=lnRow(laL.int,"int","내부 Actual",laL.int,aopLaL.int);
+  h+=lnAop(aopLaL.ext,"ext","외부 AOP");
+  h+=lnRow(laL.ext,"ext","외부 Actual",laL.ext,aopLaL.ext).replace('<tr class="sum lnr ext">','<tr class="sum lnr ext last">');
   rows.forEach(({w,S,V},ri)=>{
     const far=mi(V.L)>=NM;
     h+=`<tr data-wid="${w.id}" class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><span class="drh" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>
