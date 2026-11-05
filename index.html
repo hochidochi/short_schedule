@@ -2367,7 +2367,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.04-P";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.05-B";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2529,8 +2529,9 @@ function renderOpen(){
   // 11/04: AOP 제작플랜의 연재 작품 수 (연재 목표가 있으면 목표, 없으면 AOP 계산값) — 연재 중과 비교
   if(L3===null){ L3=undefined; l3Load().then(()=>{ if(TAB==="open") safeRender(); }); }
   if(L3){ try{ const MO3=l3Monthly(L3,l3Compute(L3)); const aopAt=(i)=>{ const mk=`${months[i].y}-${String(months[i].m).padStart(2,"0")}`, j=L3_M.indexOf(mk); if(j<0) return null;
+      if(OPEN_LINE==="int"||OPEN_LINE==="ext"){ const lt=aopLineTarget(OPEN_LINE,mk); return lt!=null?{v:lt,tg:true,ln:OPEN_LINE}:null; }
       const t=L3.target&&L3.target[j]; return t!=null&&t!==""?{v:+t,tg:true}:{v:+MO3.T.onair[j]||0,tg:false}; };
-    h+=`<tr class="sum aopr"><th class="rl">AOP 연재 목표 <span class="hint" style="font-weight:400">(작은 숫자 = 연재 중 − 목표)</span></th>`+months.map((_,i)=>{ const A=aopAt(i); if(!A||!A.v) return `<td class="c${yb(i)} z">–</td>`;
+    h+=`<tr class="sum aopr"><th class="rl">AOP 연재 목표${OPEN_LINE==="int"?" · 내부":OPEN_LINE==="ext"?" · 외부":""} <span class="hint" style="font-weight:400">(작은 숫자 = 연재 중 − 목표)</span></th>`+months.map((_,i)=>{ const A=aopAt(i); if(!A||!A.v) return `<td class="c${yb(i)} z">–</td>`;
       const d=(onAir[i]||0)-A.v; return `<td class="c${yb(i)} ${d>=0?"aok":"abad"}" title="AOP ${A.tg?"연재 목표":"계산"} ${A.v}작품 · 연재 중 ${onAir[i]||0}작품 (${d>=0?"+":""}${d})">${A.v}<small>${d>=0?"+":""}${d}</small></td>`; }).join("")+`</tr>`; }catch(e){ console.warn(e); } }
   h+=`<tr class="sum first"><th class="rl">신규 오픈</th>`+launchBy.map((a,i)=>`<td class="c${yb(i)}${a.length?" hot":" z"}" title="${a.map(x=>esc(x.w.n)).join(", ")}">${a.length||"–"}</td>`).join("")+`</tr>`;
   const COV=FORCE||OPEN_LINE!=="all"?null:coverageNow(), lowM=new Set((COV?COV.gaps:[]).map(x=>mi(x.t)));
@@ -5766,6 +5767,11 @@ const L3_SEED={"inp":{"start":{"내부 1":[1.0,2.0,1.0,1.0,null,2.0,null,null,2.
    팀 블록: 내부 1·2·3 = 작업자 10명 × 작업 순서 6 (60행) · 외부 일본·일본 외 = 라인 150 × 3단 (450행)
    수식은 시트 열 기호(F 착수일, I 영업일, K 성우, L 기본 런칭, M 런칭, N 제작 완료, O 연재 종료, P, Q 다음 시즌, R 작품 순번)를 주석으로 표시 */
 const L3_TEAMS=["내부 1","내부 2","내부 3","외부 일본","외부 일본 외"];
+/* 11/05: AOP v4 '0/d. 월별 연재 작품 수' v.5 (시뮬 2560) 팀별 연재 목표 · 2027-02 ~ 2028-12 */
+const AOP_V5_START="2027-02", AOP_V5_TEAM={"내부 1": [1, 3, 4, 5, 6, 7, 8, 7, 5, 6, 4, 6, 7, 6, 7, 6, 7, 7, 6, 9, 8, 8, 9], "내부 2": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 7, 9, 10, 9, 5, 6, 7, 5, 7, 9, 10], "내부 3": [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 7, 9, 10, 9, 5, 6, 7, 5, 7, 9, 10], "외부 일본": [0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 3, 3, 2, 2, 4, 6, 8, 8, 10, 10, 10, 8], "외부 일본 외": [0, 0, 0, 1, 4, 6, 9, 10, 10, 12, 11, 9, 8, 9, 12, 16, 18, 23, 26, 25, 23, 24, 23]};
+const aopTeamTarget=(t,mk)=>{ const a=AOP_V5_TEAM[t]; if(!a) return null; const [y0,m0]=AOP_V5_START.split("-").map(Number), [y,m]=mk.split("-").map(Number); const i=(y-y0)*12+(m-m0); return i>=0&&i<a.length?a[i]:null; };
+const aopLineTarget=(line,mk)=>{ const ts=line==="int"?["내부 1","내부 2","내부 3"]:["외부 일본","외부 일본 외"]; const v=ts.map(t=>aopTeamTarget(t,mk)); return v.some(x=>x==null)?null:v.reduce((a,b)=>a+b,0); };
+
 const L3_INT=(t)=>t.startsWith("내부");
 const L3_M=(()=>{ const a=[]; for(let y=2026,m=7;y<2029;){ a.push(`${y}-${String(m).padStart(2,"0")}`); m++; if(m>12){m=1;y++;} } return a; })();   // 2026-07 ~ 2028-12 (30달)
 const l3d=(s)=>{ if(s==null||s==="") return null; const [y,m,d]=String(s).slice(0,10).split("-").map(Number); return Date.UTC(y,m-1,d||1)/86400000; };
@@ -5874,7 +5880,11 @@ function l3Vendors(S,rows){ const P=S.src||{}, cap=+P.cap||3, g2=+P.gap2||0, g3=
 /* ---------- 저장 (공유) ---------- */
 let L3=null, L3_SIG="", L3_T=0, L3_AT=null, L3V={open:{},list:false,cost:false,lev:true,hol:false,src:true};
 async function l3Load(){ let d=null; try{ if(SB.on){ const r=await sb("GET",T_CONF,"?id=eq.lp3&select=data"); d=r&&r.length&&r[0].data||null; } else d=lsGet("anime_lp3"); }catch(e){}
-  L3=d&&d.inp?d:clone(L3_SEED); if(!L3.src) L3.src=clone(L3_SEED.src); L3_AT=d&&d.at||null; L3_SIG=JSON.stringify(L3); }
+  L3=d&&d.inp?d:clone(L3_SEED); if(!L3.src) L3.src=clone(L3_SEED.src); L3_AT=d&&d.at||null; L3_SIG=JSON.stringify(L3);
+  if(!L3.m1105){   // 11/05: '연재 작품 수 (실제)' 줄에 적혀 있던 값이 AOP 연재 목표 → 목표 줄로 옮김 (예전 목표 값은 targetOld에 보관 · 실적 줄은 비움)
+    const has=(a)=>Array.isArray(a)&&a.some(x=>x!=null&&x!=="");
+    if(has(L3.actual)){ L3.targetOld=(L3.target||[]).slice(); L3.target=L3.actual.slice(); L3.actual=L3.actual.map(()=>""); }
+    L3.m1105=1; l3SaveSoon(); } }
 function l3SaveSoon(){ clearTimeout(L3_T); L3_T=setTimeout(l3Save,800); }
 async function l3Save(){ if(!L3) return; const sig=JSON.stringify(L3); if(sig===L3_SIG) return;
   try{ const data={...L3,at:new Date().toISOString(),by:(typeof lpWho==="function"?lpWho():"")}; if(!SB.on) lsSet("anime_lp3",data); else await sb("POST",T_CONF,"",[{id:"lp3",data,updated_at:data.at}],"resolution=merge-duplicates");
@@ -5935,7 +5945,9 @@ function renderPlan(){ const v=$("v-plan");
   if(L3V.open.lev2){ L3_TEAMS.forEach(t=>{ b+=inRow(`<span class="ind">영업일 · ${esc(t)}</span>`,`inp.bd.${t}`,S.inp.bd[t],null,"none"); }); L3_TEAMS.forEach(t=>{ b+=inRow(`<span class="ind">AI 비중 · ${esc(t)}</span>`,`inp.ai.${t}`,S.inp.ai[t],null,"none","0~1"); }); }
   b+=`<tr class="sxh"><td class="tl" colspan="${NM+5}">1. 연재 작품 수 <span class="hint">그 달 말 연재 중</span></td></tr>`;
   b+=`<tr class="lcx-s tot"><td class="tl"><b>연재 작품 수 (계산)</b> ${tog("on","팀별")}</td>${MO.T.onair.map((x,i)=>{ const t=S.target[i], has=t!=null&&t!==""; const d=has?x-t:0; return `<td class="${yb(i)}${has?(d>=0?" sxok":" sxbad"):""}">${n(x)}${has?`<small class="sxd">${d>=0?"+":""}${d}</small>`:""}</td>${ys(i)?`<td class="ysum">${n(x)}${x?"":""}</td>`:""}`; }).join("")}<td class="tsum">${n(MO.T.onair[NM-1])}</td></tr>`;
-  if(L3V.open.on) L3_TEAMS.forEach(t=>{ b+=row(`<span class="ind">ㄴ ${esc(t)}</span>`,MO.R.onair[t],"sub","end"); });
+  if(L3V.open.on) L3_TEAMS.forEach(t=>{ const arr=MO.R.onair[t];
+    b+=`<tr class="sub"><td class="tl"><span class="ind">ㄴ ${esc(t)}</span> <span class="sxbadge btg" title="AOP v4 · v.5 팀별 연재 목표와 비교">목표 v.5</span></td>${arr.map((x,i)=>{ const tg=aopTeamTarget(t,L3_M[i]); const has=tg!=null; const d=has?(+x||0)-tg:0;
+      return `<td class="${yb(i)}${has?(d>=0?" sxok":" sxbad"):""}" title="${has?`목표 ${tg} · 계산 ${+x||0}`:""}">${n(x)}${has?`<small class="sxd">${d>=0?"+":""}${d}</small>`:""}</td>${ys(i)?`<td class="ysum">${n(x)}</td>`:""}`; }).join("")}<td class="tsum">${n(arr[NM-1])}</td></tr>`; });
   b+=inRow(`ㄴ 연재 목표`,"target",S.target,null,"end");
   b+=inRow(`ㄴ 연재 작품 수 (실제)`,"actual",S.actual,null,"end");
   b+=`<tr class="sxh"><td class="tl" colspan="${NM+5}">2. 런칭</td></tr>`;
