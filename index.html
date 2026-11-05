@@ -1186,6 +1186,28 @@ table.cal tr.lnaop.int th.rl,table.cal tr.lnaop.ext th.rl{font-weight:600;font-s
 table.cal tr.lnaop.int th.rl{box-shadow:inset 3px 0 0 var(--int)} table.cal tr.lnaop.ext th.rl{box-shadow:inset 3px 0 0 var(--ext)}
 table.cal tr.lnr td small{display:block;font-size:10px;font-weight:700;margin-top:1px}
 table.cal tr.lnr td.lok small{color:#1D6B3F} table.cal tr.lnr td.lbad small{color:#C2272D}
+
+/* 11/05 요약 줄 위계: 묶음 띠(진한 남색) → 전체 AOP(연보라) · Actual(흰색 · 굵게) → 내부(하늘) · 외부(주황) AOP 옅게 · Actual 진하게 */
+table.cal tr.sgh th.rl{background:#2D3748!important;color:#fff!important;font-size:12.5px;font-weight:800;padding:6px 10px;letter-spacing:.01em}
+table.cal tr.sgh td{background:#2D3748!important;padding:0;height:6px;border-color:#2D3748!important}
+table.cal tr.aopr th.rl,table.cal tr.actr th.rl,table.cal tr.lnr th.rl,table.cal tr.lnaop th.rl{padding-top:3px;padding-bottom:3px}
+table.cal tr.aopr td{background:#F3F1FA;font-size:12px;font-weight:700;color:#5D5A75;padding-top:4px;padding-bottom:4px}
+table.cal tr.aopr th.rl{background:#F3F1FA}
+table.cal tr.actr td{background:#fff;font-size:14px;font-weight:800;color:var(--ink);border-bottom:2px solid #D5DBE5}
+table.cal tr.actr th.rl{background:#fff;border-bottom:2px solid #D5DBE5}
+table.cal tr.lnaop.int td,table.cal tr.lnaop.int th.rl{background:#F1F7FC;color:#8AA4BC;font-size:11.5px;font-weight:600;padding-top:2px;padding-bottom:2px}
+table.cal tr.lnr.int td,table.cal tr.lnr.int th.rl{background:#DDEDF9;color:#1E4F7E;font-size:12.5px;font-weight:800}
+table.cal tr.lnaop.ext td,table.cal tr.lnaop.ext th.rl{background:#FDF6EF;color:#BC9571;font-size:11.5px;font-weight:600;padding-top:2px;padding-bottom:2px}
+table.cal tr.lnr.ext td,table.cal tr.lnr.ext th.rl{background:#FBE5D2;color:#8A4A12;font-size:12.5px;font-weight:800}
+table.cal tr.lnr.int td,table.cal tr.lnr.int th.rl{border-bottom:1px solid #C3DDF1} table.cal tr.lnr.ext td,table.cal tr.lnr.ext th.rl{border-bottom:2px solid #D5DBE5}
+table.cal tr.actr td.abad{background:#FDEDED} table.cal tr.lnr td.lbad small,table.cal tr.actr td.abad small{color:#C2272D}
+.sgi{display:inline-block;width:6px} .sgi.l2{width:16px}
+.sgb{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 7px;line-height:1.5}
+.sgb.aop{border:1px dashed #9C97B8;color:#6B6690;background:transparent}
+.sgb.act{background:#2D3748;color:#fff}
+.sgb.aop.int{border-color:#9CC0DE;color:#5E87AA} .sgb.act.int{background:var(--int);color:#fff}
+.sgb.aop.ext{border-color:#E3B990;color:#A9733F} .sgb.act.ext{background:var(--ext);color:#fff}
+table.cal tr.lnr th.rl .lndot,table.cal tr.lnaop th.rl .lndot{display:none}
 </style>
 </head>
 <body>
@@ -2382,7 +2404,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.05-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.05-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2557,12 +2579,12 @@ function renderOpen(){
       ["int","ext"].forEach(ln=>{ aopOnL[ln][i]=aopLineTarget(ln,mk); aopLaL[ln][i]=TMS[ln].reduce((a,t)=>a+(+((MO3.R.launch[t]||[])[j])||0),0); }); }); }catch(e){ console.warn(e); } }
   const COV=FORCE?null:coverageNow(), lowM=new Set((COV?COV.gaps:[]).map(x=>mi(x.t)));
   const grpRow=(t,hint)=>`<tr class="sum sgh"><th class="rl" title="${esc(hint||"")}">${t}</th>${months.map((_,i)=>`<td class="c${yb(i)}"></td>`).join("")}</tr>`;
-  const aopRow=(arr,lab)=>`<tr class="sum aopr"><th class="rl"><span class="sgi">ㄴ</span> ${lab}</th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
-  const actRow=(arr,aop,lab,list,low)=>`<tr class="sum actr"><th class="rl"><span class="sgi">ㄴ</span> ${lab}</th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop[i], has=A!=null&&A>0, d=has?n-A:0;
+  const aopRow=(arr,lab)=>`<tr class="sum aopr"><th class="rl"><span class="sgi"></span><span class="sgb aop">${lab}</span></th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
+  const actRow=(arr,aop,lab,list,low)=>`<tr class="sum actr"><th class="rl"><span class="sgi"></span><span class="sgb act">${lab}</span></th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop[i], has=A!=null&&A>0, d=has?n-A:0;
       return `<td class="c${yb(i)}${n?"":" z"}${has?(d>=0?" aok":" abad"):""}${low&&low.has(i)?" low":""}" title="${list?esc(list[i].join(", ")):""}${has?` · AOP ${A} (${d>=0?"+":""}${d})`:""}">${n||"–"}${has?`<small>${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}</tr>`;
-  const lnRow=(arr,ln,lab,list,aop)=>`<tr class="sum lnr ${ln}"><th class="rl"><span class="sgi">ㄴ</span> <i class="lndot ${ln}"></i>${lab}</th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop?aop[i]:null, has=A!=null&&A>0, d=has?n-A:0;
+  const lnRow=(arr,ln,lab,list,aop)=>`<tr class="sum lnr ${ln}"><th class="rl"><span class="sgi l2"></span><i class="lndot ${ln}"></i><span class="sgb act ${ln}">${lab}</span></th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop?aop[i]:null, has=A!=null&&A>0, d=has?n-A:0;
       return `<td class="c${yb(i)}${n?"":" z"}${has?(d>=0?" lok":" lbad"):""}" title="${list?esc(list[i].join(", ")):""}${has?` · AOP ${A} (${d>=0?"+":""}${d})`:""}">${n||"–"}${has?`<small>${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}</tr>`;
-  const lnAop=(arr,ln,lab)=>`<tr class="sum lnaop ${ln}"><th class="rl"><span class="sgi">ㄴ</span> <i class="lndot ${ln}"></i>${lab}</th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
+  const lnAop=(arr,ln,lab)=>`<tr class="sum lnaop ${ln}"><th class="rl"><span class="sgi l2"></span><i class="lndot ${ln}"></i><span class="sgb aop ${ln}">${lab}</span></th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
   h+=grpRow("연재 작품 수","그 달 연재 중 · 작은 숫자 = Actual − AOP");
   h+=aopRow(aopOn,"AOP");
   h+=actRow(onL.all,aopOn,"Actual",null,lowM);
