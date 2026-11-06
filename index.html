@@ -1238,6 +1238,40 @@ details.monfold{margin:14px 0 6px} details.monfold>summary{cursor:pointer;list-s
 details.monfold>summary::before{content:"▸ ";color:var(--muted)} details.monfold[open]>summary::before{content:"▾ "}
 
 #v-open .calwrap{overflow:visible}   /* 표가 화면보다 넓어도 흰 바탕이 끝까지 */
+
+/* 11/06: 요약 줄 단순화 — 배지 · 바탕색 없이 텍스트로. 색은 AOP보다 부족한 칸(빨간 숫자)만 */
+#v-open table.cal tr.sgh th.rl,#v-open table.cal tr.sgh td{background:#F1F3F6!important;color:var(--ink)!important;border-color:var(--line)!important;box-shadow:none!important}
+#v-open table.cal tr.sgh th.rl{font-size:12px;font-weight:800;padding:4px 10px!important}
+#v-open table.cal tr.aopr td,#v-open table.cal tr.aopr th.rl,#v-open table.cal tr.lnaop td,#v-open table.cal tr.lnaop th.rl{background:#fff!important;color:#8A91A0!important;font-weight:500!important;font-size:11.5px!important;box-shadow:none!important}
+#v-open table.cal tr.actr td,#v-open table.cal tr.actr th.rl{background:#fff!important;color:var(--ink)!important;font-weight:800!important;box-shadow:none!important;border-bottom:1px solid var(--line)!important}
+#v-open table.cal tr.lnr td,#v-open table.cal tr.lnr th.rl{background:#fff!important;color:var(--ink)!important;font-weight:700!important;font-size:12px!important;box-shadow:none!important;border-bottom:1px solid var(--line)!important}
+#v-open table.cal tr.lnr.ext.last td,#v-open table.cal tr.lnr.ext.last th.rl{border-bottom:2px solid var(--line2)!important}
+#v-open .sgt{font-size:11.5px} #v-open .sgt.l2{padding-left:14px}
+#v-open table.cal tr.sum td.abad,#v-open table.cal tr.sum td.lbad,#v-open table.cal tr.sum td.low{background:#fff!important}
+#v-open table.cal tr.sum td.aok small,#v-open table.cal tr.sum td.lok small{color:#A0A6B2!important;font-weight:600}
+#v-open table.cal tr.sum td.abad small,#v-open table.cal tr.sum td.lbad small{color:#C2272D!important}
+#v-open table.cal tr.sum td.low{color:#C2272D!important}
+
+/* 11/06: 작품 줄 — 시뮬레이션 설정처럼 내부 / 외부 묶음 + 작품명 크게 */
+#v-open table.cal tr.ogrp th.rl{background:var(--int-bg);color:var(--int-ink);font-weight:800;font-size:12.5px;padding:5px 10px;box-shadow:inset 4px 0 0 var(--int);white-space:nowrap}
+#v-open table.cal tr.ogrp td{background:var(--int-bg);height:auto;padding:0;border-left-color:transparent}
+#v-open table.cal tr.ogrp.og-ext th.rl{background:var(--ext-bg);color:var(--ext-ink);box-shadow:inset 4px 0 0 var(--ext)} #v-open table.cal tr.ogrp.og-ext td{background:var(--ext-bg)}
+#v-open .ogdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:0;background:var(--int)} #v-open tr.og-ext .ogdot{background:var(--ext)}
+#v-open .ogn{font-weight:600;font-size:11.5px;opacity:.8;margin-left:4px}
+#v-open table.cal tr.ln-int[data-wid] th.rl,#v-open table.cal tr.ln-int.held th.rl{background:var(--int-prod)} #v-open table.cal tr.ln-ext[data-wid] th.rl,#v-open table.cal tr.ln-ext.held th.rl{background:var(--ext-prod)}
+#v-open table.cal tr[data-wid] .nm,#v-open table.cal tr.held .nm{font-size:13px;font-weight:700;color:var(--ink)}
+#v-open table.cal tr[data-wid] .rl .ln,#v-open table.cal tr.held .rl .ln{display:none}
+
+/* 11/06: 2027년 라인업 */
+details.lufold .lu{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto}
+table.lut{border-collapse:collapse;font-size:12.5px;width:100%}
+table.lut th,table.lut td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.lut th{font-weight:700;color:var(--ink2);white-space:nowrap}
+table.lut .r{text-align:right;white-space:nowrap}
+table.lusum{margin-bottom:14px;max-width:900px} table.lusum th{width:96px}
+table.lum thead th{background:#F6F7F9;font-size:12px} table.lum tr.emp td,table.lum tr.emp th{color:var(--muted)}
+table.lum tr.tot td,table.lum tr.tot th{font-weight:800;border-top:2px solid var(--line2)}
+.luw{display:block;line-height:1.55;white-space:nowrap} .luw .hint{margin-left:6px}
 #v-open table.cal tr[data-wid] td.c{background-clip:padding-box}
 #v-open table.cal thead th{top:var(--toph,0px);z-index:6}
 #v-open table.cal thead tr:nth-child(2) th{top:calc(var(--toph,0px) + 24px)}
@@ -2595,7 +2629,7 @@ function rowDrag(tbody){ if(!tbody) return; let drag=null;
     tr.ondragend=()=>{ tr.draggable=false; tr.classList.remove("dragging"); tbody.querySelectorAll(".dropb,.dropa").forEach(x=>x.classList.remove("dropb","dropa"));
       if(!drag) return; drag=null; const ids=[...tbody.querySelectorAll("tr[data-wid]")].map(x=>x.dataset.wid); const old=ordEnsure().filter(id=>!ids.includes(id));
       const all=SIM_WL().map(w=>w.id); ORD=[...ids,...old,...all.filter(id=>!ids.includes(id)&&!old.includes(id))]; ordSave(); render(); toast("순서를 바꿨어요 · 모두에게 저장"); };
-    tr.ondragover=(e)=>{ if(!drag||drag===tr) return; e.preventDefault(); const r=tr.getBoundingClientRect(), before=e.clientY<r.top+r.height/2;
+    tr.ondragover=(e)=>{ if(!drag||drag===tr) return; if(drag.dataset.ln&&tr.dataset.ln&&drag.dataset.ln!==tr.dataset.ln) return; e.preventDefault(); const r=tr.getBoundingClientRect(), before=e.clientY<r.top+r.height/2;
       tbody.querySelectorAll(".dropb,.dropa").forEach(x=>x.classList.remove("dropb","dropa")); tr.classList.add(before?"dropb":"dropa");
       // 같은 묶음(예: 행 사이 상세줄) 유지: 손잡이 있는 줄끼리만 이동
       if(before) tr.parentNode.insertBefore(drag,tr); else tr.parentNode.insertBefore(drag,tr.nextSibling); };
@@ -2606,9 +2640,26 @@ const aopKeyOf=(w)=>w.aopKey||w.n;
 function aopPickSel(w,simST){   // 11/06: AOP 임시 파이프라인에 숏리스트 작품(전체)을 골라 넣기
   const all=(WL||[]).map(r=>Array.isArray(r)?r[1]:r&&r.name).filter(Boolean);
   const used=new Set(((simST&&simST.extra)||[]).filter(x=>x.id!==w.id&&isAopW(x)&&x.aopPick).map(x=>x.n));
-  const real=new Set(WORKS.map(x=>x.n));
-  return `<select class="aopPick" data-aopk="${esc(aopKeyOf(w))}" title="이 파이프라인에 넣을 작품 고르기 (숏리스트 전체 ${all.length}작품)"><option value="">${w.aopPick?"↺ 임시 이름으로":"작품 선택"}</option>${all.map(n=>`<option value="${esc(n)}"${w.aopPick&&w.n===n?" selected":""}${used.has(n)?" disabled":""}>${esc(n)}${used.has(n)?" · 다른 파이프라인에 배정됨":real.has(n)?" · 제작 일정 있음":""}</option>`).join("")}</select>`; }
-function aopAssign(key,name){ const cur=SIMREG; let n=0;
+  const real=new Set(WORKS.map(x=>wlNorm(x.n)));
+  return `<select class="aopPick" data-aopk="${esc(aopKeyOf(w))}" title="이 파이프라인에 넣을 작품 고르기 (숏리스트 전체 ${all.length}작품)"><option value="">${w.aopPick?"↺ 임시 이름으로":"작품 선택"}</option>${all.map(n=>{ const sel=w.aopPick&&w.n===n, inReal=real.has(wlNorm(n));
+    return `<option value="${esc(n)}"${sel?" selected":""}${inReal&&!sel?" disabled":""}>${esc(n)}${inReal?" · 제작 일정에 있음":used.has(n)?" · 다른 파이프라인에서 옮겨옴":""}</option>`; }).join("")}</select>`; }
+function aopRelease(name,keepKey){   // 11/06: 같은 작품이 다른 파이프라인에 남아 있으면 그쪽은 임시 이름으로 되돌림
+  if(!SIMS||!name) return 0; const k=wlNorm(name); let n=0;
+  SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra) return; const fresh=!st.aopSig||st.aopSig===aopSig(st);
+    st.extra.forEach(x=>{ if(!(isAopW(x)&&x.aopPick)) return; if(keepKey&&aopKeyOf(x)===keepKey) return; if(wlNorm(x.n)!==k) return;
+      x.n=aopKeyOf(x); x.aopPick=false; if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; });
+    if(fresh) st.aopSig=aopSig(st); });
+  return n; }
+function aopDedupeLive(){   // 11/06: 화면을 그릴 때마다 확인 — 제작 일정 탭에 있는 작품 · 두 파이프라인에 같은 작품이 들어간 경우 정리
+  if(!SIMS) return 0; const real=new Set(WORKS.map(x=>wlNorm(x.n)).filter(Boolean)); let n=0; const names=new Set();
+  SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra) return; const fresh=!st.aopSig||st.aopSig===aopSig(st), seen=new Map();
+    st.extra.forEach(x=>{ if(!(isAopW(x)&&x.aopPick)) return; const k=wlNorm(x.n), key=aopKeyOf(x);
+      if(real.has(k)||(seen.has(k)&&seen.get(k)!==key)){ names.add(x.n); x.n=key; x.aopPick=false; if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; }
+      else seen.set(k,key); });
+    if(fresh) st.aopSig=aopSig(st); });
+  if(n){ simUse(SIMREG); simRegSaveSoon(); toast(`다른 파이프라인과 겹친 작품을 정리했어요: ${esc([...names].join(", "))} (겹친 쪽은 임시 이름으로)`); }
+  return n; }
+function aopAssign(key,name){ const cur=SIMREG; let n=0; if(name) aopRelease(name,key);
   SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra) return; st.extra.forEach(x=>{ if(!isAopW(x)) return; if(aopKeyOf(x)!==key) return;
     x.aopKey=key; x.aop=true; if(name){ x.n=name; x.aopPick=true; } else { x.n=key; x.aopPick=false; } if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; }); });
   simUse(cur); simRegSaveSoon(); render(); toast(name?`'${key}' 자리에 <${name}>을(를) 넣었어요 (JP · KR · GW)`:`'${key}'를 임시 이름으로 되돌렸어요`); }
@@ -2647,7 +2698,7 @@ function aopAutoGen(){ aopCut28(); aopFixPicksAll(); krLaunch1106(); aopRedo1106
   const changed=false;   // 일정이 바뀐 경우는 오픈 일정 안내 → 버튼으로 다시 맞춤 (자동 재조정은 무거워서 끔)
   if(!need) return;
   window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true,why:changed?"changed":"first"}).then(()=>{ setTimeout(()=>{ window.__aopAuto=false; },1500); }).catch(e=>console.warn(e)),300); }
-function renderOpen(){ aopAutoGen();
+function renderOpen(){ aopAutoGen(); aopDedupeLive();
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1}));
   const nowM=mi(TODAY), dataM=mi(D("2026-09-01"));   // 제작 현황 데이터 시작 월
   const simST=OPEN_SIM?simEnsure(OPEN_SREG):null;
@@ -2719,7 +2770,7 @@ function renderOpen(){ aopAutoGen();
     h+=mw.map(([a,i])=>card(`${months[i].y}년 ${months[i].m}월`,a)).join("");
     if(after.length) h+=card(`${YEND+1}년 이후`,after);
     if(!mw.length&&!after.length) h+=`<p class="hint">오픈 예정 작품이 없습니다. '제작 일정' 탭에서 작품을 추가하세요.</p>`;
-    h+=`</div></details>`;
+    h+=`</div></details><!--LU-->`;
   }
   h+=`<h2>작품별 월간 일정 <span class="hint" style="font-weight:400">${Y0}년 1월 ~ ${YEND}년 12월 · 옆으로 밀어서 보기${FORCE?` · ${md(FD)} 런칭 기준`:""}${OPEN_LINE!=="all"?` · <b>${LNLAB[OPEN_LINE]}만 보는 중</b>`:""} · ⋮⋮ 끌어서 순서 변경${ordEnsure().length?` <button type="button" class="btn" id="ordReset" style="padding:1px 8px;font-size:11.5px">런칭일 순서로</button>`:""}${simST?(()=>{ const n=SIMREGS.reduce((a,[rg])=>a+((SIMS&&SIMS[rg]&&SIMS[rg].extra)||[]).filter(w=>w.aop||/ AOP \d+\.\d+-\d+$/.test(w.n||"")).length,0);
       const stale=SIMREGS.some(([rg])=>SIMS&&SIMS[rg]&&SIMS[rg].aopSig&&SIMS[rg].aopSig!==aopSig(SIMS[rg]));
@@ -2735,6 +2786,7 @@ function renderOpen(){ aopAutoGen();
   if(L3===null){ L3=undefined; l3Load().then(()=>{ if(TAB==="open") safeRender(); }); }
   const byId=new Map(rows.map(r=>[r.w.id,r]));
   const allV=allAct.map(w=>{ if(byId.has(w.id)) return byId.get(w.id); const S=schedule(w); if(simST){ const x=simViewOf(w,S,simST); if(x) return {w,S:x.S,V:x.V}; } return {w,S,V:viewOf(S)}; });
+  h=h.replace("<!--LU-->",lineupHTML(allV,simST));
   const onL={all:months.map(()=>0),int:months.map(()=>0),ext:months.map(()=>0)}, laL={all:months.map(()=>[]),int:months.map(()=>[]),ext:months.map(()=>[])};
   allV.forEach(({w,V})=>{ if(!V||!V.L) return; const ln=lineOf(w)==="ext"?"ext":"int", lm=mi(V.L), em=mi(V.end);
     for(let i=Math.max(0,lm);i<=Math.min(em,NM-1);i++){ onL.all[i]++; onL[ln][i]++; }
@@ -2747,12 +2799,12 @@ function renderOpen(){ aopAutoGen();
       ["int","ext"].forEach(ln=>{ aopOnL[ln][i]=aopLineTarget(ln,mk); aopLaL[ln][i]=TMS[ln].reduce((a,t)=>a+(+((MO3.R.launch[t]||[])[j])||0),0); }); }); }catch(e){ console.warn(e); } }
   const COV=FORCE?null:coverageNow(), lowM=new Set((COV?COV.gaps:[]).map(x=>mi(x.t)));
   const grpRow=(t,hint)=>`<tr class="sum sgh"><th class="rl" title="${esc(hint||"")}">${t}</th>${months.map((_,i)=>`<td class="c${yb(i)}"></td>`).join("")}</tr>`;
-  const aopRow=(arr,lab)=>`<tr class="sum aopr"><th class="rl"><span class="sgi"></span><span class="sgb aop">${lab}</span></th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
-  const actRow=(arr,aop,lab,list,low)=>`<tr class="sum actr"><th class="rl"><span class="sgi"></span><span class="sgb act">${lab}</span></th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop[i], has=A!=null&&A>0, d=has?n-A:0;
+  const aopRow=(arr,lab)=>`<tr class="sum aopr"><th class="rl"><span class="sgt">${lab}</span></th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
+  const actRow=(arr,aop,lab,list,low)=>`<tr class="sum actr"><th class="rl"><span class="sgt">${lab}</span></th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop[i], has=A!=null&&A>0, d=has?n-A:0;
       return `<td class="c${yb(i)}${n?"":" z"}${has?(d>=0?" aok":" abad"):""}${low&&low.has(i)?" low":""}" title="${list?esc(list[i].join(", ")):""}${has?` · AOP ${A} (${d>=0?"+":""}${d})`:""}">${n||"–"}${has?`<small>${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}</tr>`;
-  const lnRow=(arr,ln,lab,list,aop)=>`<tr class="sum lnr ${ln}"><th class="rl"><span class="sgi l2"></span><i class="lndot ${ln}"></i><span class="sgb act ${ln}">${lab}</span></th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop?aop[i]:null, has=A!=null&&A>0, d=has?n-A:0;
+  const lnRow=(arr,ln,lab,list,aop)=>`<tr class="sum lnr ${ln}"><th class="rl"><span class="sgt l2">${lab}</span></th>${arr.map((x,i)=>{ const n=Array.isArray(x)?x.length:x, A=aop?aop[i]:null, has=A!=null&&A>0, d=has?n-A:0;
       return `<td class="c${yb(i)}${n?"":" z"}${has?(d>=0?" lok":" lbad"):""}" title="${list?esc(list[i].join(", ")):""}${has?` · AOP ${A} (${d>=0?"+":""}${d})`:""}">${n||"–"}${has?`<small>${d>=0?"+":""}${d}</small>`:""}</td>`; }).join("")}</tr>`;
-  const lnAop=(arr,ln,lab)=>`<tr class="sum lnaop ${ln}"><th class="rl"><span class="sgi l2"></span><i class="lndot ${ln}"></i><span class="sgb aop ${ln}">${lab}</span></th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
+  const lnAop=(arr,ln,lab)=>`<tr class="sum lnaop ${ln}"><th class="rl"><span class="sgt l2">${lab}</span></th>${arr.map((v,i)=>`<td class="c${yb(i)}${v?"":" z"}">${v||"–"}</td>`).join("")}</tr>`;
   h+=grpRow("연재 작품 수","그 달 연재 중 · 작은 숫자 = Actual − AOP");
   h+=aopRow(aopOn,"AOP");
   h+=actRow(onL.all,aopOn,"Actual",null,lowM);
@@ -2767,13 +2819,14 @@ function renderOpen(){ aopAutoGen();
   h+=lnRow(laL.int,"int","내부 Actual",laL.int,aopLaL.int);
   h+=lnAop(aopLaL.ext,"ext","외부 AOP");
   h+=lnRow(laL.ext,"ext","외부 Actual",laL.ext,aopLaL.ext).replace('<tr class="sum lnr ext">','<tr class="sum lnr ext last">');
-  rows.forEach(({w,S,V},ri)=>{
+  const cellMap=new Map(rows.map((r,i)=>[r.w.id,cellsOf[i]]));
+  const rowH=({w,S,V})=>{ let h="";
     const far=mi(V.L)>=NM;
-    h+=`<tr data-wid="${w.id}" class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><span class="drh" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>${isAopW(w)?`${w.aopPick?`<span class="hint aopk">${esc(aopKeyOf(w))}</span>`:""}${aopPickSel(w,simST)}`:(!w.simOnly&&(w.aopFrom||AOP_RX.test(w.n||"")))?(()=>{   // 11/06: 실제 작품으로 옮긴 AOP 작품도 작품 선택
+    h+=`<tr data-wid="${w.id}" data-ln="${lineOf(w)==="ext"?"ext":"int"}" class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><span class="drh" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>${isAopW(w)?`${w.aopPick?`<span class="hint aopk">${esc(aopKeyOf(w))}</span>`:""}${aopPickSel(w,simST)}`:(!w.simOnly&&(w.aopFrom||AOP_RX.test(w.n||"")))?(()=>{   // 11/06: 실제 작품으로 옮긴 AOP 작품도 작품 선택
       const all=(WL||[]).map(r=>Array.isArray(r)?r[1]:r&&r.name).filter(Boolean), used=new Set(WORKS.filter(x=>x.id!==w.id).map(x=>x.n));
       return `<select class="aopPick rwPick" data-rwid="${w.id}" title="이 작품에 넣을 원작 고르기 (제작 일정 작품명이 바뀌어요)"><option value="">작품 선택</option>${all.map(n=>`<option value="${esc(n)}"${used.has(n)?" disabled":""}>${esc(n)}${used.has(n)?" · 제작 일정 있음":""}</option>`).join("")}</select>`; })():""}
       ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${lineOf(w)==="ext"?(()=>{ const vs=vendorsOfWork(w.n); return vs.length?`<span class="vco" title="${esc(vs.map(v=>`${v.name} · ${vStep(v.stage||"contact")+1}. ${vStage(v.stage||"contact")}`).join("\n"))}">${esc(vs[0].name)}${vs.length>1?` +${vs.length-1}`:""}</span>`:`<span class="vco none" title="외주사 관리의 '진행 작품'에 이 작품명을 적으면 표시돼요">업체 미정</span>`; })():""}${far?ymd(V.L).slice(2):md(V.L)} 런칭${V.sim&&V.resume?` <span class="hint" title="${V.K}화 먼저 공개 → ${md(V.resume)}에 ${V.K+1}${V.resK>1?`~${V.K+V.resK}`:""}화 재개 · 제작 일정 탭 기준 ${md(V.base)}">(재개 ${md(V.resume)})</span>`:V.sim&&key(V.L)!==key(V.base)?` <span class="hint">(확정 ${md(V.base)})</span>`:""}${(FORCE||V.sim)&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE||V.sim||(S.seasons&&S.seasons.length>1)?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
-    cellsOf[ri].forEach((c,i)=>{
+    cellMap.get(w.id).forEach((c,i)=>{
       const cl=(i===nowM?" now":"")+yb(i)+(c.g&&c.n?" gap":"");
       const gt=c.g?` · 휴재 ${c.g}주`:"";
       if(c.st==="launch") h+=`<td class="c launch${cl}" title="${esc(w.n)} 런칭 ${ymd(V.L)} · ${S.K}화 동시 오픈${gt}">${V.L.getUTCDate()}일<small>${c.n}화</small></td>`;
@@ -2783,9 +2836,8 @@ function renderOpen(){ aopAutoGen();
       else if(c.st==="prod") h+=`<td class="c prod${cl}" title="${far&&i===NM-1?`제작 중 — ${ymd(V.L)} 런칭`:"제작 중"}">${far&&i===NM-1?`<span class="far">→</span>`:""}</td>`;
       else h+=`<td class="c${cl}"></td>`;
     });
-    h+=`</tr>`;
-  });
-  WORKS.filter(isHeld).filter(lineOk).sort((a,b)=>(isHire(holdOf(a))?1:0)-(isHire(holdOf(b))?1:0)||(a.pos||0)-(b.pos||0)).forEach(w=>{   // 재개 미정으로 중단된 작품: 중단 월부터 끝까지 '중단'
+    h+=`</tr>`; return h; };
+  const heldH=(w)=>{ let h="";   // 재개 미정으로 중단된 작품: 중단 월부터 끝까지 '중단'
     const S=schedule(w), p=holdOf(w), pm=mi(D(p.from)), pf=S.done>0?dataM:Math.max(0,mi(S.start0));
     h+=`<tr class="ln-${lineOf(w)} held"><th class="rl"><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>
       <span class="mt" style="margin-top:1px">${tbdTag(w,1)}<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span></span>
@@ -2795,8 +2847,12 @@ function renderOpen(){ aopAutoGen();
       else if(i>=pm) h+=`<td class="c pz${cl}" title="${esc(pauseTxt(w))}">${i===pm?"중단":""}</td>`;
       else if(i>=pf) h+=`<td class="c prod${cl}" title="제작 중"></td>`;
       else h+=`<td class="c${cl}"></td>`; });
-    h+=`</tr>`;
-  });
+    h+=`</tr>`; return h; };
+  const heldL=WORKS.filter(isHeld).filter(lineOk).sort((a,b)=>(isHire(holdOf(a))?1:0)-(isHire(holdOf(b))?1:0)||(a.pos||0)-(b.pos||0));
+  const lk=(w)=>lineOf(w)==="ext"?"ext":"int";
+  [["int","내부 제작"],["ext","외부 제작"]].forEach(([k,l])=>{ const rs=rows.filter(r=>lk(r.w)===k), hs=heldL.filter(w=>lk(w)===k); if(!rs.length&&!hs.length) return;
+    h+=`<tr class="ogrp og-${k}"><th class="rl"><i class="ogdot"></i>${l} <span class="ogn">${rs.length+hs.length}작품</span></th>${months.map((_,i)=>`<td class="c${yb(i)}"></td>`).join("")}</tr>`;
+    rs.forEach(r=>{ h+=rowH(r); }); hs.forEach(w=>{ h+=heldH(w); }); });
   h+=`</tbody></table></div>
   <div class="legend">
     <span><b>내부 제작</b> <i style="background:var(--int);margin-left:6px"></i>런칭 <i style="background:var(--int-bg)"></i>연재 <i style="background:repeating-linear-gradient(135deg,var(--int-prod) 0 4px,#F7F7F4 4px 8px)"></i>제작 중</span>
@@ -2813,9 +2869,10 @@ function renderOpen(){ aopAutoGen();
   if($("ordReset")) $("ordReset").onclick=()=>{ ORD=[]; ordSave(); render(); toast("런칭일 순서로 되돌렸어요"); };
   if($("oAopFill")) $("oAopFill").onclick=()=>simAopFill();
   { const tp=document.querySelector("header.top"); if(tp) document.documentElement.style.setProperty("--toph",tp.offsetHeight+"px"); }
-  document.querySelectorAll("#v-open details.monfold").forEach(d=>d.ontoggle=()=>{ window.__MONOPEN=d.open; });
+  document.querySelectorAll("#v-open details.monfold:not(.lufold)").forEach(d=>d.ontoggle=()=>{ window.__MONOPEN=d.open; });
+  document.querySelectorAll("#v-open details.lufold").forEach(d=>d.ontoggle=()=>{ window.__LUOPEN=d.open; });   // 페이지를 열 때는 항상 접힘
   document.querySelectorAll("#v-open select.aopPick:not(.rwPick)").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>aopAssign(sel.dataset.aopk,sel.value); });
-  document.querySelectorAll("#v-open select.rwPick").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>{ if(!sel.value) return; const w=WORKS.find(x=>x.id===sel.dataset.rwid); if(w) edit(w.id,[{p:["n"],v:sel.value}]); }; });
+  document.querySelectorAll("#v-open select.rwPick").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>{ if(!sel.value) return; const w=WORKS.find(x=>x.id===sel.dataset.rwid); if(!w) return; const nr=aopRelease(sel.value); if(nr){ simUse(SIMREG); simRegSaveSoon(); } edit(w.id,[{p:["n"],v:sel.value}]); if(nr) toast(`<${esc(sel.value)}>을(를) 넣고, 임시 파이프라인 ${nr}곳에 있던 같은 작품은 뺐어요`); }; });
   if((WL===null||WL===undefined)&&!window.__wlOpenLoad){ window.__wlOpenLoad=true; wlLoad().then(()=>{ if(TAB==="open") safeRender(); }).catch(()=>{}); }
   if($("oAopClear")) $("oAopClear").onclick=()=>{ if(confirm("AOP 맞춤으로 만든 임시 작품을 JP · KR · GW에서 모두 지울까요?")) simAopClear(); };
   if($("staffN")) $("staffN").onchange=(e)=>{ CONF.staff.n=+e.target.value; saveConf(); };
@@ -2834,6 +2891,39 @@ function renderOpen(){ aopAutoGen();
   document.querySelectorAll(".seg [data-ln]").forEach(b=>b.onclick=()=>{ OPEN_LINE=b.dataset.ln; try{ localStorage.setItem("anime_open_line",OPEN_LINE); }catch(e){} render(); });
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{SEL=b.dataset.go;setTab("prod");});
 }
+
+/* 11/06: 2027년 라인업 — 월별 런칭 작품 · 내부/외부 · 성별 타겟 · 장르 (오픈 일정 탭, 기본 접힘) */
+function lineupHTML(allV,simST){ const Y=2027, src=WL||WL_SEED||[];
+  const info=new Map(); src.forEach(r=>{ const nm=Array.isArray(r)?r[1]:r&&r.name; if(!nm) return; info.set(wlNorm(nm),{genre:(Array.isArray(r)?r[2]:r.genre)||"",tgt:wlTgt(Array.isArray(r)?{name:nm}:r)||""}); });
+  const its=[]; allV.forEach(({w,V})=>{ if(!V||!V.L||V.L.getUTCFullYear()!==Y) return;
+    const tmp=(isAopW(w)&&!w.aopPick)||(!w.simOnly&&AOP_RX.test(w.n||"")), ln=lineOf(w)==="ext"?"ext":"int", nm=tmp?aopKeyOf(w):w.n, I=tmp?null:(info.get(wlNorm(nm))||{genre:"",tgt:wlTgt({name:nm})||""});
+    let vend=""; if(ln==="ext"&&!tmp){ const vs=vendorsOfWork(nm); vend=vs.length?vs[0].name:"업체 미정"; }
+    its.push({w,V,m:V.L.getUTCMonth()+1,ln,tmp,nm,tgt:tmp?"":I.tgt,genre:tmp?"":I.genre,vend}); });
+  its.sort((a,b)=>a.V.L-b.V.L);
+  const N=its.length, pc=(n)=>N?Math.round(n/N*100):0, cnt=(a,f)=>a.filter(f).length;
+  const tally=(a,f,order)=>{ const m=new Map(); a.forEach(x=>{ const k=f(x); m.set(k,(m.get(k)||0)+1); }); const ks=[...m.keys()].sort((p,q)=>{ const ip=order?order.indexOf(p):-1, iq=order?order.indexOf(q):-1; if(ip>=0||iq>=0) return (ip<0?99:ip)-(iq<0?99:iq); return m.get(q)-m.get(p); }); return ks.map(k=>[k,m.get(k)]); };
+  const TG=["남성향","여성향","여·남","미정"], tgOf=(x)=>x.tmp?"미정":(x.tgt||"미정"), gOf=(x)=>x.tmp?"미정":(x.genre||"미정");
+  const nInt=cnt(its,x=>x.ln==="int"), nExt=N-nInt, nTmp=cnt(its,x=>x.tmp);
+  const txt=(arr,withPc)=>arr.length?arr.map(([k,n])=>`${esc(k)} ${n}${withPc?` (${pc(n)}%)`:""}`).join(", "):"–";
+  const vendT=tally(its.filter(x=>x.ln==="ext"),x=>x.tmp?"작품 미정 (임시)":x.vend);
+  const view=simST?`시뮬레이션 일정 · ${esc((SIMREGS.find(x=>x[0]===OPEN_SREG)||[])[1]||OPEN_SREG)} 기준`:"휴재 없는 일정 기준";
+  let h=`<details class="monfold lufold"${window.__LUOPEN?" open":""}><summary><h2 style="display:inline">${Y}년 라인업</h2> <span class="hint">${N}작품 런칭 · 내부 ${nInt} · 외부 ${nExt} · 눌러서 펼치기</span></summary><div class="lu">
+    <p class="hint" style="margin:0 0 8px">${view} · 내부 · 외부 전체 · 1화 오픈 월 기준${nTmp?` · '작품 미정'은 작품을 아직 고르지 않은 임시 파이프라인 ${nTmp}개`:""}</p>
+    <table class="lut lusum"><tbody>
+      <tr><th>전체 런칭</th><td><b>${N}작품</b></td></tr>
+      <tr><th>제작 라인</th><td>내부 ${nInt} (${pc(nInt)}%), 외부 ${nExt} (${pc(nExt)}%)</td></tr>
+      <tr><th>외부 업체별</th><td>${txt(vendT)}</td></tr>
+      <tr><th>성별 타겟</th><td>${txt(tally(its,tgOf,TG),true)}</td></tr>
+      <tr><th>장르</th><td>${txt(tally(its,gOf,null).sort((a,b)=>(a[0]==="미정")-(b[0]==="미정")||b[1]-a[1]),true)}</td></tr>
+    </tbody></table>
+    <table class="lut lum"><thead><tr><th>월</th><th class="r">런칭</th><th class="r">내부</th><th class="r">외부</th><th class="r">남성향</th><th class="r">여성향</th><th class="r">여·남</th><th class="r">타겟 미정</th><th>장르</th><th>작품</th></tr></thead><tbody>`;
+  for(let m=1;m<=12;m++){ const a=its.filter(x=>x.m===m), z=(n)=>n||"–";
+    h+=`<tr${a.length?"":` class="emp"`}><th>${m}월</th><td class="r"><b>${z(a.length)}</b></td><td class="r">${z(cnt(a,x=>x.ln==="int"))}</td><td class="r">${z(cnt(a,x=>x.ln==="ext"))}</td>
+      ${TG.map(t=>`<td class="r">${z(cnt(a,x=>tgOf(x)===t))}</td>`).join("")}
+      <td>${a.length?txt(tally(a,gOf,null)):"–"}</td>
+      <td>${a.map(x=>`<span class="luw">${md(x.V.L)} ${esc(x.nm)}<span class="hint">${x.ln==="ext"?`외부${x.vend?` (${esc(x.vend)})`:""}`:"내부"}${x.tmp?", 작품 미정":`, ${esc(x.genre||"장르 미정")}, ${esc(x.tgt||"타겟 미정")}`}</span></span>`).join("")||"–"}</td></tr>`; }
+  h+=`<tr class="tot"><th>합계</th><td class="r">${N}</td><td class="r">${nInt}</td><td class="r">${nExt}</td>${TG.map(t=>`<td class="r">${cnt(its,x=>tgOf(x)===t)}</td>`).join("")}<td colspan="2"></td></tr></tbody></table></div></details>`;
+  return h; }
 
 function staffPanel(){
   const o=staffOrder(); if(!o.length) return "";
