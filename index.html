@@ -2502,7 +2502,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-AC";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-AD";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2627,7 +2627,7 @@ function krLaunch1106(){   // 11/06: 한국 KR 1화 오픈일 — 소녀바둑 �
   WORKS.forEach(w=>{ const d=map[w.n], r=st.rows&&st.rows[w.id]; if(d&&r){ r.launchMode="fixed"; r.launch=d; } }); st.krL1106=1; simRegSaveSoon(); }
 function aopAutoGen(){ aopCut28(); aopFixPicksAll(); krLaunch1106();   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
   if(window.__aopAuto||!SIMS) return;
-  const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="yod-1106"));
+  const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="yod2-1106"));
   const changed=false;   // 일정이 바뀐 경우는 오픈 일정 안내 → 버튼으로 다시 맞춤 (자동 재조정은 무거워서 끔)
   if(!need) return;
   window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true,why:changed?"changed":"first"}).then(()=>{ setTimeout(()=>{ window.__aopAuto=false; },1500); }).catch(e=>console.warn(e)),300); }
@@ -2888,7 +2888,7 @@ function simAddWork(line){
   w.rate=defRate(w); SIM.extra.push(w); SIM.rows[id]=SIM_R0(w); render();
 }
 /* 11/05: AOP 런칭 수(내부 · 외부)에 맞춰 임시 작품을 시뮬레이션에만 만듦 — 지역 JP · KR · GW 모두 · 실제 작품 일정은 그대로 */
-const AOP_START_MAX="2027-12-31", AOP_YOD="2027-12", AOP_NEP=20;   // 임시 파이프라인 착수 상한
+const AOP_START_MAX="2027-12-31", AOP_START_MIN="2027-01-01", AOP_YOD="2027-12", AOP_NEP=25;   // 11/06: 임시 작품 25화 · 2027년 착수만 (2026년 착수분은 실제 제작 일정 작품으로)   // 임시 파이프라인 착수 상한
 const AOP_TMS={int:["내부 1","내부 2","내부 3"],ext:["외부 일본","외부 일본 외"]};
 async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'(내부 · 외부)에 맞춰 임시 파이프라인을 만듦 — 연재가 목표보다 넘치지 않게 런칭 수를 줄임
   if(!L3){ if(L3===null) L3=undefined; await l3Load(); } if(!L3){ toast("AOP 제작플랜을 불러오지 못했어요"); return; }
@@ -2923,11 +2923,25 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
           w.rate=defRate(w); const r=SIM_R0(w); r.launchMode="fixed"; r.launch=key(L); r.openK=3; r.pgap=""; r.name=nm; r.inc=true;
           let P=null; for(let t=0;t<30;t++){ const S=schedule(simX(w,r)); P=planOpens(S,r); if(P&&P.L&&key(P.L)===key(L)&&!P.hiatus) break; w.start=key(addDays(D(w.start),-14)); }
           if(w.start>AOP_START_MAX) continue;
+          if(SIM.aopConv1106&&w.start<AOP_START_MIN) continue;   // 2026년 착수는 이미 실제 작품으로 옮김
+          SIM.aopS2=(SIM.aopS2||0)+1; if(SIM.aopS2%2===0){ try{ const S1=schedule(w), e=S1.eps[AOP_NEP]&&S1.eps[AOP_NEP].cells.prod1&&S1.eps[AOP_NEP].cells.prod1.e;   // 절반은 시즌 2 (시즌 1 마지막 화 1차 영상 완료 + 한 달 착수 · 25화)
+              if(e){ const m=new Date(e.getTime()); m.setUTCMonth(m.getUTCMonth()+1); const rs=isBD(m)?m:nextBD(m); w.total=AOP_NEP*2; w.pauses=[{ep:AOP_NEP+1,from:key(e),resume:key(rs),season:true}]; } }catch(x){} }
           SIM.rows[id]=r; const V=vOfW(w)||P; if(!V||mkOf(V.L)>YM||mkOf(V.end||V.L)<YM||!fits(ln,V)){ delete SIM.rows[id]; continue; }   // 12월에 연재 중이어야 함
           SIM.extra.push(w); made++; addSpan(ln,V); left--; placed=true; break; }
         if(!placed) break; } });
-    SIM.aopGen="onair-1106"; SIM.aopGen2="yod-1106"; SIM.aopSig=aopSig(SIM); SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
-  simUse(cur); simRegSaveSoon(); render();
+    SIM.aopGen="onair-1106"; SIM.aopGen2="yod2-1106"; SIM.aopSig=aopSig(SIM); SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
+  simUse(cur);
+  if(SIMS.JP&&!SIMS.JP.aopConv1106){   // 11/06: 2026년 안에 착수해야 하는 임시 작품 → 실제 제작 일정 작품으로 (한 번만) · 모든 지역에서 임시 작품은 지움
+    const conv=(SIMS.JP.extra||[]).filter(w=>isAopW(w)&&(w.start||"")<AOP_START_MIN); let nc=0;
+    conv.forEach(w=>{ const r=SIMS.JP.rows[w.id]||{}, id="w"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), pos=Math.max(0,...WORKS.map(x=>x.pos||0))+1;
+      const nw=normW({id,pos,n:w.aopPick?w.n:aopKeyOf(w),line:w.line,voice:w.voice||"human",total:w.total,start:w.start,rate:w.rate||defRate(w),b1:w.b1||BATCH,
+        pauses:(w.pauses||[]).map(x=>({...x})),launch:r.launch||w.launch,launchAuto:!r.launch,owner:w.line==="ext"?"외부 제작사":"미정 (AOP 신규)",
+        ...(w.line==="ext"?{team:{prod1:"외부 제작사",prodF:"외부 제작사"}}:{}),aopFrom:aopKeyOf(w)});
+      WORKS.push(nw); nc++; if(SB.on){ (PENDING[id]=PENDING[id]||[]).push({p:["n"],v:nw.n}); pushWork(id); } else if(typeof saveLocal==="function") saveLocal(); });
+    const keys=new Set(conv.map(aopKeyOf));
+    SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st) return; st.extra=(st.extra||[]).filter(x=>{ if(isAopW(x)&&keys.has(aopKeyOf(x))){ delete st.rows[x.id]; return false; } return true; }); st.aopConv1106=1; });
+    if(nc){ toast(`2026년 안에 착수해야 하는 AOP 작품 ${nc}개를 제작 일정 탭의 실제 작품으로 만들었어요 · 나머지를 다시 계산해요`); return simAopFill({...opt,auto:true}); } }
+  simRegSaveSoon(); render();
   toast(`${opt.why==="changed"?"작품 일정이 바뀌어서 ":""}AOP 연재 작품 수에 맞춰 임시 파이프라인을 다시 만들었어요 · ${made}개 (작품을 고른 파이프라인은 그대로)${opt.auto?" · 자동":""}`);
 }
 function simAopClear(){ const cur=SIMREG; let n=0;
@@ -4203,7 +4217,7 @@ function toast(html){ const t=$("toast"); t.innerHTML=html; t.hidden=false; clea
 let AOP_REFIT_T=null;
 function aopRefitSoon(){   // 11/06: 작품 일정(시즌 2 추가 · 회차 · 착수일 등)이 바뀌면 바로 임시 파이프라인을 다시 맞춰 연재 · 런칭 수를 AOP에 맞춤
   clearTimeout(AOP_REFIT_T); AOP_REFIT_T=setTimeout(()=>{ try{
-    if(!SIMS||MIGRATING) return; const any=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopGen2==="yod-1106"); if(!any) return;   // 임시 파이프라인을 쓰는 중일 때만
+    if(!SIMS||MIGRATING) return; const any=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopGen2==="yod2-1106"); if(!any) return;   // 임시 파이프라인을 쓰는 중일 때만
     const changed=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopSig&&SIMS[rg].aopSig!==aopSig(SIMS[rg])); if(!changed) return;
     if(window.__aopAuto) return; window.__aopAuto=true;
     simAopFill({auto:true,why:"changed"}).catch(e=>console.warn(e)).finally(()=>{ setTimeout(()=>{ window.__aopAuto=false; },800); }); }catch(e){ console.warn(e); } },1200); }
