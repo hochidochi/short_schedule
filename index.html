@@ -1255,6 +1255,12 @@ tr.vctr td{background:#F8F9FB;padding:6px 12px} .vctin{display:flex;flex-wrap:wr
 .vctin .ve{min-width:120px}
 table.vt2 tr.vgh td{font-size:13.5px;font-weight:800;padding:8px 12px}
 #v-vendors .vtwrap{overflow:visible}
+
+table.vt2 td.c-nt .ve.vmemo2{background:#FFFBEA;border:1px solid #F1E3A6;border-radius:8px;padding:6px 8px;min-height:38px;white-space:pre-wrap;line-height:1.45;font-size:12px;color:#4A4433}
+table.vt2 td.c-nt .ve.vmemo2.empty{background:#FFFDF5;border-style:dashed}
+table.vt2 .c-nt{min-width:240px}
+
+.ssend{display:inline-flex;align-items:center;gap:4px;margin-right:10px} .ssend select{width:auto;min-height:30px;padding:2px 6px} .btn.sse{border-color:#C9B8F0;color:#5B3FB0}
 </style>
 </head>
 <body>
@@ -2458,7 +2464,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-I";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-K";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2550,7 +2556,7 @@ function aopAssign(key,name){ const cur=SIMREG; let n=0;
     x.aopKey=key; x.aop=true; if(name){ x.n=name; x.aopPick=true; } else { x.n=key; x.aopPick=false; } if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; }); });
   simUse(cur); simRegSaveSoon(); render(); toast(name?`'${key}' 자리에 <${name}>을(를) 넣었어요 (JP · KR · GW)`:`'${key}'를 임시 이름으로 되돌렸어요`); }
 function aopAutoGen(){   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
-  if(window.__aopAuto||!SIMS) return; const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen==="onair2-1106")); if(!need) return;
+  if(window.__aopAuto||!SIMS) return; const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106")); if(!need) return;
   window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true}).catch(e=>console.warn(e)),300); }
 function renderOpen(){ aopAutoGen();
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1}));
@@ -2819,7 +2825,10 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
     const cnt={int:{},ext:{},all:{}}, used={};
     const addSpan=(ln,P)=>{ if(!P||!P.L) return; let mk=mkOf(P.L); const end=mkOf(P.end||P.L); let g=0; while(mk<=end&&g++<60){ cnt[ln][mk]=(cnt[ln][mk]||0)+1; cnt.all[mk]=(cnt.all[mk]||0)+1; mk=mAdd(mk,1); } };
     const totTg=(mk)=>{ const j=L3_M.indexOf(mk); const t=j>=0&&L3.target?L3.target[j]:null; return t!=null&&t!==""?+t:null; };
-    SIM_WL().forEach(w=>{ const r=SIM.rows[w.id]; if(!r||r.inc===false) return; const S=schedule(simX(w,r)); if(S.held) return; addSpan(lineOf(w)==="ext"?"ext":"int",planOpens(S,r)); });
+    // 오픈 일정 [시뮬레이션 일정] 화면과 같은 방식으로 셈 (시뮬레이션 행이 없는 작품은 제작 일정 기준)
+    const vOfW=(w)=>{ const S=schedule(w); if(S.held) return null; const x=simViewOf(w,S,SIM); return x?x.V:viewOf(S); };
+    const base=ACT().concat((SIM.extra||[]).filter(w=>SIM.rows[w.id]&&SIM.rows[w.id].inc!==false));
+    base.forEach(w=>{ const V=vOfW(w); if(V&&V.L) addSpan(lineOf(w)==="ext"?"ext":"int",V); });
     L3_M.forEach(mk=>{ if(mk<nowMk) return; ["int","ext"].forEach(ln=>{ const tg=aopLineTarget(ln,mk); if(tg==null) return; let guard=0;
       const TT=totTg(mk);
       while((cnt[ln][mk]||0)<tg&&(TT==null||(cnt.all[mk]||0)<TT)&&guard++<12){   /* 라인 목표 · 전체 목표 둘 다 넘지 않게 */ const k=(used[ln+mk]=(used[ln+mk]||0)+1)-1;
@@ -2829,8 +2838,8 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
           ...(ln==="ext"?{team:{prod1:"외부 제작사",prodF:"외부 제작사"},owner:"외부 제작사"}:{})});
         w.rate=defRate(w); const r=SIM_R0(w); r.launchMode="fixed"; r.launch=key(L); r.openK=3; r.pgap=""; r.name=nm; r.inc=true;
         let P=null; for(let t=0;t<30;t++){ const S=schedule(simX(w,r)); P=planOpens(S,r); if(P&&P.L&&key(P.L)===key(L)&&!P.hiatus) break; w.start=key(addDays(D(w.start),-14)); }
-        SIM.extra.push(w); SIM.rows[id]=r; made++; addSpan(ln,P); } }); });
-    SIM.aopGen="onair2-1106"; SIMS[rg]=SIM; }
+        SIM.extra.push(w); SIM.rows[id]=r; made++; addSpan(ln,vOfW(w)||P); } }); });
+    SIM.aopGen="onair-1106"; SIM.aopGen2="cap2-1106"; SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
   simUse(cur); simRegSaveSoon(); render();
   toast(`AOP 연재 작품 수에 맞춰 임시 파이프라인을 다시 만들었어요 · ${made}개 (작품을 고른 파이프라인은 그대로)${opt.auto?" · 자동":""}`);
 }
@@ -3220,7 +3229,7 @@ function epCtl(w,S,k){
     return `<span class="epz ssn" title="${k}화부터 시즌 ${sn} · 1화 착수일 ${p.resume?ymd(D(p.resume)):"미정"}">시즌 ${sn} 1화 · 착수 ${p.resume?md(D(p.resume)):"미정"}</span><button type="button" class="epb" data-sseason="${k}" title="시즌 ${sn} 1화 착수일 바꾸기">착수일</button><button type="button" class="epb" data-unpause="${k}" title="시즌 구분을 없애고 이어서 계산">취소</button>`; }
   if(p&&p.resume) return `<span class="epz" title="${esc(pauseTxt(w))}">중단→${md(D(p.resume))} 재개</span><button type="button" class="epb" data-resume="${k}" title="재개일 바꾸기 · 지우기">재개일</button><button type="button" class="epb" data-unpause="${k}" title="중단 자체를 없애고 원래 일정으로">취소</button>`;
   if(k<=(+w.done||0)||S.held) return "";
-  return `<button type="button" class="epb" data-pause="${k}" title="${k}화부터 제작 중단">중단</button>${k<S.N&&!(w.pauses||[]).some(x=>x.ep===k+1)?`<button type="button" class="epb sse" data-send="${k}" title="${k}화에서 시즌을 끝내고 ${k+1}화부터 다음 시즌으로 계산">시즌 종료</button>`:""}`;
+  return `<button type="button" class="epb" data-pause="${k}" title="${k}화부터 제작 중단">중단</button>`;
 }
 function openSeason(w,k,anchor){   // 11/06: 다음 시즌 1화 착수일
   const pop=$("pop"), p=(w.pauses||[]).find(x=>x.ep===k)||{}, sn=(w.pauses||[]).filter(x=>x.season&&x.ep<k).length+2;
@@ -3645,7 +3654,9 @@ function renderProd(){
   }
   h+=`</tbody></table></div>`;
   h+=`<div class="epadd">${NR>lim||SHOWALL?`<button type="button" class="btn" id="more">${SHOWALL?"접기":`나머지 ${NR-lim}화 보기`}</button>`:""}
-    <span class="sp"></span><span class="hint">현재 총 ${S.N}화</span>
+    <span class="sp"></span>
+    <span class="ssend"><select class="in" id="ssEp" title="시즌을 끝낼 회차">${[...Array(Math.max(0,S.N-1))].map((_,i)=>i+1).filter(k=>!(w.pauses||[]).some(x=>x.ep===k+1)).map(k=>`<option value="${k}">${k}화</option>`).join("")}</select><button type="button" class="btn sse" id="ssGo" title="고른 회차에서 시즌을 끝내고 다음 회차부터 다음 시즌으로 계산">에서 시즌 종료</button></span>
+    <span class="hint">현재 총 ${S.N}화</span>
     <button type="button" class="btn" data-addep="-5"${S.N<=5?" disabled":""} title="마지막 5화 빼기">− 5화</button>
     <button type="button" class="btn" data-addep="-1"${S.N<=1?" disabled":""} title="마지막 1화 빼기">− 1화</button>
     <button type="button" class="btn" data-addep="1" title="1화 더하기">+ 1화</button>
@@ -3705,7 +3716,7 @@ function renderProd(){
     if(!confirm(`${k}화부터 제작을 중단합니다. 재개일을 정할 때까지 런칭은 '미정'으로 표시됩니다.`)) return;
     const others=(w.pauses||[]).filter(p=>p.ep<k&&p.resume);
     edit(w.id,[{p:["pauses"],v:[...others,{ep:k,from:key(from),resume:null}]}]); });
-  document.querySelectorAll("#v-prod [data-send]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openSeason(w,+b.dataset.send+1,b); });
+  if($("ssGo")) $("ssGo").onclick=(e)=>{ e.stopPropagation(); const k=+$("ssEp").value; if(k) openSeason(w,k+1,$("ssGo")); };
   document.querySelectorAll("#v-prod [data-sseason]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openSeason(w,+b.dataset.sseason,b); });
   document.querySelectorAll("#v-prod [data-resume]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openResume(w,+b.dataset.resume,b);});
   document.querySelectorAll("#v-prod [data-unpause]").forEach(b=>b.onclick=(e)=>{e.stopPropagation();
@@ -4492,7 +4503,11 @@ function vChkEditor(v,anchor,keep){
 const V_OWNERS=["Yunjeong","Haruki"];
 const vOwnerOf=(v)=>{ const o=(v.owner||"").trim(); if(!o) return "Yunjeong"; if(/haruki|하루키|春木/i.test(o)) return "Haruki"; if(/yunjeong|윤정|sophia/i.test(o)) return "Yunjeong"; return o; };
 let VCT=new Set();   // 연락처 펼친 업체
-function renderVendors(){
+function vMergePrice(){   // 11/06: 비고 · 단가 → 비고 하나로 (단가를 비고 끝에 붙이고 단가 칸은 비움)
+  if(window.__vMerged) return; window.__vMerged=true;
+  setTimeout(()=>{ (VENDORS||[]).filter(v=>(v.price||"").trim()).forEach(v=>{ const n=(v.note||"").trim(), pr=v.price.trim();
+    vEdit({op:"set",id:v.id,v:{note:n?(n.includes(pr)?n:`${n}\n${pr}`):pr,price:""}}); }); },300); }
+function renderVendors(){ vMergePrice();
   const L=vFiltered(), all=VENDORS.filter(v=>!VF.kind||vKind(v)===VF.kind), cnt=(f,k)=>all.filter(v=>f(v)===k).length;
   // 단계별 숫자는 국가·우선순위·담당자·검색 필터를 반영 (단계 필터만 제외)
   const qq=VF.q.trim().toLowerCase(), fx=all.filter(v=>(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.owner||vOwnerOf(v)===VF.owner)&&(!qq||JSON.stringify(v).toLowerCase().includes(qq)));
@@ -4523,7 +4538,7 @@ function renderVendors(){
   const linkify=(t)=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,(u)=>`<a href="${u}" target="_blank" rel="noopener" class="vml">${u.length>42?u.slice(0,40)+"…":u}</a>`);
   const TXK=new Set(["status","keyDate","next","interest","note","price","intro"]);   // 자동 번역 대상
   const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}"${v[k]&&TXK.has(k)?" data-tx data-notr":""} data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
-  { h+=`<div class="vtwrap"><table class="vt vt2"><thead><tr><th class="c-name">제작사</th><th class="c-pr">우선순위</th><th class="c-st">진행 단계</th><th class="c-sc">일정</th><th class="c-wk">진행 작품</th><th class="c-nt">비고 · 단가</th><th class="c-ow">담당</th><th class="c-ct">연락처</th><th></th></tr></thead><tbody>`;
+  { h+=`<div class="vtwrap"><table class="vt vt2"><thead><tr><th class="c-name">제작사</th><th class="c-pr">우선순위</th><th class="c-st">진행 단계</th><th class="c-sc">일정</th><th class="c-wk">진행 작품</th><th class="c-nt">비고</th><th class="c-ow">담당</th><th class="c-ct">연락처</th><th></th></tr></thead><tbody>`;
   const vRow=(v)=>{ const od=vOd(v);
     const home=(v.url||"").split(/\s+/).filter(Boolean)[0]||"", st=v.stage||"contact", si=vStep(st);
     h+=`<tr class="${["no","hold"].includes(st)?"off":""} pr-${v.prio||"mid"} k-${vKind(v)}">
@@ -4541,7 +4556,7 @@ function renderVendors(){
       <td class="c-sc">${ve(v,"status","+ 다음 할 일","vstat")}
         <div class="vone${od?" od":""}"><input type="date" class="vdate" data-vid="${v.id}" data-vk="to" value="${esc(vTo(v))}" title="일정 (예정일 · 기한)">${od?`<b class="vod">기한 지남</b>`:""}</div></td>
       <td class="c-wk">${ve(v,"interest","+ 작품")}</td>
-      <td class="c-nt">${ve(v,"note","+ 비고")}${ve(v,"price","+ 단가","vsub")}</td>
+      <td class="c-nt">${ve(v,"note","+ 메모","vmemo2")}</td>
       <td class="c-ow">${(()=>{ const cur=vOwnerOf(v); return `<select class="vown" data-vid="${v.id}" data-vk="owner" title="담당">${V_OWNERS.map(o=>`<option${cur===o?" selected":""}>${o}</option>`).join("")}${cur&&!V_OWNERS.includes(cur)?`<option selected>${esc(cur)}</option>`:""}</select>`; })()}</td>
       <td class="c-ct"><button type="button" class="vctb${VCT.has(v.id)?" on":""}" data-vct="${v.id}" title="상대 담당자 · 이메일 · 전화">${VCT.has(v.id)?"접기 ▴":"보기 ▾"}</button></td>
       <td class="c-act"><button type="button" class="vdel" data-vid="${v.id}" title="삭제">✕</button></td></tr>${VCT.has(v.id)?`<tr class="vctr"><td colspan="9"><div class="vctin"><span class="vctl">상대 담당자</span>${ve(v,"contact","+ 담당자")}<span class="vctl">이메일</span>${ve(v,"email","+ 이메일")}<span class="vctl">전화</span>${ve(v,"phone","+ 전화")}${v.upd?`<span class="hint" style="margin-left:auto">수정 ${esc(v.upd.slice(5).replace("-","/"))}${v.updBy?` · ${esc(v.updBy)}`:""}</span>`:""}</div></td></tr>`:""}`; };
