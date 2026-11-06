@@ -2505,7 +2505,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-AF";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-AG";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2571,7 +2571,10 @@ function forced(S,F){
 }
 function viewOf(S){
   if(FORCE) return forced(S,D(FORCE));
-  return {L:S.L,ok:true,op:[null,...S.eps.slice(1).map(e=>({open:e.open,slot:e.open,gap:0}))],hiatus:0,first:null,run:S.N,end:S.end};
+  const op=[null,...S.eps.slice(1).map(e=>({open:e.open,slot:e.open,gap:0}))];
+  if(S.seasons&&S.seasons.length>1) S.seasons.slice(1).forEach(sg=>{ const a=sg.a, prev=S.eps[a-1]&&S.eps[a-1].open; if(!prev||!op[a]) return;   // 11/06: 시즌 사이는 '쉼'
+    const sl=addDays(prev,7); let n=0; for(let x=sl;x<op[a].open;x=addDays(x,7)) n++; op[a]={...op[a],slot:sl,rest:n}; });
+  return {L:S.L,ok:true,op,hiatus:0,first:null,run:S.N,end:S.end};
 }
 /* 오픈 일정 보기: 전체 / 내부 제작 / 외부 제작 (이 브라우저에 기억) */
 let OPEN_LINE=(()=>{ try{ return localStorage.getItem("anime_open_line")||"all"; }catch(e){ return "all"; } })();
@@ -2633,7 +2636,12 @@ function aopFixPicksAll(){ if(!SIMS) return; let n=0, any=false;
 function krLaunch1106(){   // 11/06: 한국 KR 1화 오픈일 — 소녀바둑 · 냐한 남자 · 용사가 돌아왔다 3/15, 나이트런 3/29 (한 번만)
   const st=SIMS&&SIMS.KR; if(!st||st.krL1106) return; const map={"소녀바둑":"2027-03-15","냐한 남자":"2027-03-15","용사가 돌아왔다":"2027-03-15","나이트런":"2027-03-29"};
   WORKS.forEach(w=>{ const d=map[w.n], r=st.rows&&st.rows[w.id]; if(d&&r){ r.launchMode="fixed"; r.launch=d; } }); st.krL1106=1; simRegSaveSoon(); }
-function aopAutoGen(){ aopCut28(); aopFixPicksAll(); krLaunch1106();   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
+function aopRedo1106c(){   // 11/06: 외부 2027년 1월 착수 기준으로 다시 짜기 — 작품을 고르지 않은(이름 그대로) AOP 전환 작품은 지우고 처음부터 다시 (한 번만)
+  if(!SIMS||!SIMS.JP||SIMS.JP.aopRe1106c) return false;
+  const del=WORKS.filter(w=>w.aopFrom&&AOP_RX.test(w.n||"")); del.forEach(w=>delWork(w.id));
+  SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st) return; st.aopConv1106b=0; st.aopGen2=""; st.aopRe1106c=1; });
+  simRegSaveSoon(); if(del.length) toast(`작품을 고르지 않은 AOP 전환 작품 ${del.length}개를 지우고 새 기준(외부 2027.1 착수)으로 다시 만들어요`); return true; }
+function aopAutoGen(){ aopCut28(); aopFixPicksAll(); krLaunch1106(); aopRedo1106c();   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
   if(window.__aopAuto||!SIMS) return;
   const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="yod3-1106"));
   const changed=false;   // 일정이 바뀐 경우는 오픈 일정 안내 → 버튼으로 다시 맞춤 (자동 재조정은 무거워서 끔)
@@ -2761,8 +2769,10 @@ function renderOpen(){ aopAutoGen();
   h+=lnRow(laL.ext,"ext","외부 Actual",laL.ext,aopLaL.ext).replace('<tr class="sum lnr ext">','<tr class="sum lnr ext last">');
   rows.forEach(({w,S,V},ri)=>{
     const far=mi(V.L)>=NM;
-    h+=`<tr data-wid="${w.id}" class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><span class="drh" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>${isAopW(w)?`${w.aopPick?`<span class="hint aopk">${esc(aopKeyOf(w))}</span>`:""}${aopPickSel(w,simST)}`:""}
-      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${lineOf(w)==="ext"?(()=>{ const vs=vendorsOfWork(w.n); return vs.length?`<span class="vco" title="${esc(vs.map(v=>`${v.name} · ${vStep(v.stage||"contact")+1}. ${vStage(v.stage||"contact")}`).join("\n"))}">${esc(vs[0].name)}${vs.length>1?` +${vs.length-1}`:""}</span>`:`<span class="vco none" title="외주사 관리의 '진행 작품'에 이 작품명을 적으면 표시돼요">업체 미정</span>`; })():""}${far?ymd(V.L).slice(2):md(V.L)} 런칭${V.sim&&V.resume?` <span class="hint" title="${V.K}화 먼저 공개 → ${md(V.resume)}에 ${V.K+1}${V.resK>1?`~${V.K+V.resK}`:""}화 재개 · 제작 일정 탭 기준 ${md(V.base)}">(재개 ${md(V.resume)})</span>`:V.sim&&key(V.L)!==key(V.base)?` <span class="hint">(확정 ${md(V.base)})</span>`:""}${(FORCE||V.sim)&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE||V.sim?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
+    h+=`<tr data-wid="${w.id}" class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><span class="drh" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>${isAopW(w)?`${w.aopPick?`<span class="hint aopk">${esc(aopKeyOf(w))}</span>`:""}${aopPickSel(w,simST)}`:(!w.simOnly&&(w.aopFrom||AOP_RX.test(w.n||"")))?(()=>{   // 11/06: 실제 작품으로 옮긴 AOP 작품도 작품 선택
+      const all=(WL||[]).map(r=>Array.isArray(r)?r[1]:r&&r.name).filter(Boolean), used=new Set(WORKS.filter(x=>x.id!==w.id).map(x=>x.n));
+      return `<select class="aopPick rwPick" data-rwid="${w.id}" title="이 작품에 넣을 원작 고르기 (제작 일정 작품명이 바뀌어요)"><option value="">작품 선택</option>${all.map(n=>`<option value="${esc(n)}"${used.has(n)?" disabled":""}>${esc(n)}${used.has(n)?" · 제작 일정 있음":""}</option>`).join("")}</select>`; })():""}
+      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${lineOf(w)==="ext"?(()=>{ const vs=vendorsOfWork(w.n); return vs.length?`<span class="vco" title="${esc(vs.map(v=>`${v.name} · ${vStep(v.stage||"contact")+1}. ${vStage(v.stage||"contact")}`).join("\n"))}">${esc(vs[0].name)}${vs.length>1?` +${vs.length-1}`:""}</span>`:`<span class="vco none" title="외주사 관리의 '진행 작품'에 이 작품명을 적으면 표시돼요">업체 미정</span>`; })():""}${far?ymd(V.L).slice(2):md(V.L)} 런칭${V.sim&&V.resume?` <span class="hint" title="${V.K}화 먼저 공개 → ${md(V.resume)}에 ${V.K+1}${V.resK>1?`~${V.K+V.resK}`:""}화 재개 · 제작 일정 탭 기준 ${md(V.base)}">(재개 ${md(V.resume)})</span>`:V.sim&&key(V.L)!==key(V.base)?` <span class="hint">(확정 ${md(V.base)})</span>`:""}${(FORCE||V.sim)&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE||V.sim||(S.seasons&&S.seasons.length>1)?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
     cellsOf[ri].forEach((c,i)=>{
       const cl=(i===nowM?" now":"")+yb(i)+(c.g&&c.n?" gap":"");
       const gt=c.g?` · 휴재 ${c.g}주`:"";
@@ -2804,7 +2814,8 @@ function renderOpen(){ aopAutoGen();
   if($("oAopFill")) $("oAopFill").onclick=()=>simAopFill();
   { const tp=document.querySelector("header.top"); if(tp) document.documentElement.style.setProperty("--toph",tp.offsetHeight+"px"); }
   document.querySelectorAll("#v-open details.monfold").forEach(d=>d.ontoggle=()=>{ window.__MONOPEN=d.open; });
-  document.querySelectorAll("#v-open select.aopPick").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>aopAssign(sel.dataset.aopk,sel.value); });
+  document.querySelectorAll("#v-open select.aopPick:not(.rwPick)").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>aopAssign(sel.dataset.aopk,sel.value); });
+  document.querySelectorAll("#v-open select.rwPick").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>{ if(!sel.value) return; const w=WORKS.find(x=>x.id===sel.dataset.rwid); if(w) edit(w.id,[{p:["n"],v:sel.value}]); }; });
   if((WL===null||WL===undefined)&&!window.__wlOpenLoad){ window.__wlOpenLoad=true; wlLoad().then(()=>{ if(TAB==="open") safeRender(); }).catch(()=>{}); }
   if($("oAopClear")) $("oAopClear").onclick=()=>{ if(confirm("AOP 맞춤으로 만든 임시 작품을 JP · KR · GW에서 모두 지울까요?")) simAopClear(); };
   if($("staffN")) $("staffN").onchange=(e)=>{ CONF.staff.n=+e.target.value; saveConf(); };
@@ -2896,7 +2907,7 @@ function simAddWork(line){
   w.rate=defRate(w); SIM.extra.push(w); SIM.rows[id]=SIM_R0(w); render();
 }
 /* 11/05: AOP 런칭 수(내부 · 외부)에 맞춰 임시 작품을 시뮬레이션에만 만듦 — 지역 JP · KR · GW 모두 · 실제 작품 일정은 그대로 */
-const AOP_START_MAX="2027-12-31", AOP_START_MIN="2027-01-01", AOP_YOD="2027-12", AOP_NEP=25;   // 11/06: 임시 작품 25화 · 2027년 착수만 (2026년 착수분은 실제 제작 일정 작품으로)   // 임시 파이프라인 착수 상한
+const AOP_EXT_MIN="2027-01-01", AOP_START_MAX="2027-12-31", AOP_START_MIN="2027-01-01", AOP_YOD="2027-12", AOP_NEP=25;   // 11/06: 임시 작품 25화 · 2027년 착수만 (2026년 착수분은 실제 제작 일정 작품으로)   // 임시 파이프라인 착수 상한
 const AOP_TMS={int:["내부 1","내부 2","내부 3"],ext:["외부 일본","외부 일본 외"]};
 async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'(내부 · 외부)에 맞춰 임시 파이프라인을 만듦 — 연재가 목표보다 넘치지 않게 런칭 수를 줄임
   if(!L3){ if(L3===null) L3=undefined; await l3Load(); } if(!L3){ toast("AOP 제작플랜을 불러오지 못했어요"); return; }
@@ -2931,6 +2942,7 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
           w.rate=defRate(w); const r=SIM_R0(w); r.launchMode="fixed"; r.launch=key(L); r.openK=3; r.pgap=""; r.name=nm; r.inc=true;
           let P=null; for(let t=0;t<30;t++){ const S=schedule(simX(w,r)); P=planOpens(S,r); if(P&&P.L&&key(P.L)===key(L)&&!P.hiatus) break; w.start=key(addDays(D(w.start),-14)); }
           if(w.start>AOP_START_MAX) continue;
+          if(ln==="ext"&&w.start<AOP_EXT_MIN) continue;   // 11/06: 외부 제작은 2027년 1월부터 착수
           if(SIM.aopConv1106b&&w.start<AOP_START_MIN) continue;   // 2026년 착수는 이미 실제 작품으로 옮김
           SIM.aopS2=(SIM.aopS2||0)+1; if(SIM.aopS2%2===0){ try{ const S1=schedule(w), e=S1.eps[AOP_NEP]&&S1.eps[AOP_NEP].cells.prod1&&S1.eps[AOP_NEP].cells.prod1.e;   // 절반은 시즌 2 (시즌 1 마지막 화 1차 영상 완료 + 한 달 착수 · 25화)
               if(e){ const m=new Date(e.getTime()); m.setUTCMonth(m.getUTCMonth()+1); const rs=isBD(m)?m:nextBD(m); w.total=AOP_NEP*2; w.pauses=[{ep:AOP_NEP+1,from:key(e),resume:key(rs),season:true}]; } }catch(x){} }
@@ -2940,7 +2952,7 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
     SIM.aopGen="onair-1106"; SIM.aopGen2="yod3-1106"; SIM.aopSig=aopSig(SIM); SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
   simUse(cur);
   if(SIMS.JP&&!SIMS.JP.aopConv1106b){   // 11/06: 2026년 안에 착수해야 하는 임시 작품 → 실제 제작 일정 작품으로 (한 번만) · 모든 지역에서 임시 작품은 지움
-    const conv=(SIMS.JP.extra||[]).filter(w=>isAopW(w)&&(w.start||"")<AOP_START_MIN); let nc=0;
+    const conv=(SIMS.JP.extra||[]).filter(w=>isAopW(w)&&w.line!=="ext"&&(w.start||"")<AOP_START_MIN); let nc=0;
     conv.forEach(w=>{ const r=SIMS.JP.rows[w.id]||{}, id="w"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), pos=Math.max(0,...WORKS.map(x=>x.pos||0))+1;
       const nw=normW({id,pos,n:w.aopPick?w.n:aopKeyOf(w),line:w.line,voice:w.voice||"human",total:w.total,start:w.start,rate:w.rate||defRate(w),b1:w.b1||BATCH,
         pauses:(w.pauses||[]).map(x=>({...x})),launch:r.launch||w.launch,launchAuto:!r.launch,owner:w.line==="ext"?"외부 제작사":"미정 (AOP 신규)",
