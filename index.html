@@ -1291,7 +1291,8 @@ table.vt2 .c-nt{min-width:240px}
 .winfo .szb label,.szb label{display:flex;flex-direction:row;align-items:center;gap:4px;white-space:nowrap;margin:0} .szb .in.n{width:56px} .szb input[type=date]{width:128px}
 .szadd{align-self:center;border-style:dashed;color:#5B3FB0;border-color:#C9B8F0}
 
-.wtitle select.wtsel{font:inherit;font-size:22px;font-weight:800;border:1.5px solid var(--line);border-radius:10px;padding:2px 30px 2px 10px;background:#fff;max-width:420px}
+.wtitle .wtname{font-size:22px;font-weight:800;margin-right:6px}
+.wtitle select.wtsel{font:inherit;font-size:12px;font-weight:600;color:var(--ink2);border:1px solid var(--line);border-radius:8px;padding:2px 20px 2px 8px;background:#fff;width:70px;vertical-align:middle;cursor:pointer}
 .wtitle select.wtsel:focus{border-color:#1E40AF;outline:none}
 </style>
 </head>
@@ -2498,7 +2499,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-W";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-Y";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2606,7 +2607,7 @@ function vendorsOfWork(n){   // 11/06: 이 작품을 맡은(진행 작품에 적
   return VENDORS.filter(v=>vKind(v)!=="voice"&&!["no","hold"].includes(v.stage)&&wlNorm(v.interest||"").includes(k)).sort((a,b)=>vStep(b.stage||"contact")-vStep(a.stage||"contact")); }
 function aopAutoGen(){   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
   if(window.__aopAuto||!SIMS) return;
-  const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106"));
+  const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="cap3-1106"));
   const changed=!need&&SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopSig&&SIMS[rg].aopSig!==aopSig(SIMS[rg]));   // 11/06: 실제 작품 일정(시즌 2 추가 등)이 바뀌면 임시 파이프라인 자동 재조정
   if(!need&&!changed) return;
   window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true,why:changed?"changed":"first"}).then(()=>{ setTimeout(()=>{ window.__aopAuto=false; },1500); }).catch(e=>console.warn(e)),300); }
@@ -2885,13 +2886,17 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
       const TT=totTg(mk);
       while((cnt[ln][mk]||0)<tg&&(TT==null||(cnt.all[mk]||0)<TT)&&guard++<12){   /* 라인 목표 · 전체 목표 둘 다 넘지 않게 */ const k=(used[ln+mk]=(used[ln+mk]||0)+1)-1;
         let mon=D(mk+"-01"); while(mon.getUTCDay()!==1) mon=addDays(mon,1); const L=addDays(mon,7*(k%4)); const [yy,mm]=mk.split("-");
+        // 11/06: 이 작품이 연재되는 뒤쪽 달 중 이미 목표(라인 · 전체)를 채운 달이 있으면, 그 달 전에 끝나도록 회차 수를 줄임 → 목표를 넘지 않게
+        let lim=null; for(let t=1;t<=24;t++){ const m2=mAdd(mk,t); if(!L3_M.includes(m2)) break; const lt=aopLineTarget(ln,m2), T2=totTg(m2);
+          if((lt!=null&&(cnt[ln][m2]||0)>=lt)||(T2!=null&&(cnt.all[m2]||0)>=T2)){ lim=m2; break; } }
+        let NEP=SEASON_N; if(lim){ const wk=Math.ceil((D(lim+"-01")-L)/(7*864e5)); NEP=Math.min(SEASON_N,2+wk); if(NEP<6) break; }
         const id="a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), nm=`${ln==="ext"?"외부":"내부"} AOP ${+yy%100}.${+mm}-${k+1}`;
-        const w=normW({id,line:ln,n:nm,voice:"human",done:0,start:key(addDays(L,-7*26)),total:SEASON_N,b1:BATCH,simOnly:true,aop:true,aopKey:nm,
+        const w=normW({id,line:ln,n:nm,voice:"human",done:0,start:key(addDays(L,-7*26)),total:NEP,b1:BATCH,simOnly:true,aop:true,aopKey:nm,
           ...(ln==="ext"?{team:{prod1:"외부 제작사",prodF:"외부 제작사"},owner:"외부 제작사"}:{})});
         w.rate=defRate(w); const r=SIM_R0(w); r.launchMode="fixed"; r.launch=key(L); r.openK=3; r.pgap=""; r.name=nm; r.inc=true;
         let P=null; for(let t=0;t<30;t++){ const S=schedule(simX(w,r)); P=planOpens(S,r); if(P&&P.L&&key(P.L)===key(L)&&!P.hiatus) break; w.start=key(addDays(D(w.start),-14)); }
         SIM.extra.push(w); SIM.rows[id]=r; made++; addSpan(ln,vOfW(w)||P); } }); });
-    SIM.aopGen="onair-1106"; SIM.aopGen2="cap2-1106"; SIM.aopSig=aopSig(SIM); SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
+    SIM.aopGen="onair-1106"; SIM.aopGen2="cap3-1106"; SIM.aopSig=aopSig(SIM); SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
   simUse(cur); simRegSaveSoon(); render();
   toast(`${opt.why==="changed"?"작품 일정이 바뀌어서 ":""}AOP 연재 작품 수에 맞춰 임시 파이프라인을 다시 만들었어요 · ${made}개 (작품을 고른 파이프라인은 그대로)${opt.auto?" · 자동":""}`);
 }
@@ -3623,9 +3628,9 @@ function renderProd(){
       const ok=(WL||[]).filter(r=>r&&!Array.isArray(r)&&(/작가 동의|판권 계약/.test(r.rights||"")||r.cat==="제작 중")).map(r=>r.name).filter(Boolean);
       const used=new Set(WORKS.filter(x=>x.id!==w.id).map(x=>x.n)), names=[...new Set(ok)];
       const cur=w.n||"미정", inList=names.includes(cur)||cur==="미정";
-      return `<select class="wtsel" data-f="n" aria-label="작품명 (작가 동의 확보 작품 중 선택)" title="작가 동의 확보 · 판권 계약 완료 작품 중에서 골라요 (숏리스트 기준)">
-        <option value="미정"${cur==="미정"?" selected":""}>미정</option>${inList?"":`<option value="${esc(cur)}" selected>${esc(cur)} (목록에 없음)</option>`}
-        ${names.map(n=>`<option value="${esc(n)}"${n===cur?" selected":""}${used.has(n)&&n!==cur?" disabled":""}>${esc(n)}${used.has(n)&&n!==cur?" · 이미 제작 일정 있음":""}</option>`).join("")}</select>`; })()}
+      return `<span class="wtname">${esc(cur)}</span><select class="wtsel" data-f="n" aria-label="작품명 (작가 동의 확보 작품 중 선택)" title="작가 동의 확보 · 판권 계약 완료 작품 중에서 골라요 (숏리스트 기준)">
+        <option value="" selected disabled hidden>변경</option><option value="미정">${cur==="미정"?"✓ ":""}미정</option>
+        ${names.map(n=>`<option value="${esc(n)}"${used.has(n)&&n!==cur?" disabled":""}>${n===cur?"✓ ":""}${esc(n)}${used.has(n)&&n!==cur?" · 이미 제작 일정 있음":""}</option>`).join("")}</select>`; })()}
       ${ageBadge(w)}<span class="ln ${lineOf(w)}" style="font-size:11px;padding:1px 7px">${LINE_LABEL[lineOf(w)]}</span>${tbdTag(w)}${pauseOf(w)?`<span class="tag pzt">${esc(pauseShort(w))}</span>`:""}<span class="vo ${w.voice==="ai"?"ai":"human"}">${w.voice==="ai"?"AI 성우":"인간 성우"}</span>
       <span class="sp"></span><span class="winfo-sum">${S.held?"런칭 미정":`예상 런칭 <b>${ymd(S.L)}</b> · 완결 ${ymd(S.end)}`} · ${S.N}화 · 회차당 ${w.rate||"–"}영업일</span>
       <button type="button" class="btn" id="winfoT" style="padding:3px 10px">${PINFO?"작품 정보 접기 ▴":"작품 정보 펼치기 ▾"}</button>
@@ -3759,7 +3764,7 @@ function renderProd(){
     const fk=el.dataset.f; let v=el.value;
     if(["done","rate","total","b1"].includes(fk)){ v=parseInt(v,10); if(isNaN(v))return;
       const lm={done:[0,300],rate:[1,60],total:[1,300],b1:[1,300]}[fk]; v=clamp(v,lm[0],lm[1]); }
-    else if(fk==="n"){ v=v.trim()||"이름 없음"; }
+    else if(fk==="n"){ v=v.trim(); if(!v) return; }
     else if(fk==="nJa"){ v=v.trim(); if(!v){ edit(w.id,[{p:["nJa"],del:true}]); return; } }
     else if((fk==="start"||fk==="launch")&&!v) return;
     else if(fk==="start"){ v=key(snapBD(D(v))); }   // 착수일은 영업일로
@@ -4166,7 +4171,7 @@ function toast(html){ const t=$("toast"); t.innerHTML=html; t.hidden=false; clea
 let AOP_REFIT_T=null;
 function aopRefitSoon(){   // 11/06: 작품 일정(시즌 2 추가 · 회차 · 착수일 등)이 바뀌면 바로 임시 파이프라인을 다시 맞춰 연재 · 런칭 수를 AOP에 맞춤
   clearTimeout(AOP_REFIT_T); AOP_REFIT_T=setTimeout(()=>{ try{
-    if(!SIMS||MIGRATING) return; const any=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106"); if(!any) return;   // 임시 파이프라인을 쓰는 중일 때만
+    if(!SIMS||MIGRATING) return; const any=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopGen2==="cap3-1106"); if(!any) return;   // 임시 파이프라인을 쓰는 중일 때만
     const changed=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopSig&&SIMS[rg].aopSig!==aopSig(SIMS[rg])); if(!changed) return;
     if(window.__aopAuto) return; window.__aopAuto=true;
     simAopFill({auto:true,why:"changed"}).catch(e=>console.warn(e)).finally(()=>{ setTimeout(()=>{ window.__aopAuto=false; },800); }); }catch(e){ console.warn(e); } },1200); }
