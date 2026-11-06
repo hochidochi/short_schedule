@@ -1215,6 +1215,24 @@ table.cal tr.lnr th.rl .lndot,table.cal tr.lnaop th.rl .lndot{display:none}
 #v-open .calwrap{max-height:none;overflow-y:visible}
 select.aopPick{display:block;margin-top:3px;max-width:200px;font:inherit;font-size:11.5px;border:1px dashed #B8BFCC;border-radius:7px;padding:2px 4px;background:#fff;color:var(--ink2)}
 select.aopPick:hover{border-color:var(--ink)} .aopk{display:block;font-size:10.5px}
+
+/* 11/06: 오픈 일정 표 압축 (한눈에 보기) */
+#v-open table.cal tr[data-wid] th.rl{padding:3px 8px 3px 16px;line-height:1.2;vertical-align:middle}
+#v-open table.cal tr[data-wid] .drh{position:absolute;left:3px;top:50%;transform:translateY(-50%);font-size:10px;padding:0}
+#v-open table.cal tr[data-wid] .nm{font-size:12.5px;line-height:1.25;padding:0}
+#v-open table.cal tr[data-wid] .rl .tag,#v-open table.cal tr[data-wid] .rl .agebd,#v-open table.cal tr[data-wid] .rl [class*="badge"]{font-size:9.5px!important;padding:0 4px!important;line-height:1.5}
+#v-open table.cal tr[data-wid] .rl .mt{margin-top:1px;font-size:10.5px;gap:4px}
+#v-open table.cal tr[data-wid] .rl .ln{font-size:9.5px;padding:0 4px}
+#v-open table.cal tr[data-wid] td.c{height:28px;font-size:11px;line-height:1.1}
+#v-open table.cal tr[data-wid] td.c b,#v-open table.cal tr[data-wid] td.c strong{font-size:11.5px}
+#v-open table.cal tr[data-wid] td.c small,#v-open table.cal tr[data-wid] td.c .sub{font-size:9.5px}
+#v-open select.aopPick{display:inline-block;margin:0 0 0 6px;height:18px;padding:0 2px;font-size:10px;max-width:78px;vertical-align:middle}
+#v-open table.cal tr[data-wid] .nm{display:inline}
+#v-open .aopk{display:none}
+#v-open table.cal tr.sum th.rl{padding-top:2px!important;padding-bottom:2px!important}
+#v-open table.cal tr.sum td{padding-top:1px!important;padding-bottom:1px!important}
+#v-open table.cal tr.actr td,#v-open table.cal tr.lnr td{font-size:12px}
+#v-open table.cal tr.actr td small,#v-open table.cal tr.lnr td small{font-size:9px;margin-top:0}
 </style>
 </head>
 <body>
@@ -2411,7 +2429,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-C";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-D";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2497,7 +2515,7 @@ function aopPickSel(w,simST){   // 11/06: AOP 임시 파이프라인에 숏리�
   const all=(WL||[]).map(r=>Array.isArray(r)?r[1]:r&&r.name).filter(Boolean);
   const used=new Set(((simST&&simST.extra)||[]).filter(x=>x.id!==w.id&&isAopW(x)&&x.aopPick).map(x=>x.n));
   const real=new Set(WORKS.map(x=>x.n));
-  return `<select class="aopPick" data-aopk="${esc(aopKeyOf(w))}" title="이 파이프라인에 넣을 작품 고르기 (숏리스트 전체 ${all.length}작품)"><option value="">${w.aopPick?"↺ 임시 이름으로":"작품 선택…"}</option>${all.map(n=>`<option value="${esc(n)}"${w.aopPick&&w.n===n?" selected":""}${used.has(n)?" disabled":""}>${esc(n)}${used.has(n)?" · 다른 파이프라인에 배정됨":real.has(n)?" · 제작 일정 있음":""}</option>`).join("")}</select>`; }
+  return `<select class="aopPick" data-aopk="${esc(aopKeyOf(w))}" title="이 파이프라인에 넣을 작품 고르기 (숏리스트 전체 ${all.length}작품)"><option value="">${w.aopPick?"↺ 임시 이름으로":"작품 선택"}</option>${all.map(n=>`<option value="${esc(n)}"${w.aopPick&&w.n===n?" selected":""}${used.has(n)?" disabled":""}>${esc(n)}${used.has(n)?" · 다른 파이프라인에 배정됨":real.has(n)?" · 제작 일정 있음":""}</option>`).join("")}</select>`; }
 function aopAssign(key,name){ const cur=SIMREG; let n=0;
   SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra) return; st.extra.forEach(x=>{ if(!isAopW(x)) return; if(aopKeyOf(x)!==key) return;
     x.aopKey=key; x.aop=true; if(name){ x.n=name; x.aopPick=true; } else { x.n=key; x.aopPick=false; } if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; }); });
