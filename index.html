@@ -1281,6 +1281,9 @@ table.vt2 .c-nt{min-width:240px}
 #v-open table.cal thead th.now,#v-open table.cal thead th.cur{background:#F2B33D!important;color:#1B1E24!important}
 #v-open table.cal tr.sgh th.rl{background:#E9EDF5!important;color:#2D3748!important;font-size:12.5px;box-shadow:inset 4px 0 0 #2D3748}
 #v-open table.cal tr.sgh td{background:#E9EDF5!important;border-color:#E9EDF5!important;height:4px}
+
+.vco{display:inline-block;font-size:10px;font-weight:700;color:#8A4A12;background:#FFF;border:1px solid #F0C9A6;border-radius:5px;padding:0 5px;margin-right:4px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+.vco.none{color:#A9B0BD;border-style:dashed;border-color:#D5DBE5;font-weight:600}
 </style>
 </head>
 <body>
@@ -2484,7 +2487,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-P";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-R";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2579,6 +2582,9 @@ function aopSig(st){   // 실제 작품 · 직접 추가한 가상 작품의 일
   const x=ACT().map(w=>[w.id,w.line,w.total,w.done,w.start,w.rate,w.launch,w.launchAuto?1:0,JSON.stringify(w.pauses||[])]);
   const e=((st&&st.extra)||[]).filter(w=>!(isAopW(w)&&!w.aopPick)).map(w=>{ const r=(st.rows||{})[w.id]||{}; return [w.id,w.line,w.total,w.start,r.launch,r.launchMode,r.inc]; });
   const str=JSON.stringify([x,e]); let h=0; for(let i=0;i<str.length;i++){ h=(h*31+str.charCodeAt(i))|0; } return String(h); }
+function vendorsOfWork(n){   // 11/06: 이 작품을 맡은(진행 작품에 적힌) 외주 제작사 — 진행 불가 · 보류 제외, 단계가 높은 순
+  const k=wlNorm(n||""); if(!k||!Array.isArray(VENDORS)) return [];
+  return VENDORS.filter(v=>vKind(v)!=="voice"&&!["no","hold"].includes(v.stage)&&wlNorm(v.interest||"").includes(k)).sort((a,b)=>vStep(b.stage||"contact")-vStep(a.stage||"contact")); }
 function aopAutoGen(){   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
   if(window.__aopAuto||!SIMS) return;
   const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106"));
@@ -2707,7 +2713,7 @@ function renderOpen(){ aopAutoGen();
   rows.forEach(({w,S,V},ri)=>{
     const far=mi(V.L)>=NM;
     h+=`<tr data-wid="${w.id}" class="ln-${lineOf(w)}${LAST_EDIT&&LAST_EDIT.id===w.id&&Date.now()-LAST_EDIT.t<60000?" flash":""}"><th class="rl"><span class="drh" title="끌어서 순서 바꾸기">⋮⋮</span><button type="button" class="nm" data-go="${w.id}" title="제작 일정 보기">${esc(w.n)}${ageBadge(w)}</button>${isAopW(w)?`${w.aopPick?`<span class="hint aopk">${esc(aopKeyOf(w))}</span>`:""}${aopPickSel(w,simST)}`:""}
-      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${far?ymd(V.L).slice(2):md(V.L)} 런칭${V.sim&&V.resume?` <span class="hint" title="${V.K}화 먼저 공개 → ${md(V.resume)}에 ${V.K+1}${V.resK>1?`~${V.K+V.resK}`:""}화 재개 · 제작 일정 탭 기준 ${md(V.base)}">(재개 ${md(V.resume)})</span>`:V.sim&&key(V.L)!==key(V.base)?` <span class="hint">(확정 ${md(V.base)})</span>`:""}${(FORCE||V.sim)&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE||V.sim?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
+      ${w.tbd||pauseOf(w)?`<span class="mt" style="margin-top:1px">${tbdTag(w,1)}${pauseOf(w)?`<span class="tag pzt" style="font-size:10px;padding:0 5px">${esc(pauseShort(w))}</span>`:""}</span>`:""}<span class="mt"><span class="ln ${lineOf(w)}">${lineOf(w)==="ext"?"외부":"내부"}</span>${lineOf(w)==="ext"?(()=>{ const vs=vendorsOfWork(w.n); return vs.length?`<span class="vco" title="${esc(vs.map(v=>`${v.name} · ${vStep(v.stage||"contact")+1}. ${vStage(v.stage||"contact")}`).join("\n"))}">${esc(vs[0].name)}${vs.length>1?` +${vs.length-1}`:""}</span>`:`<span class="vco none" title="외주사 관리의 '진행 작품'에 이 작품명을 적으면 표시돼요">업체 미정</span>`; })():""}${far?ymd(V.L).slice(2):md(V.L)} 런칭${V.sim&&V.resume?` <span class="hint" title="${V.K}화 먼저 공개 → ${md(V.resume)}에 ${V.K+1}${V.resK>1?`~${V.K+V.resK}`:""}화 재개 · 제작 일정 탭 기준 ${md(V.base)}">(재개 ${md(V.resume)})</span>`:V.sim&&key(V.L)!==key(V.base)?` <span class="hint">(확정 ${md(V.base)})</span>`:""}${(FORCE||V.sim)&&V.hiatus?` · <span style="color:var(--hia);font-weight:600">휴재 ${V.hiatus}주</span>`:""}</span>${FORCE||V.sim?"":(()=>{const x=saveInfo(w);return x?`<span class="mt svl${!x.cont&&x.last<x.N?" warn":""}" title="런칭일에 최종본 완료 ${x.ready}화 중 ${S.K}화 동시 오픈 → 세이브 ${x.save}화. 같은 속도로 계속 만들면 ${x.cont?"계속":x.last+"화까지"} 휴재 없음">세이브 ${x.save}화 · ${x.cont?"시즌 2 바로 가능":x.last>=x.N?`시즌 휴재 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`}</span>`:"";})()}</th>`;
     cellsOf[ri].forEach((c,i)=>{
       const cl=(i===nowM?" now":"")+yb(i)+(c.g&&c.n?" gap":"");
       const gt=c.g?` · 휴재 ${c.g}주`:"";
@@ -3271,6 +3277,7 @@ function openSeason(w,k,anchor){   // 11/06: 다음 시즌 1화 착수일
     <div class="row" style="justify-content:flex-end;gap:8px"><button type="button" class="btn" id="ssX">닫기</button><button type="button" class="btn pri" id="ssA">저장</button></div>`;
   pop.hidden=false; const r=anchor.getBoundingClientRect(), cw=document.documentElement.clientWidth;
   pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+cw-356))+"px"; pop.style.top=(r.bottom+window.scrollY+6)+"px";
+  { const ph=pop.offsetHeight||300; if(r.bottom+ph+12>window.innerHeight) pop.style.top=Math.max(window.scrollY+8,r.top+window.scrollY-ph-6)+"px"; }   // 화면 아래가 모자라면 버튼 위로 띄움
   $("ssX").onclick=closePop;
   $("ssA").onclick=()=>{ const v=$("ssD").value; if(!v) return; const list=(w.pauses||[]).filter(x=>x.ep!==k); list.push({ep:k,from:p.from||key(TODAY),resume:key(snapBD(D(v))),season:true});
     const ops=[{p:["pauses"],v:list}]; if(addMode){ const n=Math.max(1,Math.min(200,+($("ssN").value)||N0)); ops.push({p:["total"],v:N0+n}); }
