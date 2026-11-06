@@ -1242,6 +1242,19 @@ details.monfold>summary::before{content:"▸ ";color:var(--muted)} details.monfo
 #v-open table.cal thead tr:nth-child(2) th{top:calc(var(--toph,0px) + 24px)}
 
 .epz.ssn{background:#EDE7FB;color:#5B3FB0} .epb.sse{border-color:#C9B8F0;color:#5B3FB0}
+
+/* 11/06 외주사 관리 정리 */
+table.vt2 thead th{position:sticky;top:var(--toph,0px);z-index:6;background:#2D3748!important;color:#fff!important;font-size:13px;font-weight:800;padding:10px 10px;border-color:#2D3748}
+table.vt2 th.c-name{min-width:200px} table.vt2 .c-pr{width:92px} table.vt2 .c-st{min-width:190px} table.vt2 .c-sc{min-width:230px} table.vt2 .c-wk{min-width:200px}
+table.vt2 .c-nt{min-width:200px;font-size:12px;color:var(--ink2)} table.vt2 .c-ow{width:96px} table.vt2 .c-ct{width:70px}
+table.vt2 td.c-nt .ve{font-size:12px} table.vt2 td.c-wk .ve{font-weight:700}
+.vone{display:flex;align-items:center;gap:6px;margin-top:4px} .vone .vdate{font-size:12px} .vone.od .vdate{color:var(--bad);border-color:var(--bad)}
+select.vown{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:7px;padding:2px 4px;background:#fff}
+.vctb{border:1px solid var(--line);background:#fff;border-radius:7px;font:inherit;font-size:11.5px;padding:2px 7px;cursor:pointer;white-space:nowrap} .vctb.on{background:#EEF1F6}
+tr.vctr td{background:#F8F9FB;padding:6px 12px} .vctin{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:12.5px} .vctl{font-size:11px;color:#8A91A0;font-weight:700}
+.vctin .ve{min-width:120px}
+table.vt2 tr.vgh td{font-size:13.5px;font-weight:800;padding:8px 12px}
+#v-vendors .vtwrap{overflow:visible}
 </style>
 </head>
 <body>
@@ -2445,7 +2458,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-H";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-I";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -4265,7 +4278,7 @@ async function vPull(force){
 function vFiltered(){
   const q=VF.q.trim().toLowerCase();
   const list=VENDORS.filter(v=>(!VF.kind||vKind(v)===VF.kind)&&(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.stage.size||VF.stage.has(v.stage||"contact"))
-    &&(!VF.owner||(v.owner||"").includes(VF.owner))&&(!q||JSON.stringify(v).toLowerCase().includes(q)));
+    &&(!VF.owner||vOwnerOf(v)===VF.owner)&&(!q||JSON.stringify(v).toLowerCase().includes(q)));
   const po={high:0,mid:1,low:2}, so=Object.fromEntries(V_STAGES.map((s,i)=>[s[0],i]));
   const nd=(v)=>vTo(v)||"9999";
   const last=(v)=>v.stage==="no"?1:0;   // 진행 불가는 항상 맨 아래
@@ -4476,19 +4489,22 @@ function vChkEditor(v,anchor,keep){
   pop.querySelectorAll("[data-ck]").forEach(el=>el.onchange=()=>{ const keepPos={left:pop.style.left,top:pop.style.top}, sy=window.scrollY; vChkToggle(VENDORS.find(x=>x.id===v.id),el.dataset.ck,el.checked); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor,keepPos); if(window.scrollY!==sy) window.scrollTo(0,sy); });
   pop.querySelectorAll("[data-cd]").forEach(el=>el.onchange=()=>{ const keepPos={left:pop.style.left,top:pop.style.top}, sy=window.scrollY; const vv=VENDORS.find(x=>x.id===v.id), cc={...vChk(vv),[el.dataset.cd]:el.value}; vEdit({op:"set",id:v.id,v:{chk:cc}}); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor,keepPos); if(window.scrollY!==sy) window.scrollTo(0,sy); });
 }
+const V_OWNERS=["Yunjeong","Haruki"];
+const vOwnerOf=(v)=>{ const o=(v.owner||"").trim(); if(!o) return "Yunjeong"; if(/haruki|하루키|春木/i.test(o)) return "Haruki"; if(/yunjeong|윤정|sophia/i.test(o)) return "Yunjeong"; return o; };
+let VCT=new Set();   // 연락처 펼친 업체
 function renderVendors(){
   const L=vFiltered(), all=VENDORS.filter(v=>!VF.kind||vKind(v)===VF.kind), cnt=(f,k)=>all.filter(v=>f(v)===k).length;
   // 단계별 숫자는 국가·우선순위·담당자·검색 필터를 반영 (단계 필터만 제외)
-  const qq=VF.q.trim().toLowerCase(), fx=all.filter(v=>(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.owner||(v.owner||"").includes(VF.owner))&&(!qq||JSON.stringify(v).toLowerCase().includes(qq)));
+  const qq=VF.q.trim().toLowerCase(), fx=all.filter(v=>(!VF.country.size||VF.country.has(V_COUNTRY.includes(v.country)?v.country:"기타"))&&(!VF.prio.size||VF.prio.has(v.prio||"mid"))&&(!VF.owner||vOwnerOf(v)===VF.owner)&&(!qq||JSON.stringify(v).toLowerCase().includes(qq)));
   const cntS=(k)=>fx.filter(v=>(v.stage||"contact")===k).length;
   const chip=(grp,k,label,n)=>`<button type="button" class="vchip${VF[grp].has(k)?" on":""}" data-vf="${grp}" data-k="${k}">${esc(label)} <span>${n}</span></button>`;
   const owners=[...new Set(all.flatMap(v=>(v.owner||"").split("/").map(x=>x.trim()).filter(Boolean)))];
   const overdue=all.filter(vOd).length;
   let h=`<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
-    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">제작사 ${all.filter(v=>vKind(v)!=="voice").length}곳 · 진행 중 ${all.filter(v=>vKind(v)!=="voice"&&!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">일정 기한 지남 ${overdue}곳</b>`:""}</span></p></div>
+    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">진행 중 ${all.filter(v=>vKind(v)!=="voice"&&!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">기한 지남 ${overdue}곳</b>`:""}</span></p></div>
     <span style="display:flex;gap:8px;align-items:center"><button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></span></div>
-  <div class="vkseg" role="group" aria-label="외주 구분">${[["","전체",VENDORS.length,"all"],...V_KINDS.map(([k,l])=>[k,l,VENDORS.filter(v=>vKind(v)===k).length,k])].map(([k,l,n,c])=>`<button type="button" class="vkb k-${c}" data-vk2="${k}" aria-pressed="${VF.kind===k}"><i></i>${l} <b>${n}</b></button>`).join("")}</div>
   ${vNextBoard(fx)}
+  <div class="vkseg" role="group" aria-label="외주 구분">${[["","전체",VENDORS.length,"all"],...V_KINDS.map(([k,l])=>[k,l,VENDORS.filter(v=>vKind(v)===k).length,k])].map(([k,l,n,c])=>`<button type="button" class="vkb k-${c}" data-vk2="${k}" aria-pressed="${VF.kind===k}"><i></i>${l} <b>${n}</b></button>`).join("")}</div>
   <div class="vpipe">
     <div class="vflow">${V_FLOW.map(([k,l],i)=>{const n=cntS(k);return `<button type="button" class="vstep${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><span class="vno">${i+1}</span><span class="vtx"><b>${n}</b>${l}</span></button>`;}).join("")}</div>
     <div class="vside"><span class="vsl">진행 외</span>${V_SIDE.map(([k,l])=>{const n=cntS(k);return `<button type="button" class="vsbtn ${k}${VF.stage.has(k)?" on":""}${n?"":" z"}" data-vf="stage" data-k="${k}"><b>${n}</b>${l}</button>`;}).join("")}</div>
@@ -4496,9 +4512,8 @@ function renderVendors(){
   <div class="card vfil">
     <span class="sog">국가</span>${(()=>{ const vid=VF.kind==="voice"?all:all.filter(v=>vKind(v)!=="voice"); return V_COUNTRY.map(c=>chip("country",c,c,vid.filter(v=>(V_COUNTRY.includes(v.country)?v.country:"기타")===c).length)).join(""); })()}
     <span class="sog">우선순위</span>${(()=>{ const vid=VF.kind==="voice"?all:all.filter(v=>vKind(v)!=="voice"); return V_PRIO.map(([k,l])=>chip("prio",k,l,vid.filter(v=>(v.prio||"mid")===k).length)).join(""); })()}
-    <span class="hint" style="font-size:11px">${VF.kind==="voice"?"성우 업체 기준":"영상 제작사 기준"}</span>
     <span class="vsp"></span>
-    <select class="in" id="vOwner"><option value="">컨택 담당자 전체</option>${owners.map(o=>`<option${VF.owner===o?" selected":""}>${esc(o)}</option>`).join("")}</select>
+    <select class="in" id="vOwner"><option value="">담당 전체</option>${V_OWNERS.map(o=>`<option${VF.owner===o?" selected":""}>${o}</option>`).join("")}</select>
     <select class="in" id="vSort">${[["prio","우선순위순"],["stage","진행 단계순"],["next","다음 액션 기한순"],["country","국가순"]].map(([k,l])=>`<option value="${k}"${VF.sort===k?" selected":""}>${l}</option>`).join("")}</select>
     <input class="in" id="vQ" placeholder="검색 (이름·담당·메모)" value="${esc(VF.q)}" style="width:180px">
     ${VF.country.size||VF.prio.size||VF.stage.size||VF.owner||VF.q?`<button type="button" class="btn" id="vClr" style="padding:2px 10px;font-size:12px">필터 초기화</button>`:""}
@@ -4508,7 +4523,7 @@ function renderVendors(){
   const linkify=(t)=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,(u)=>`<a href="${u}" target="_blank" rel="noopener" class="vml">${u.length>42?u.slice(0,40)+"…":u}</a>`);
   const TXK=new Set(["status","keyDate","next","interest","note","price","intro"]);   // 자동 번역 대상
   const ve=(v,k,ph,cls)=>`<div class="ve${cls?" "+cls:""}${v[k]?"":" empty"}${k==="note"?" vmemo":""}"${v[k]&&TXK.has(k)?" data-tx data-notr":""} data-vid="${v.id}" data-vk="${k}" tabindex="0" title="클릭해서 수정">${v[k]?(k==="note"?linkify(v[k]):esc(v[k])):`<span class="ph">${ph||"+"}</span>`}</div>`;
-  { h+=`<div class="vtwrap"><table class="vt"><thead><tr><th class="c-name">외주 제작사</th><th>우선순위</th><th>진행 단계</th><th>진행 상황 · 일정</th><th>관심 &amp; 배정 작품</th><th>비고 · 단가</th><th>컨택 담당</th><th>상대 담당자 연락처</th><th></th></tr></thead><tbody>`;
+  { h+=`<div class="vtwrap"><table class="vt vt2"><thead><tr><th class="c-name">제작사</th><th class="c-pr">우선순위</th><th class="c-st">진행 단계</th><th class="c-sc">일정</th><th class="c-wk">진행 작품</th><th class="c-nt">비고 · 단가</th><th class="c-ow">담당</th><th class="c-ct">연락처</th><th></th></tr></thead><tbody>`;
   const vRow=(v)=>{ const od=vOd(v);
     const home=(v.url||"").split(/\s+/).filter(Boolean)[0]||"", st=v.stage||"contact", si=vStep(st);
     h+=`<tr class="${["no","hold"].includes(st)?"off":""} pr-${v.prio||"mid"} k-${vKind(v)}">
@@ -4523,13 +4538,13 @@ function renderVendors(){
           <optgroup label="진행 외">${V_SIDE.map(([k,l])=>`<option value="${k}"${st===k?" selected":""}>${l}</option>`).join("")}</optgroup></select>
         ${si>=0?`<div class="vprog" title="${si+1} / ${V_FLOW.length} 단계">${V_FLOW.map((_,i)=>`<i class="${i<si?"d":i===si?"c":""}"></i>`).join("")}</div>`:`<div class="vprog off">${esc(vStage(st))}</div>`}
         ${["no"].includes(st)?"":(()=>{const ci=vChkInfo(v);return `<button type="button" class="vchkb${ci.done===ci.total?" ok":""}" data-vid="${v.id}" title="계약 준비 체크리스트">계약 준비 <b>${ci.done}/${ci.total}</b>${ci.done===ci.total?" ✓":` · 남은 ${ci.total-ci.done}개`}</button>`;})()}</td>
-      <td class="c-w2">${ve(v,"status","+ 진행 상황","vstat")}
-        <div class="vrng${od?" od":""}"><input type="date" class="vdate" data-vid="${v.id}" data-vk="from" value="${esc(vFrom(v))}" title="시작일"><span>~</span><input type="date" class="vdate" data-vid="${v.id}" data-vk="to" value="${esc(vTo(v))}" title="종료일 (기한)">${od?`<b class="vod">기한 지남</b>`:""}</div></td>
-      <td class="c-w">${ve(v,"interest","+ 작품")}</td>
-      <td class="c-w">${ve(v,"note","+ 비고")}${ve(v,"price","+ 단가","vsub")}</td>
-      <td>${ve(v,"owner","+ 담당")}</td>
-      <td class="c-w">${ve(v,"contact","+ 담당자")}${ve(v,"email","+ 이메일","vsub")}${ve(v,"phone","+ 전화","vsub")}</td>
-      <td class="c-act"><button type="button" class="vdel" data-vid="${v.id}" title="삭제">✕</button>${v.upd?`<div class="hint" style="font-size:10.5px;white-space:nowrap">${esc(v.upd.slice(5).replace("-","/"))}${v.updBy?`<br>${esc(v.updBy)}`:""}</div>`:""}</td></tr>`; };
+      <td class="c-sc">${ve(v,"status","+ 다음 할 일","vstat")}
+        <div class="vone${od?" od":""}"><input type="date" class="vdate" data-vid="${v.id}" data-vk="to" value="${esc(vTo(v))}" title="일정 (예정일 · 기한)">${od?`<b class="vod">기한 지남</b>`:""}</div></td>
+      <td class="c-wk">${ve(v,"interest","+ 작품")}</td>
+      <td class="c-nt">${ve(v,"note","+ 비고")}${ve(v,"price","+ 단가","vsub")}</td>
+      <td class="c-ow">${(()=>{ const cur=vOwnerOf(v); return `<select class="vown" data-vid="${v.id}" data-vk="owner" title="담당">${V_OWNERS.map(o=>`<option${cur===o?" selected":""}>${o}</option>`).join("")}${cur&&!V_OWNERS.includes(cur)?`<option selected>${esc(cur)}</option>`:""}</select>`; })()}</td>
+      <td class="c-ct"><button type="button" class="vctb${VCT.has(v.id)?" on":""}" data-vct="${v.id}" title="상대 담당자 · 이메일 · 전화">${VCT.has(v.id)?"접기 ▴":"보기 ▾"}</button></td>
+      <td class="c-act"><button type="button" class="vdel" data-vid="${v.id}" title="삭제">✕</button></td></tr>${VCT.has(v.id)?`<tr class="vctr"><td colspan="9"><div class="vctin"><span class="vctl">상대 담당자</span>${ve(v,"contact","+ 담당자")}<span class="vctl">이메일</span>${ve(v,"email","+ 이메일")}<span class="vctl">전화</span>${ve(v,"phone","+ 전화")}${v.upd?`<span class="hint" style="margin-left:auto">수정 ${esc(v.upd.slice(5).replace("-","/"))}${v.updBy?` · ${esc(v.updBy)}`:""}</span>`:""}</div></td></tr>`:""}`; };
   if(VF.kind) L.forEach(vRow);
   else V_KINDS.forEach(([k,l])=>{ const gl=L.filter(v=>vKind(v)===k); if(!gl.length) return;
     h+=`<tr class="vgh k-${k}"><td colspan="9">${l} 제작 <span class="hint">${gl.length}곳</span></td></tr>`; gl.forEach(vRow); });
@@ -4550,7 +4565,8 @@ function renderVendors(){
   if($("vClr")) $("vClr").onclick=()=>{ VF={country:new Set(),prio:new Set(),stage:new Set(),owner:"",q:"",sort:VF.sort,kind:VF.kind}; render(); };
   document.querySelectorAll("#v-vendors .vsel").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
   document.querySelectorAll("#v-vendors .vpen").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); vLinkEditor(VENDORS.find(x=>x.id===b.dataset.vid),b); });
-  document.querySelectorAll("#v-vendors .vcty,#v-vendors .vkind,#v-vendors .vdate").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
+  document.querySelectorAll("#v-vendors .vcty,#v-vendors .vkind,#v-vendors .vdate,#v-vendors .vown").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
+  document.querySelectorAll("#v-vendors [data-vct]").forEach(b=>b.onclick=()=>{ const id=b.dataset.vct; VCT.has(id)?VCT.delete(id):VCT.add(id); render(); });
   document.querySelectorAll("#v-vendors .vdel").forEach(b=>b.onclick=()=>{ const v=VENDORS.find(x=>x.id===b.dataset.vid); if(v&&confirm(`'${v.name}'을(를) 목록에서 삭제할까요? 모든 사람 화면에서 사라집니다.`)) vEdit({op:"del",id:v.id}); });
   document.querySelectorAll("#v-vendors .ve a.vml").forEach(a=>a.addEventListener("click",(e)=>e.stopPropagation()));
   document.querySelectorAll("#v-vendors .ve").forEach(el=>{ const go=(e)=>{ if(e&&e.target&&e.target.closest("a")) return; if(el.dataset.vk==="interest"){ if(e) e.stopPropagation(); vWorkPick(el); return; } vInline(el); }; el.onclick=go; el.onkeydown=(e)=>{ if(e.target.tagName==="TEXTAREA") return; if(e.key==="Enter"){ e.preventDefault(); go(); } }; });
