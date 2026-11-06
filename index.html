@@ -1237,7 +1237,8 @@ select.aopPick:hover{border-color:var(--ink)} .aopk{display:block;font-size:10.5
 details.monfold{margin:14px 0 6px} details.monfold>summary{cursor:pointer;list-style:none} details.monfold>summary::-webkit-details-marker{display:none}
 details.monfold>summary::before{content:"▸ ";color:var(--muted)} details.monfold[open]>summary::before{content:"▾ "}
 
-#v-open .calwrap{overflow:visible}
+#v-open .calwrap{overflow:visible}   /* 표가 화면보다 넓어도 흰 바탕이 끝까지 */
+#v-open table.cal tr[data-wid] td.c{background-clip:padding-box}
 #v-open table.cal thead th{top:var(--toph,0px);z-index:6}
 #v-open table.cal thead tr:nth-child(2) th{top:calc(var(--toph,0px) + 24px)}
 
@@ -1271,6 +1272,15 @@ table.vt2 .c-nt{min-width:240px}
 .vsml .no{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#E6F4EA;color:#1D6B3F;font-size:11px;font-weight:800}
 .vsml .hint{margin-left:auto} .vsmd{border:none;background:none;color:#9AA1AE;cursor:pointer}
 .vsmn{display:block;font-size:12.5px;margin:8px 0}
+
+/* 11/06: 오픈 일정 — 표 폭만큼 흰 바탕 이어지게 · 월 머리줄을 진한 남색으로 강조 · 연재/런칭 묶음 띠는 연한 색으로 */
+#v-open table.cal{background:var(--surface)}
+#v-open table.cal thead th{background:#2D3748!important;color:#fff!important;border-color:#3A4558!important}
+#v-open table.cal thead th.yr,#v-open table.cal thead tr:first-child th{font-size:13px;font-weight:800}
+#v-open table.cal thead tr:nth-child(2) th{font-size:12px;font-weight:700;color:#D7DCE5!important}
+#v-open table.cal thead th.now,#v-open table.cal thead th.cur{background:#F2B33D!important;color:#1B1E24!important}
+#v-open table.cal tr.sgh th.rl{background:#E9EDF5!important;color:#2D3748!important;font-size:12.5px;box-shadow:inset 4px 0 0 #2D3748}
+#v-open table.cal tr.sgh td{background:#E9EDF5!important;border-color:#E9EDF5!important;height:4px}
 </style>
 </head>
 <body>
@@ -2124,7 +2134,7 @@ const teaserTag_OLD=(w,sm)=>{ const T=TZC(); if(!T||!w) return ""; const i=(T.or
   return `<span class="tag tz"${sm?' style="font-size:10px;padding:0 5px"':""} title="티저 런칭 ${i+1}순위${T.first?` · ${T.first} 우선`:""}${d?` · ${d}`:" · 일정 미정"}">티저 ${"①②③④⑤⑥⑦⑧⑨"[i]||i+1}${T.first?` · ${T.first} 우선`:""}${d?` ${+d.slice(5,7)}/${+d.slice(8)}`:""}</span>`; };
 const tbdTag0=(w,sm)=>w.tbd?`<span class="tag tbd"${sm?' style="font-size:10px;padding:0 5px"':""}>담당 미정</span>`:"";
 const tbdTag=(w,sm)=>teaserTag(w,sm)+tbdTag0(w,sm);
-const pauseOf=(w)=>(w.pauses||[]).filter(p=>p.ep>(+w.done||0)||p.resume).sort((a,b)=>a.ep-b.ep)[0]||null;
+const pauseOf=(w)=>(w.pauses||[]).filter(p=>!p.season&&(p.ep>(+w.done||0)||p.resume)).sort((a,b)=>a.ep-b.ep)[0]||null;   // 시즌 구분은 중단으로 보지 않음
 const isHire=(p)=>p&&p.reason==="hire";   // 신규 인력 충원 대기 (1화부터 착수 전)
 const pauseTxt=(w)=>{const p=pauseOf(w); if(!p) return "";
   if(isHire(p)) return p.resume?`신규 인력 충원 → ${ymd(D(p.resume))} 착수`:"신규 인력 충원 시 착수 · 착수일 미정";
@@ -2474,7 +2484,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-N";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-P";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2565,9 +2575,16 @@ function aopAssign(key,name){ const cur=SIMREG; let n=0;
   SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra) return; st.extra.forEach(x=>{ if(!isAopW(x)) return; if(aopKeyOf(x)!==key) return;
     x.aopKey=key; x.aop=true; if(name){ x.n=name; x.aopPick=true; } else { x.n=key; x.aopPick=false; } if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; }); });
   simUse(cur); simRegSaveSoon(); render(); toast(name?`'${key}' 자리에 <${name}>을(를) 넣었어요 (JP · KR · GW)`:`'${key}'를 임시 이름으로 되돌렸어요`); }
+function aopSig(st){   // 실제 작품 · 직접 추가한 가상 작품의 일정 조건 (바뀌면 임시 파이프라인 다시 맞춤)
+  const x=ACT().map(w=>[w.id,w.line,w.total,w.done,w.start,w.rate,w.launch,w.launchAuto?1:0,JSON.stringify(w.pauses||[])]);
+  const e=((st&&st.extra)||[]).filter(w=>!(isAopW(w)&&!w.aopPick)).map(w=>{ const r=(st.rows||{})[w.id]||{}; return [w.id,w.line,w.total,w.start,r.launch,r.launchMode,r.inc]; });
+  const str=JSON.stringify([x,e]); let h=0; for(let i=0;i<str.length;i++){ h=(h*31+str.charCodeAt(i))|0; } return String(h); }
 function aopAutoGen(){   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
-  if(window.__aopAuto||!SIMS) return; const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106")); if(!need) return;
-  window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true}).catch(e=>console.warn(e)),300); }
+  if(window.__aopAuto||!SIMS) return;
+  const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106"));
+  const changed=!need&&SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopSig&&SIMS[rg].aopSig!==aopSig(SIMS[rg]));   // 11/06: 실제 작품 일정(시즌 2 추가 등)이 바뀌면 임시 파이프라인 자동 재조정
+  if(!need&&!changed) return;
+  window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true,why:changed?"changed":"first"}).then(()=>{ setTimeout(()=>{ window.__aopAuto=false; },1500); }).catch(e=>console.warn(e)),300); }
 function renderOpen(){ aopAutoGen();
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1}));
   const nowM=mi(TODAY), dataM=mi(D("2026-09-01"));   // 제작 현황 데이터 시작 월
@@ -2849,9 +2866,9 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
         w.rate=defRate(w); const r=SIM_R0(w); r.launchMode="fixed"; r.launch=key(L); r.openK=3; r.pgap=""; r.name=nm; r.inc=true;
         let P=null; for(let t=0;t<30;t++){ const S=schedule(simX(w,r)); P=planOpens(S,r); if(P&&P.L&&key(P.L)===key(L)&&!P.hiatus) break; w.start=key(addDays(D(w.start),-14)); }
         SIM.extra.push(w); SIM.rows[id]=r; made++; addSpan(ln,vOfW(w)||P); } }); });
-    SIM.aopGen="onair-1106"; SIM.aopGen2="cap2-1106"; SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
+    SIM.aopGen="onair-1106"; SIM.aopGen2="cap2-1106"; SIM.aopSig=aopSig(SIM); SIMS[rg]=SIM; }   // aopGen은 이전 버전이 다시 만들지 않게 그 값으로 고정 · 이번 기준은 aopGen2
   simUse(cur); simRegSaveSoon(); render();
-  toast(`AOP 연재 작품 수에 맞춰 임시 파이프라인을 다시 만들었어요 · ${made}개 (작품을 고른 파이프라인은 그대로)${opt.auto?" · 자동":""}`);
+  toast(`${opt.why==="changed"?"작품 일정이 바뀌어서 ":""}AOP 연재 작품 수에 맞춰 임시 파이프라인을 다시 만들었어요 · ${made}개 (작품을 고른 파이프라인은 그대로)${opt.auto?" · 자동":""}`);
 }
 function simAopClear(){ const cur=SIMREG; let n=0;
   SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra) return; st.extra=st.extra.filter(w=>{ if(w.aop||/ AOP \d+\.\d+-\d+$/.test(w.n||"")){ delete st.rows[w.id]; n++; return false; } return true; }); });
@@ -3244,8 +3261,12 @@ function epCtl(w,S,k){
 function openSeason(w,k,anchor){   // 11/06: 다음 시즌 1화 착수일
   const pop=$("pop"), p=(w.pauses||[]).find(x=>x.ep===k)||{}, sn=(w.pauses||[]).filter(x=>x.season&&x.ep<k).length+2;
   const N0=clamp(+w.total||1,1,300), addMode=k>N0;   // 마지막 회차에서 종료 → 다음 시즌 회차를 새로 추가
+  // 11/06: 기본 착수일 = 시즌 마지막 회차(k-1)의 1차 영상 제작 완료일 + 한 달 (영업일로 맞춤)
+  let ssEnd=null; try{ const S0=schedule(w), c0=S0.eps[k-1]&&S0.eps[k-1].cells&&S0.eps[k-1].cells.prod1; ssEnd=c0&&c0.e||null; }catch(e){}
+  const ssBase=ssEnd||TODAY, ssM=new Date(ssBase.getTime()); ssM.setUTCMonth(ssM.getUTCMonth()+1); const ssDef=key(isBD(ssM)?ssM:nextBD(ssM));
   pop.innerHTML=`<h4>시즌 ${sn} 1화 착수일</h4><p class="ps">${esc(w.n)} · ${k-1}화에서 시즌 종료 → ${k}화가 시즌 ${sn} 1화</p>
-    <div class="row"><span>착수일</span><input class="in" type="date" id="ssD" value="${esc(p.resume||key(nextBD(TODAY)))}"></div>
+    <div class="row"><span>착수일</span><input class="in" type="date" id="ssD" value="${esc(p.resume||ssDef)}"></div>
+    <p class="hint" style="margin:-4px 0 6px">기본: ${k-1}화 1차 영상 제작 완료${ssEnd?`(${md(ssEnd)})`:""}로부터 한 달 뒤${ssEnd?"":" (완료일을 몰라 오늘 기준)"}</p><div style="display:none"></div>
     ${addMode?`<div class="row"><span>시즌 ${sn} 회차 수</span><input class="in" type="number" id="ssN" min="1" max="200" value="${N0}" style="width:80px"> 화</div>`:""}
     <div class="row" style="justify-content:flex-end;gap:8px"><button type="button" class="btn" id="ssX">닫기</button><button type="button" class="btn pri" id="ssA">저장</button></div>`;
   pop.hidden=false; const r=anchor.getBoundingClientRect(), cw=document.documentElement.clientWidth;
