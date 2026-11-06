@@ -1263,15 +1263,37 @@ details.monfold>summary::before{content:"▸ ";color:var(--muted)} details.monfo
 #v-open table.cal tr[data-wid] .rl .ln,#v-open table.cal tr.held .rl .ln{display:none}
 
 /* 11/06: 2027년 라인업 */
-details.lufold .lu{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto}
-table.lut{border-collapse:collapse;font-size:12.5px;width:100%}
-table.lut th,table.lut td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-table.lut th{font-weight:700;color:var(--ink2);white-space:nowrap}
-table.lut .r{text-align:right;white-space:nowrap}
-table.lusum{margin-bottom:14px;max-width:900px} table.lusum th{width:96px}
-table.lum thead th{background:#F6F7F9;font-size:12px} table.lum tr.emp td,table.lum tr.emp th{color:var(--muted)}
-table.lum tr.tot td,table.lum tr.tot th{font-weight:800;border-top:2px solid var(--line2)}
-.luw{display:block;line-height:1.55;white-space:nowrap} .luw .hint{margin-left:6px}
+details.lufold .lu{margin-top:10px}
+.lucards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
+.luleg span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:#3A4152;padding:2px 4px}
+.luleg span i{width:9px;height:9px;border-radius:2px;display:inline-block} .luleg span em{font-style:normal;color:#9AA1AE}
+.lulegend{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px;font-size:12px}
+.luk{border-radius:6px;padding:1px 8px;font-weight:700;font-size:11.5px}
+.lutw{background:#fff;border:1px solid #E7E9EE;border-radius:14px;overflow-x:auto}
+table.lug2{border-collapse:collapse;width:100%;min-width:1500px;table-layout:fixed}
+table.lug2 th,table.lug2 td{border-left:1px solid #EEF0F4;vertical-align:top;padding:6px}
+table.lug2 thead th{background:#F7F8FA;color:#5B6372;font-size:12.5px;font-weight:700;text-align:left;border-bottom:1px solid #E7E9EE}
+table.lug2 thead th span{color:#9AA1AE;font-weight:600;margin-left:3px}
+table.lug2 th.lurl{width:104px;border-left:0;text-align:left;font-size:12.5px;font-weight:800;white-space:nowrap}
+table.lug2 th.lurl span{display:block;font-weight:600;font-size:11.5px;opacity:.8;margin-top:2px}
+table.lug2 tr.lu-int th.lurl{background:var(--int-bg);color:var(--int-ink);box-shadow:inset 4px 0 0 var(--int)}
+table.lug2 tr.lu-ext th.lurl{background:var(--ext-bg);color:var(--ext-ink);box-shadow:inset 4px 0 0 var(--ext)}
+table.lug2 tr.lu-ext .ogdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;background:var(--ext)} table.lug2 tr.lu-int .ogdot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;background:var(--int)}
+table.lug2 tr.lu-int td{border-bottom:1px solid #E7E9EE}
+.luc{border-radius:8px;padding:5px 7px;margin-bottom:5px;border-left:3px solid transparent}
+.luc .lun{font-size:12px;font-weight:700;line-height:1.3;display:flex;gap:5px;align-items:flex-start;word-break:keep-all}
+.luc .lus{font-size:10.5px;opacity:.8;margin-top:2px;line-height:1.3}
+.luc.t-m,.luk.t-m{background:#DDEEFB;color:#185FA5;border-left-color:#3B8FD9}
+.luc.t-f,.luk.t-f{background:#FBE3EE;color:#A83268;border-left-color:#D6458A}
+.luc.t-mf,.luk.t-mf{background:#EEE6FA;color:#5B3A9C;border-left-color:#7F56C2}
+.luc.t-n,.luk.t-n{background:#F0F2F5;color:#5B6372;border-left-color:#B8BFCC}
+.luc.t-tmp,.luk.t-tmp{background:#fff;color:#9AA1AE;border:1px dashed #CDD2DA}
+.lug{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;border-radius:4px;font-size:10.5px;font-weight:800;background:#fff;color:#9AA1AE;border:1px solid #D5D9E0;padding:0 3px}
+.lug.g-S{background:#1F2A44;color:#fff;border-color:#1F2A44} .lug.g-A{background:#4A5468;color:#fff;border-color:#4A5468} .lug.g-B{background:#fff;color:#4A5468;border-color:#8A93A6} .lug.g-C{background:#fff;color:#8A93A6;border-color:#C3C9D4}
+/* 작품 리스트: 급 */
+.wgrh{width:60px} td.wgrc{padding-right:0!important;width:60px}
+.wgr{appearance:none;-webkit-appearance:none;border:1px solid #D5D9E0;border-radius:12px;padding:3px 6px;font-size:11.5px;font-weight:800;cursor:pointer;text-align:center;width:52px;background:#fff;color:#9AA1AE}
+.wgr.g-S{background:#1F2A44;color:#fff;border-color:#1F2A44} .wgr.g-A{background:#4A5468;color:#fff;border-color:#4A5468} .wgr.g-B{color:#4A5468;border-color:#8A93A6} .wgr.g-C{color:#8A93A6}
 #v-open table.cal tr[data-wid] td.c{background-clip:padding-box}
 #v-open table.cal thead th{top:var(--toph,0px);z-index:6}
 #v-open table.cal thead tr:nth-child(2) th{top:calc(var(--toph,0px) + 24px)}
@@ -2892,37 +2914,36 @@ function renderOpen(){ aopAutoGen(); aopDedupeLive();
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{SEL=b.dataset.go;setTab("prod");});
 }
 
-/* 11/06: 2027년 라인업 — 월별 런칭 작품 · 내부/외부 · 성별 타겟 · 장르 (오픈 일정 탭, 기본 접힘) */
+/* 11/06: 2027년 라인업 — 내부/외부 × 월 표, 작품 칸 색 = 성별 타겟, 앞 글자 = 급 (오픈 일정 탭, 기본 접힘) */
+const WL_GRADES=["S","A","B","C"];
 function lineupHTML(allV,simST){ const Y=2027, src=WL||WL_SEED||[];
-  const info=new Map(); src.forEach(r=>{ const nm=Array.isArray(r)?r[1]:r&&r.name; if(!nm) return; info.set(wlNorm(nm),{genre:(Array.isArray(r)?r[2]:r.genre)||"",tgt:wlTgt(Array.isArray(r)?{name:nm}:r)||""}); });
+  const info=new Map(); src.forEach(r=>{ const nm=Array.isArray(r)?r[1]:r&&r.name; if(!nm) return; const o=Array.isArray(r)?{name:nm}:r; info.set(wlNorm(nm),{genre:(Array.isArray(r)?r[2]:r.genre)||"",tgt:wlTgt(o)||"",grade:o.grade||""}); });
   const its=[]; allV.forEach(({w,V})=>{ if(!V||!V.L||V.L.getUTCFullYear()!==Y) return;
-    const tmp=(isAopW(w)&&!w.aopPick)||(!w.simOnly&&AOP_RX.test(w.n||"")), ln=lineOf(w)==="ext"?"ext":"int", nm=tmp?aopKeyOf(w):w.n, I=tmp?null:(info.get(wlNorm(nm))||{genre:"",tgt:wlTgt({name:nm})||""});
-    let vend=""; if(ln==="ext"&&!tmp){ const vs=vendorsOfWork(nm); vend=vs.length?vs[0].name:"업체 미정"; }
-    its.push({w,V,m:V.L.getUTCMonth()+1,ln,tmp,nm,tgt:tmp?"":I.tgt,genre:tmp?"":I.genre,vend}); });
+    const tmp=(isAopW(w)&&!w.aopPick)||(!w.simOnly&&AOP_RX.test(w.n||"")), ln=lineOf(w)==="ext"?"ext":"int", nm=tmp?aopKeyOf(w):w.n, I=tmp?{}:(info.get(wlNorm(nm))||{genre:"",tgt:wlTgt({name:nm})||"",grade:""});
+    let vend=""; if(ln==="ext"&&!tmp){ const vs=vendorsOfWork(nm); vend=vs.length?vs[0].name:""; }
+    its.push({w,V,m:V.L.getUTCMonth()+1,ln,tmp,nm,tgt:I.tgt||"미정",genre:I.genre||"미정",grade:I.grade||"",vend}); });
   its.sort((a,b)=>a.V.L-b.V.L);
-  const N=its.length, pc=(n)=>N?Math.round(n/N*100):0, cnt=(a,f)=>a.filter(f).length;
-  const tally=(a,f,order)=>{ const m=new Map(); a.forEach(x=>{ const k=f(x); m.set(k,(m.get(k)||0)+1); }); const ks=[...m.keys()].sort((p,q)=>{ const ip=order?order.indexOf(p):-1, iq=order?order.indexOf(q):-1; if(ip>=0||iq>=0) return (ip<0?99:ip)-(iq<0?99:iq); return m.get(q)-m.get(p); }); return ks.map(k=>[k,m.get(k)]); };
-  const TG=["남성향","여성향","여·남","미정"], tgOf=(x)=>x.tmp?"미정":(x.tgt||"미정"), gOf=(x)=>x.tmp?"미정":(x.genre||"미정");
-  const nInt=cnt(its,x=>x.ln==="int"), nExt=N-nInt, nTmp=cnt(its,x=>x.tmp);
-  const txt=(arr,withPc)=>arr.length?arr.map(([k,n])=>`${esc(k)} ${n}${withPc?` (${pc(n)}%)`:""}`).join(", "):"–";
-  const vendT=tally(its.filter(x=>x.ln==="ext"),x=>x.tmp?"작품 미정 (임시)":x.vend);
+  const N=its.length, cnt=(f)=>its.filter(f).length;
+  const TGC={"남성향":"#3B8FD9","여성향":"#D6458A","여·남":"#7F56C2","미정":"#B8BFCC"}, tcls=(t)=>({"남성향":"m","여성향":"f","여·남":"mf"}[t]||"n");
+  const GC=["#2B6FD0","#E07A3F","#2E9B6A","#E5A32B","#7F56C2","#D6458A","#3BA3B8","#9AA3B2"];
+  const card=(title,items)=>{ const tot=items.reduce((a,b)=>a+b[1],0)||1; return `<div class="wcard"><div class="wct">${title}</div><div class="wbar">${items.filter(i=>i[1]).map(([l,n,c])=>`<i style="width:${n/tot*100}%;background:${c}" title="${esc(l)} ${n}"></i>`).join("")}</div>
+    <div class="wleg luleg">${items.map(([l,n,c])=>`<span><i style="background:${c}"></i>${esc(l)} <b>${n}</b> <em>${Math.round(n/tot*100)}%</em></span>`).join("")}</div></div>`; };
+  const gs=[...new Set(its.map(x=>x.genre))].map(g=>[g,cnt(x=>x.genre===g)]).sort((a,b)=>(a[0]==="미정")-(b[0]==="미정")||b[1]-a[1]).map((g,i)=>[g[0],g[1],g[0]==="미정"?"#B8BFCC":GC[i%GC.length]]);
+  const vends=[...new Set(its.filter(x=>x.ln==="ext").map(x=>x.tmp?"작품 미정":(x.vend||"업체 미정")))];
+  const extV=vends.map((v,i)=>[v,its.filter(x=>x.ln==="ext"&&(x.tmp?"작품 미정":(x.vend||"업체 미정"))===v).length,/미정/.test(v)?"#D5D9E0":GC[i%GC.length]]).sort((a,b)=>/미정/.test(a[0])-/미정/.test(b[0])||b[1]-a[1]);
+  const chip=(x)=>{ const t=x.tmp?"tmp":tcls(x.tgt), sub=x.tmp?"작품 미정":[x.genre!=="미정"?x.genre:"",x.ln==="ext"&&x.vend?x.vend:""].filter(Boolean).join(" · ");
+    const tip=`${md(x.V.L)} 1화 오픈 · ${x.ln==="ext"?"외부":"내부"} · ${x.tmp?"작품 미정":`${x.tgt} · ${x.grade?x.grade+"급":"급 미정"} · ${x.genre}`}${x.vend?` · ${x.vend}`:""}`;
+    return `<div class="luc t-${t}" title="${esc(tip)}"><div class="lun">${x.tmp?"":`<span class="lug${x.grade?` g-${x.grade}`:""}">${x.grade||"–"}</span>`}${esc(x.tmp?"작품 미정":x.nm)}</div><div class="lus">${md(x.V.L)}${sub?` · ${esc(sub)}`:""}</div></div>`; };
   const view=simST?`시뮬레이션 일정 · ${esc((SIMREGS.find(x=>x[0]===OPEN_SREG)||[])[1]||OPEN_SREG)} 기준`:"휴재 없는 일정 기준";
+  const nInt=cnt(x=>x.ln==="int"), nExt=N-nInt;
   let h=`<details class="monfold lufold"${window.__LUOPEN?" open":""}><summary><h2 style="display:inline">${Y}년 라인업</h2> <span class="hint">${N}작품 런칭 · 내부 ${nInt} · 외부 ${nExt} · 눌러서 펼치기</span></summary><div class="lu">
-    <p class="hint" style="margin:0 0 8px">${view} · 내부 · 외부 전체 · 1화 오픈 월 기준${nTmp?` · '작품 미정'은 작품을 아직 고르지 않은 임시 파이프라인 ${nTmp}개`:""}</p>
-    <table class="lut lusum"><tbody>
-      <tr><th>전체 런칭</th><td><b>${N}작품</b></td></tr>
-      <tr><th>제작 라인</th><td>내부 ${nInt} (${pc(nInt)}%), 외부 ${nExt} (${pc(nExt)}%)</td></tr>
-      <tr><th>외부 업체별</th><td>${txt(vendT)}</td></tr>
-      <tr><th>성별 타겟</th><td>${txt(tally(its,tgOf,TG),true)}</td></tr>
-      <tr><th>장르</th><td>${txt(tally(its,gOf,null).sort((a,b)=>(a[0]==="미정")-(b[0]==="미정")||b[1]-a[1]),true)}</td></tr>
-    </tbody></table>
-    <table class="lut lum"><thead><tr><th>월</th><th class="r">런칭</th><th class="r">내부</th><th class="r">외부</th><th class="r">남성향</th><th class="r">여성향</th><th class="r">여·남</th><th class="r">타겟 미정</th><th>장르</th><th>작품</th></tr></thead><tbody>`;
-  for(let m=1;m<=12;m++){ const a=its.filter(x=>x.m===m), z=(n)=>n||"–";
-    h+=`<tr${a.length?"":` class="emp"`}><th>${m}월</th><td class="r"><b>${z(a.length)}</b></td><td class="r">${z(cnt(a,x=>x.ln==="int"))}</td><td class="r">${z(cnt(a,x=>x.ln==="ext"))}</td>
-      ${TG.map(t=>`<td class="r">${z(cnt(a,x=>tgOf(x)===t))}</td>`).join("")}
-      <td>${a.length?txt(tally(a,gOf,null)):"–"}</td>
-      <td>${a.map(x=>`<span class="luw">${md(x.V.L)} ${esc(x.nm)}<span class="hint">${x.ln==="ext"?`외부${x.vend?` (${esc(x.vend)})`:""}`:"내부"}${x.tmp?", 작품 미정":`, ${esc(x.genre||"장르 미정")}, ${esc(x.tgt||"타겟 미정")}`}</span></span>`).join("")||"–"}</td></tr>`; }
-  h+=`<tr class="tot"><th>합계</th><td class="r">${N}</td><td class="r">${nInt}</td><td class="r">${nExt}</td>${TG.map(t=>`<td class="r">${cnt(its,x=>tgOf(x)===t)}</td>`).join("")}<td colspan="2"></td></tr></tbody></table></div></details>`;
+    <div class="wcards lucards">${card("제작 라인",[["내부",nInt,"#2B8FCC"],["외부",nExt,"#E07A2E"]])}${card("성별 타겟",["남성향","여성향","여·남","미정"].map(t=>[t,cnt(x=>x.tgt===t),TGC[t]]))}${card("급",[...WL_GRADES.map((g,i)=>[g+"급",cnt(x=>!x.tmp&&x.grade===g),["#1F2A44","#4A5468","#8A93A6","#C3C9D4"][i]]),["미정",cnt(x=>x.tmp||!x.grade),"#E3E6EB"]])}${card("장르",gs)}${extV.length?card("외부 업체",extV):""}</div>
+    <div class="lulegend"><span class="hint">작품 칸 색</span><span class="luk t-m">남성향</span><span class="luk t-f">여성향</span><span class="luk t-mf">여·남</span><span class="luk t-n">타겟 미정</span><span class="luk t-tmp">작품 미정 (임시 파이프라인)</span>
+      <span class="hint" style="margin-left:10px">앞 글자 = 급</span>${WL_GRADES.map(g=>`<span class="lug g-${g}">${g}</span>`).join("")}<span class="lug">–</span><span class="hint">급 미정 · 급은 작품 리스트 탭에서 입력</span></div>
+    <div class="lutw"><table class="lug2"><thead><tr><th class="lurl"></th>${[...Array(12)].map((_,i)=>`<th>${i+1}월 <span>${cnt(x=>x.m===i+1)||""}</span></th>`).join("")}</tr></thead><tbody>
+      ${[["int","내부 제작"],["ext","외부 제작"]].map(([k,l])=>`<tr class="lu-${k}"><th class="lurl"><i class="ogdot"></i>${l}<span>${cnt(x=>x.ln===k)}작품</span></th>${[...Array(12)].map((_,i)=>{ const a=its.filter(x=>x.ln===k&&x.m===i+1); return `<td>${a.map(chip).join("")}</td>`; }).join("")}</tr>`).join("")}
+    </tbody></table></div>
+    <p class="hint" style="margin:8px 0 0">${view} · 내부 · 외부 전체 · 1화 오픈 월에 표시 · 칸에 마우스를 올리면 자세한 내용</p></div></details>`;
   return h; }
 
 function staffPanel(){
@@ -6788,10 +6809,11 @@ function renderWL(){ const v=$("v-wl"); if(WL&&VENDORS.length&&!WL_META.smp1028)
   const act=[WLV.tgt,WLV.cat,stepSel.length?stepSel.map(k=>k==="agree"?"작가 동의 확보 (샘플 · 제작 · 런칭 포함)":WL_STEPS[si(k)][1]).join(" + "):"",WLV.genre,WLV.q&&`'${WLV.q}'`].filter(Boolean);
   if(WLSEL.size) h+=`<div class="wselbar"><b>${WLSEL.size}작품 선택</b><span class="hint">Ctrl/⌘ + C로 메일용 텍스트 복사</span><span class="sp"></span><button type="button" class="btn pri" id="wlCopy">복사</button><button type="button" class="btn" id="wlClr">선택 해제</button></div>`;
   if(act.length) h+=`<div class="wfil">${act.map(esc).join(" · ")}만 보는 중 · ${L.length}작품 <button type="button" class="btn" id="wlAll">전체 보기</button></div>`;
-  h+=`<div class="wtw"><table class="wt"><thead><tr><th class="wck"><input type="checkbox" id="wlCkAll" aria-label="보이는 작품 모두 선택"></th><th class="wtgh">타겟</th><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
+  h+=`<div class="wtw"><table class="wt"><thead><tr><th class="wck"><input type="checkbox" id="wlCkAll" aria-label="보이는 작품 모두 선택"></th><th class="wtgh">타겟</th><th class="wgrh">급</th><th>작품</th><th>구분</th><th>판권 확보</th><th>진행 단계</th><th>샘플 테스트 · 제작</th><th>애니화 적합</th><th>상품화</th><th>게임화</th><th></th></tr></thead><tbody>
     ${L.map(x=>{ const r=x.r, cur=r.rights||"미확인", opts=RO.includes(cur)?RO:[cur,...RO]; return `<tr class="${r.cat==="제작 후순위"?"wlow":""}">
       <td class="wck"><input type="checkbox" data-wck="${r.id}"${WLSEL.has(r.id)?" checked":""} aria-label="${esc(r.name)} 선택"></td>
       <td class="wtgc">${(()=>{ const t=wlTgt(r); return `<select class="wtg ${t==="남성향"?"t-m":t==="여성향"?"t-f":t==="여·남"?"t-mf":"t-n"} wls" data-wid="${r.id}" data-wk="tgt" title="타겟">${["","남성향","여성향","여·남"].map(o=>`<option value="${o}"${t===o?" selected":""}>${o||"미정"}</option>`).join("")}</select>`; })()}</td>
+      <td class="wgrc"><select class="wgr${r.grade?` g-${r.grade}`:""} wls" data-wid="${r.id}" data-wk="grade" title="급">${["",...WL_GRADES].map(o=>`<option value="${o}"${(r.grade||"")===o?" selected":""}>${o?o+"급":"미정"}</option>`).join("")}</select></td>
       <td class="wtt${WLSEL.has(r.id)?" sel":""}" data-wsel="${r.id}"><div class="wnm" data-notr title="클릭: 선택 · Shift+클릭: 여러 개 선택 · 더블클릭: 이름 수정">${esc(r.name)}</div><div class="wsub">${esc(r.genre||"장르 미정")} · ${r.no}번</div></td>
       <td><select class="wsel ${catCls[r.cat]||"s-gray"} wls" data-wid="${r.id}" data-wk="cat">${cats.map(c=>`<option${r.cat===c?" selected":""}>${c}</option>`).join("")}</select></td>
       <td><select class="wsel ${rCls(RO.includes(cur)?cur:"작가 동의 확보")} wls" data-wid="${r.id}" data-wk="rights" title="${esc(cur)}">${opts.map(o=>`<option value="${esc(o==="미확인"?"":o)}"${o===cur?" selected":""}>${esc(o)}</option>`).join("")}</select></td>
