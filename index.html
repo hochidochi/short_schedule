@@ -1264,6 +1264,13 @@ table.vt2 .c-nt{min-width:240px}
 
 .vchl li.vchg{display:flex;justify-content:space-between;align-items:center;background:#EEF1F6;border-radius:8px;padding:5px 10px;margin:8px 0 2px;font-size:12.5px;border:none}
 .vchl li.vchg span{color:var(--ink2);font-weight:700}
+
+.vsmb{display:inline-block;margin-top:4px;border:1px dashed #9CC7A8;background:#fff;color:#1D6B3F;border-radius:999px;font:inherit;font-size:11.5px;padding:2px 9px;cursor:pointer}
+.vsmb.has{border-style:solid;background:#E6F4EA} .vsmb b{font-weight:800}
+.vsml{list-style:none;margin:6px 0 10px;padding:0;max-height:180px;overflow:auto} .vsml li{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}
+.vsml .no{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#E6F4EA;color:#1D6B3F;font-size:11px;font-weight:800}
+.vsml .hint{margin-left:auto} .vsmd{border:none;background:none;color:#9AA1AE;cursor:pointer}
+.vsmn{display:block;font-size:12.5px;margin:8px 0}
 </style>
 </head>
 <body>
@@ -2467,7 +2474,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-M";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-N";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -4510,6 +4517,25 @@ function vChkEditor(v,anchor,keep){
   pop.querySelectorAll("[data-ck]").forEach(el=>el.onchange=()=>{ const keepPos={left:pop.style.left,top:pop.style.top}, sy=window.scrollY; vChkToggle(VENDORS.find(x=>x.id===v.id),el.dataset.ck,el.checked); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor,keepPos); if(window.scrollY!==sy) window.scrollTo(0,sy); });
   pop.querySelectorAll("[data-cd]").forEach(el=>el.onchange=()=>{ const keepPos={left:pop.style.left,top:pop.style.top}, sy=window.scrollY; const vv=VENDORS.find(x=>x.id===v.id), cc={...vChk(vv),[el.dataset.cd]:el.value}; vEdit({op:"set",id:v.id,v:{chk:cc}}); vChkEditor(VENDORS.find(x=>x.id===v.id),anchor,keepPos); if(window.scrollY!==sy) window.scrollTo(0,sy); });
 }
+/* 11/06: 샘플 납품 기록 — 같은 업체가 샘플을 여러 번 진행해도 납품 건수가 남게 (v.samples=[{w,d}]) */
+const V_CHK_NEXT=["send","draft","quote","gian","pick","script","signed","run","keycut","kfb","video","vfb","sdone"];   // 다음 샘플 시작 시 다시 체크할 항목 (컨택 · 파트너 · NDA · 미팅 · 툴 승인은 유지)
+function vSampleEditor(v,anchor){
+  const pop=$("pop"), list=v.samples||[];
+  pop.innerHTML=`<h4>${esc(v.name)} · 샘플 납품 기록</h4><p class="ps">납품할 때마다 기록해요. 같은 업체가 다음 샘플을 이어서 진행해도 건수는 남아요.</p>
+    ${list.length?`<ul class="vsml">${list.map((x,i)=>`<li><span class="no">${i+1}</span><b>${esc(x.w||"작품 미정")}</b><span class="hint">${esc(x.d||"")}</span><button type="button" class="vsmd" data-smd="${i}" title="이 기록 지우기">✕</button></li>`).join("")}</ul>`:`<p class="hint" style="margin:4px 0 8px">아직 기록이 없어요.</p>`}
+    <div class="row"><span>작품</span><input class="in" id="smW" value="${esc((v.interest||"").split(/[,·/]/)[0].trim())}"></div>
+    <div class="row"><span>납품일</span><input class="in" type="date" id="smD" value="${key(TODAY)}"></div>
+    <label class="vsmn"><input type="checkbox" id="smN" checked> 다음 샘플 이어서 진행 <span class="hint">(진행 단계 → 샘플 계약 진행 · 계약 이후 체크 초기화)</span></label>
+    <div class="acts"><button type="button" class="btn" id="smX">닫기</button><button type="button" class="btn pri" id="smA">✓ 납품 기록</button></div>`;
+  pop.hidden=false; const r=anchor.getBoundingClientRect(); pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+document.documentElement.clientWidth-380))+"px"; pop.style.top=(r.bottom+window.scrollY+4)+"px";
+  $("smX").onclick=closePop;
+  pop.querySelectorAll("[data-smd]").forEach(b=>b.onclick=()=>{ if(!confirm("이 납품 기록을 지울까요?")) return; const l=(v.samples||[]).slice(); l.splice(+b.dataset.smd,1); vEdit({op:"set",id:v.id,v:{samples:l}}); closePop(); });
+  $("smA").onclick=()=>{ const w=$("smW").value.trim(), d=$("smD").value||key(TODAY), nx=$("smN").checked;
+    const o={samples:[...(v.samples||[]),{w,d}]};
+    if(nx){ const c={...vChk(v)}; V_CHK_NEXT.forEach(k=>delete c[k]); o.chk=c; o.stage="sampleC"; o.status=`${w||"샘플"} 납품 완료 (${d.slice(5).replace("-","/")}) · 다음 샘플 준비`; }
+    else { o.stage="sampleD"; }
+    vEdit({op:"set",id:v.id,v:o}); closePop(); toast(`${v.name} 샘플 납품 ${o.samples.length}건째 기록${nx?" · 다음 샘플로":""}`); };
+}
 const V_OWNERS=["Yunjeong","Haruki"];
 const vOwnerOf=(v)=>{ const o=(v.owner||"").trim(); if(!o) return "Yunjeong"; if(/haruki|하루키|春木/i.test(o)) return "Haruki"; if(/yunjeong|윤정|sophia/i.test(o)) return "Yunjeong"; return o; };
 let VCT=new Set();   // 연락처 펼친 업체
@@ -4526,7 +4552,7 @@ function renderVendors(){ vMergePrice();
   const owners=[...new Set(all.flatMap(v=>(v.owner||"").split("/").map(x=>x.trim()).filter(Boolean)))];
   const overdue=all.filter(vOd).length;
   let h=`<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap">
-    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">진행 중 ${all.filter(v=>vKind(v)!=="voice"&&!["signed","no","hold"].includes(v.stage)).length}곳${overdue?` · <b style="color:var(--bad)">기한 지남 ${overdue}곳</b>`:""}</span></p></div>
+    <div><p class="lead">외주사 관리 <span class="hint" style="font-size:13px;font-weight:400">진행 중 ${all.filter(v=>vKind(v)!=="voice"&&!["signed","no","hold"].includes(v.stage)).length}곳 · 샘플 납품 누적 <b style="color:var(--ink)">${all.reduce((a,v)=>a+(v.samples||[]).length,0)}건</b>${overdue?` · <b style="color:var(--bad)">기한 지남 ${overdue}곳</b>`:""}</span></p></div>
     <span style="display:flex;gap:8px;align-items:center"><button type="button" class="btn pri" id="vAdd">+ 외주사 추가</button></span></div>
   ${vNextBoard(fx)}
   <div class="vkseg" role="group" aria-label="외주 구분">${[["","전체",VENDORS.length,"all"],...V_KINDS.map(([k,l])=>[k,l,VENDORS.filter(v=>vKind(v)===k).length,k])].map(([k,l,n,c])=>`<button type="button" class="vkb k-${c}" data-vk2="${k}" aria-pressed="${VF.kind===k}"><i></i>${l} <b>${n}</b></button>`).join("")}</div>
@@ -4562,7 +4588,8 @@ function renderVendors(){ vMergePrice();
           <optgroup label="진행 순서">${V_FLOW.map(([k,l],i)=>`<option value="${k}"${st===k?" selected":""}>${i+1}. ${l}</option>`).join("")}</optgroup>
           <optgroup label="진행 외">${V_SIDE.map(([k,l])=>`<option value="${k}"${st===k?" selected":""}>${l}</option>`).join("")}</optgroup></select>
         ${si>=0?`<div class="vprog" title="${si+1} / ${V_FLOW.length} 단계">${V_FLOW.map((_,i)=>`<i class="${i<si?"d":i===si?"c":""}"></i>`).join("")}</div>`:`<div class="vprog off">${esc(vStage(st))}</div>`}
-        ${["no"].includes(st)?"":(()=>{const ci=vChkInfo(v);return `<button type="button" class="vchkb${ci.done===ci.total?" ok":""}" data-vid="${v.id}" title="진행 체크리스트 (계약 준비 → 샘플 제작 · 평가)">${ci.cur.t} <b>${ci.cur.done}/${ci.cur.total}</b>${ci.done===ci.total?" ✓":` · 전체 ${ci.done}/${ci.total}`}</button>`;})()}</td>
+        ${["no"].includes(st)?"":(()=>{const ci=vChkInfo(v);return `<button type="button" class="vchkb${ci.done===ci.total?" ok":""}" data-vid="${v.id}" title="진행 체크리스트 (계약 준비 → 샘플 제작 · 평가)">${ci.cur.t} <b>${ci.cur.done}/${ci.cur.total}</b>${ci.done===ci.total?" ✓":` · 전체 ${ci.done}/${ci.total}`}</button>`;})()}
+        ${["no"].includes(st)?"":`<button type="button" class="vsmb${(v.samples||[]).length?" has":""}" data-smv="${v.id}" title="${(v.samples||[]).map((x,i)=>`${i+1}. ${x.w||"작품 미정"} ${x.d||""}`).join("\n")||"샘플 납품 기록하기"}">${(v.samples||[]).length?`납품 <b>${(v.samples||[]).length}건</b> · + 기록`:"+ 샘플 납품 기록"}</button>`}</td>
       <td class="c-sc">${ve(v,"status","+ 다음 할 일","vstat")}
         <div class="vone${od?" od":""}"><input type="date" class="vdate" data-vid="${v.id}" data-vk="to" value="${esc(vTo(v))}" title="일정 (예정일 · 기한)">${od?`<b class="vod">기한 지남</b>`:""}</div></td>
       <td class="c-wk">${ve(v,"interest","+ 작품")}</td>
@@ -4591,6 +4618,7 @@ function renderVendors(){ vMergePrice();
   document.querySelectorAll("#v-vendors .vsel").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
   document.querySelectorAll("#v-vendors .vpen").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); vLinkEditor(VENDORS.find(x=>x.id===b.dataset.vid),b); });
   document.querySelectorAll("#v-vendors .vcty,#v-vendors .vkind,#v-vendors .vdate,#v-vendors .vown").forEach(el=>el.onchange=()=>vEdit({op:"set",id:el.dataset.vid,v:{[el.dataset.vk]:el.value}}));
+  document.querySelectorAll("#v-vendors [data-smv]").forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); vSampleEditor(VENDORS.find(x=>x.id===b.dataset.smv),b); });
   document.querySelectorAll("#v-vendors [data-vct]").forEach(b=>b.onclick=()=>{ const id=b.dataset.vct; VCT.has(id)?VCT.delete(id):VCT.add(id); render(); });
   document.querySelectorAll("#v-vendors .vdel").forEach(b=>b.onclick=()=>{ const v=VENDORS.find(x=>x.id===b.dataset.vid); if(v&&confirm(`'${v.name}'을(를) 목록에서 삭제할까요? 모든 사람 화면에서 사라집니다.`)) vEdit({op:"del",id:v.id}); });
   document.querySelectorAll("#v-vendors .ve a.vml").forEach(a=>a.addEventListener("click",(e)=>e.stopPropagation()));
