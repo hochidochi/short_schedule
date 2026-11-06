@@ -1969,8 +1969,10 @@ function scheduleCore(w,useOv=true){
     const base=durOf(s,w), conc=concOf(s,w);
     if(s.k===PAR_JOIN) for(let k=1;k<=N;k++) if(parEnds[k]) bump(k,parEnds[k]);
     if(s.k==="prod1"){
+      const sRates=(w.pauses||[]).filter(p=>p.season&&+p.rate>0).sort((a,b)=>a.ep-b.ep);   // 11/06: 시즌별 회차당 1차 제작 영업일
+      const baseK=(k)=>{ let r=base; sRates.forEach(p=>{ if(k>=+p.ep) r=Math.max(1,+p.rate); }); return r; };
       for(let k=1;k<=N;k++){
-        const o=ov[`${k}:prod1`]||null;
+        const o=ov[`${k}:prod1`]||null; const base=baseK(k);
         if(k<=done){ const e=o&&o.f?fixD(o.f):doneEnd;
           eps[k].cells.prod1={e,d:base,base,done:true,kind:o&&o.f?"fix":"",m:o&&o.m||""}; bump(k,e); markMain(s,k,eps[k].cells.prod1); continue; }
         let d=durO(o,base);
@@ -2487,7 +2489,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-S";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-T";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3267,7 +3269,7 @@ function toggleDone(w,S,k,sk){
 function epCtl(w,S,k){
   const p=(w.pauses||[]).find(x=>x.ep===k);
   if(p&&p.season){ const sn=(w.pauses||[]).filter(x=>x.season&&x.ep<=k).length+1;
-    return `<span class="epz ssn" title="${k}화부터 시즌 ${sn} · 1화 착수일 ${p.resume?ymd(D(p.resume)):"미정"}">시즌 ${sn} 1화 · 착수 ${p.resume?md(D(p.resume)):"미정"}</span><button type="button" class="epb" data-sseason="${k}" title="시즌 ${sn} 1화 착수일 바꾸기">착수일</button><button type="button" class="epb" data-unpause="${k}" title="시즌 구분을 없애고 이어서 계산">취소</button>`; }
+    return `<span class="epz ssn" title="${k}화부터 시즌 ${sn} · 1화 착수일 ${p.resume?ymd(D(p.resume)):"미정"}">시즌 ${sn} 1화 · 착수 ${p.resume?md(D(p.resume)):"미정"}${+p.rate>0?` · 회차당 ${p.rate}일`:""}</span><button type="button" class="epb" data-sseason="${k}" title="시즌 ${sn} 1화 착수일 · 회차당 제작 영업일 바꾸기">설정</button><button type="button" class="epb" data-unpause="${k}" title="시즌 구분을 없애고 이어서 계산">취소</button>`; }
   if(p&&p.resume) return `<span class="epz" title="${esc(pauseTxt(w))}">중단→${md(D(p.resume))} 재개</span><button type="button" class="epb" data-resume="${k}" title="재개일 바꾸기 · 지우기">재개일</button><button type="button" class="epb" data-unpause="${k}" title="중단 자체를 없애고 원래 일정으로">취소</button>`;
   if(k<=(+w.done||0)||S.held) return "";
   return `<button type="button" class="epb" data-pause="${k}" title="${k}화부터 제작 중단">중단</button>`;
@@ -3282,12 +3284,14 @@ function openSeason(w,k,anchor){   // 11/06: 다음 시즌 1화 착수일
     <div class="row"><span>착수일</span><input class="in" type="date" id="ssD" value="${esc(p.resume||ssDef)}"></div>
     <p class="hint" style="margin:-4px 0 6px">기본: ${k-1}화 1차 영상 제작 완료${ssEnd?`(${md(ssEnd)})`:""}로부터 한 달 뒤${ssEnd?"":" (완료일을 몰라 오늘 기준)"}</p><div style="display:none"></div>
     ${addMode?`<div class="row"><span>시즌 ${sn} 회차 수</span><input class="in" type="number" id="ssN" min="1" max="200" value="${N0}" style="width:80px"> 화</div>`:""}
+    <div class="row"><span>회차당 1차 제작</span><input class="in" type="number" id="ssR" min="1" max="60" value="${esc(p.rate||w.rate||defRate(w))}" style="width:80px"> 영업일</div>
+    <p class="hint" style="margin:-4px 0 6px">시즌 ${sn}부터 적용 · 시즌 1은 ${esc(w.rate||defRate(w))}영업일 그대로</p>
     <div class="row" style="justify-content:flex-end;gap:8px"><button type="button" class="btn" id="ssX">닫기</button><button type="button" class="btn pri" id="ssA">저장</button></div>`;
   pop.hidden=false; const r=anchor.getBoundingClientRect(), cw=document.documentElement.clientWidth;
   pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+cw-356))+"px"; pop.style.top=(r.bottom+window.scrollY+6)+"px";
   { const ph=pop.offsetHeight||300; if(r.bottom+ph+12>window.innerHeight) pop.style.top=Math.max(window.scrollY+8,r.top+window.scrollY-ph-6)+"px"; }   // 화면 아래가 모자라면 버튼 위로 띄움
   $("ssX").onclick=closePop;
-  $("ssA").onclick=()=>{ const v=$("ssD").value; if(!v) return; const list=(w.pauses||[]).filter(x=>x.ep!==k); list.push({ep:k,from:p.from||key(TODAY),resume:key(snapBD(D(v))),season:true});
+  $("ssA").onclick=()=>{ const v=$("ssD").value; if(!v) return; const list=(w.pauses||[]).filter(x=>x.ep!==k); const rt=Math.max(1,Math.min(60,+($("ssR").value)||0)); list.push({ep:k,from:p.from||key(TODAY),resume:key(snapBD(D(v))),season:true,...(rt&&rt!==+(w.rate||defRate(w))?{rate:rt}:{})});
     const ops=[{p:["pauses"],v:list}]; if(addMode){ const n=Math.max(1,Math.min(200,+($("ssN").value)||N0)); ops.push({p:["total"],v:N0+n}); }
     edit(w.id,ops); closePop(); };
 }
