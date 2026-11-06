@@ -2487,7 +2487,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-R";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-S";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2517,6 +2517,14 @@ function simEnsure(reg){   // 시뮬레이션 탭을 안 열었어도 지역별 
 function simViewOf(w,S0,ST){ const st=ST||SIM; const r=st&&st.rows[w.id]; if(!r||r.inc===false) return null;
   const S=schedule(simX(w,r)); if(S.held) return null; const P=planOpens(S,r); if(!P||!P.opens) return null;
   const op=[null]; const rs=new Set((P.restW||[]).map(key));
+  if(S.seasons&&S.seasons.length>1){   // 11/06: 시즌 2부터는 이어 붙이지 않고, 그 시즌을 휴재 없이 끝까지 낼 수 있는 가장 빠른 날로 자동 오픈 (시즌 사이는 시즌 휴식)
+    const K=Math.max(1,S.K||3);
+    S.seasons.slice(1).forEach(sg=>{ const a=sg.a, b=sg.b, prevO=P.opens[a-1]; let Ls=sg.L&&sg.L>addDays(prevO,7)?sg.L:addDays(prevO,7);
+      for(let g=0;g<520;g++){ let bad=false; for(let k=a;k<=b;k++){ if(S.eps[k].need>addDays(Ls,CAD_D*Math.max(0,k-a+1-K))){bad=true;break;} } if(!bad) break; Ls=addDays(Ls,7); }
+      for(let x=addDays(prevO,7);x<Ls;x=addDays(x,7)) rs.add(key(x));
+      for(let k=a;k<=b;k++) P.opens[k]=addDays(Ls,CAD_D*Math.max(0,k-a+1-K)); });
+    P.end=P.opens[S.N];
+    let hz=0; for(let k=2;k<=S.N;k++){ for(let x=addDays(P.opens[k-1],7);x<P.opens[k];x=addDays(x,7)) if(!rs.has(key(x))) hz++; } P.hiatus=hz; }
   for(let k=1;k<=S.N;k++){ const o=P.opens[k]; const prev=k>1?P.opens[k-1]:null; let gap=0, rest=0, slot=o;
     if(prev){ slot=addDays(prev,7); for(let x=slot;x<o;x=addDays(x,7)){ if(rs.has(key(x))) rest++; else gap++; } }
     op.push({open:o,slot,gap,rest}); }
