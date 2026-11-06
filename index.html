@@ -1233,6 +1233,15 @@ select.aopPick:hover{border-color:var(--ink)} .aopk{display:block;font-size:10.5
 #v-open table.cal tr.sum td{padding-top:1px!important;padding-bottom:1px!important}
 #v-open table.cal tr.actr td,#v-open table.cal tr.lnr td{font-size:12px}
 #v-open table.cal tr.actr td small,#v-open table.cal tr.lnr td small{font-size:9px;margin-top:0}
+
+details.monfold{margin:14px 0 6px} details.monfold>summary{cursor:pointer;list-style:none} details.monfold>summary::-webkit-details-marker{display:none}
+details.monfold>summary::before{content:"▸ ";color:var(--muted)} details.monfold[open]>summary::before{content:"▾ "}
+
+#v-open .calwrap{overflow:visible}
+#v-open table.cal thead th{top:var(--toph,0px);z-index:6}
+#v-open table.cal thead tr:nth-child(2) th{top:calc(var(--toph,0px) + 24px)}
+
+.epz.ssn{background:#EDE7FB;color:#5B3FB0} .epb.sse{border-color:#C9B8F0;color:#5B3FB0}
 </style>
 </head>
 <body>
@@ -1868,8 +1877,8 @@ const concOf=(s,w,k)=>{ if(s&&typeof s.conc==="object"&&s.conc){ const c=s.conc[
 const stagesFor=(w)=>CONF.stages.filter(s=>s.k==="prod1"||s.k==="contract"||s.mirror||durOf(s,w)>0||(s.tbdDur&&CONF.showTbd));   // 기간 미정 단계(영상 번역)는 일정표에서 뺌 · 공정 기준에서 일수를 넣으면 다시 나타남
 function batchesOf(w,N){
   const out=[]; let a=1, size=clamp(+w.b1||BATCH,1,N);
-  const cut=+w.batchCut||0;   // 시즌 경계: 이 회차에서 묶음을 끊고 다음 회차부터 새 묶음
-  while(a<=N){ let b=Math.min(N,a+size-1); if(cut&&a<=cut&&b>cut) b=cut; out.push([a,b]); a=b+1; size=BATCH; }
+  const cuts=[+w.batchCut||0,...(w.pauses||[]).filter(p=>p.season&&p.ep>1).map(p=>+p.ep-1)].filter(x=>x>0);   // 시즌 경계: 이 회차에서 묶음을 끊고 다음 회차부터 새 묶음 (11/06: 시즌 종료 회차 포함)
+  while(a<=N){ let b=Math.min(N,a+size-1); cuts.forEach(cut=>{ if(a<=cut&&b>cut) b=cut; }); out.push([a,b]); a=b+1; size=cuts.includes(b)?clamp(+w.b1||BATCH,1,N):BATCH; }
   return out;
 }
 const fixD=(f)=>D(f);   // 지정한 완료일은 주말·휴일이어도 그대로 — 다음 단계는 그 다음 영업일부터
@@ -2021,28 +2030,35 @@ function scheduleCore(w,useOv=true){
   /* 휴재 없는 최단 런칭: open_k = L + 7·max(0,k-3) 이 모든 회차에서 need_k 이상 + 런칭 전 조건 */
   const DOW=w.dow!=null&&w.dow!==""?+w.dow:null;   // 작품별 공개 요일 (없으면 월요일 · 목표일을 정했으면 그 날 요일)
   const T0=w.launchAuto?D("2026-01-05"):D(w.launch||"2026-12-21"), K=Math.min(OPEN_K,N), T=DOW!=null?dowOnOrAfter(T0,DOW):T0;   // launchAuto: 목표일 없이 가장 빠른 날
+  // 11/06: 시즌제 — w.pauses의 season 표시가 있는 회차부터 새 시즌 (시즌마다 따로 런칭 · 시즌 사이는 휴재가 아니라 시즌 휴식)
+  const SB_=(w.pauses||[]).filter(p=>p.season&&p.ep>1&&p.ep<=N).map(p=>+p.ep).sort((a,b)=>a-b);
+  const seg1=SB_.length?SB_[0]-1:N;
   let L=T;
   for(let g=0;g<520;g++){
     let bad=false;
-    for(let k=1;k<=N;k++){ if(eps[k].need>addDays(L,CAD_D*Math.max(0,k-K))){bad=true;break;} }
+    for(let k=1;k<=seg1;k++){ if(eps[k].need>addDays(L,CAD_D*Math.max(0,k-K))){bad=true;break;} }
     if(!bad) break; L=addDays(L,7);
   }
   const Lep=L; let critGate=null;
   gates.forEach(g=>{ while(g.need>L) L=addDays(L,7); });
   if(L>Lep) critGate=gates.reduce((a,g)=>!a||g.e>a.e?g:a,null);
-  let crit=1, minSlack=Infinity;
-  for(let k=1;k<=N;k++){
+  let crit=1, minSlack=Infinity; const seasons=[{sn:1,a:1,b:seg1,L}];
+  for(let k=1;k<=seg1;k++){
     const E=eps[k]; E.open=addDays(L,CAD_D*Math.max(0,k-K));
     E.slack=bdDiff(E.need,E.open);
     if(E.slack<minSlack){minSlack=E.slack;crit=k;}
   }
+  SB_.forEach((a,ix)=>{ const b=ix+1<SB_.length?SB_[ix+1]-1:N; let Ls=addDays(eps[a-1].open,7);
+    for(let g=0;g<520;g++){ let bad=false; for(let k=a;k<=b;k++){ if(eps[k].need>addDays(Ls,CAD_D*Math.max(0,k-a+1-K))){bad=true;break;} } if(!bad) break; Ls=addDays(Ls,7); }
+    for(let k=a;k<=b;k++){ const E=eps[k]; E.open=addDays(Ls,CAD_D*Math.max(0,k-a+1-K)); E.slack=bdDiff(E.need,E.open); E.sn=ix+2; E.se=k-a+1; }
+    seasons.push({sn:ix+2,a,b,L:Ls}); });
   // 선공개(티저): 지정 회차만 먼저 공개 — 자동이면 '목표일 이후 · 그 회차가 준비되는 가장 빠른 월요일', 고정이면 그 날
   let TZ=null; const tzc=null;   // 11/04: 제작 일정의 선공개(티저) 옵션 제거 · 티저는 시뮬레이션 [티저별 운영]에서만 관리
   if(tzc){ const k=clamp(+tzc.ep||1,1,N), E=eps[k]; let t;
     if(tzc.mode==="fixed"&&tzc.date) t=D(tzc.date);
     else { const d0=tzc.date?D(tzc.date):TODAY; t=tzc.dow!=null&&tzc.dow!==""?dowOnOrAfter(d0,+tzc.dow):d0; while(E.need>t) t=addDays(t,7); }   // 티저: 입력한 날(또는 고른 요일)부터 매주 같은 요일로
     if(t<E.open){ TZ={ep:k,date:t,regular:E.open,late:E.need>t,mode:tzc.mode}; E.open=t; E.tz=true; E.slack=bdDiff(E.need,t); } }
-  return {eps,N,K,L,T,TZ,dow:L.getUTCDay(),delayW:weeks(T,L),crit,critGate,end:eps[N].open,start0,prodStart,done,ST,BT,bOf};
+  return {eps,N,K,L,T,TZ,dow:L.getUTCDay(),delayW:weeks(T,L),crit,critGate,end:eps[N].open,start0,prodStart,done,ST,BT,bOf,seasons};
 }
 /* ---------- 내부 제작 인력 ----------
    tbd(담당 미정) 작품은 인턴 전환 인원(CONF.staff.n)만큼 우선순위(CONF.staff.order) 순서대로 배정.
@@ -2429,7 +2445,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-E";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-H";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2521,7 +2537,7 @@ function aopAssign(key,name){ const cur=SIMREG; let n=0;
     x.aopKey=key; x.aop=true; if(name){ x.n=name; x.aopPick=true; } else { x.n=key; x.aopPick=false; } if(st.rows[x.id]) st.rows[x.id].name=x.n; n++; }); });
   simUse(cur); simRegSaveSoon(); render(); toast(name?`'${key}' 자리에 <${name}>을(를) 넣었어요 (JP · KR · GW)`:`'${key}'를 임시 이름으로 되돌렸어요`); }
 function aopAutoGen(){   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
-  if(window.__aopAuto||!SIMS) return; const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen==="onair-1106")); if(!need) return;
+  if(window.__aopAuto||!SIMS) return; const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen==="onair2-1106")); if(!need) return;
   window.__aopAuto=true; setTimeout(()=>simAopFill({auto:true}).catch(e=>console.warn(e)),300); }
 function renderOpen(){ aopAutoGen();
   const months=[...Array(NM)].map((_,i)=>({y:Y0+Math.floor(i/12),m:i%12+1}));
@@ -2586,7 +2602,8 @@ function renderOpen(){ aopAutoGen();
       <p class="hint" style="margin:8px 0 0">원인: 주 1회 공개(5영업일에 1화)보다 영상 1차 제작(회차당 7~13영업일)이 느려서, 연재를 시작하면 공개 속도를 제작이 따라가지 못합니다.
       완결일은 마지막 회차 제작이 끝나는 날로 정해지기 때문에, 일찍 런칭해도 완결이 당겨지지 않고 그 사이 휴재만 늘어납니다.</p>`;
   }else{
-    h+=`<h2>월별 신규 오픈</h2><div class="strip">`;
+    const mwN=launchBy.reduce((a,x)=>a+x.length,0)+after.length;
+    h+=`<details class="monfold"${window.__MONOPEN?" open":""}><summary><h2 style="display:inline">월별 신규 오픈</h2> <span class="hint">${mwN}작품 · 눌러서 펼치기</span></summary><div class="strip">`;
     const card=(label,a)=>`<div class="mon"><div class="ml">${label}</div>
         <div class="mn">${a.length}<small>작품</small></div>
         <ul>${a.map(({w,V})=>`<li><span><span class="lnd ${lineOf(w)}"></span>${esc(w.n)}${ageBadge(w)} ${tbdTag(w,1)}</span><span>${label.includes("이후")?ymd(V.L).slice(2):md(V.L)}</span></li>`).join("")}</ul></div>`;
@@ -2594,7 +2611,7 @@ function renderOpen(){ aopAutoGen();
     h+=mw.map(([a,i])=>card(`${months[i].y}년 ${months[i].m}월`,a)).join("");
     if(after.length) h+=card(`${YEND+1}년 이후`,after);
     if(!mw.length&&!after.length) h+=`<p class="hint">오픈 예정 작품이 없습니다. '제작 일정' 탭에서 작품을 추가하세요.</p>`;
-    h+=`</div>`;
+    h+=`</div></details>`;
   }
   h+=`<h2>작품별 월간 일정 <span class="hint" style="font-weight:400">${Y0}년 1월 ~ ${YEND}년 12월 · 옆으로 밀어서 보기${FORCE?` · ${md(FD)} 런칭 기준`:""}${OPEN_LINE!=="all"?` · <b>${LNLAB[OPEN_LINE]}만 보는 중</b>`:""} · ⋮⋮ 끌어서 순서 변경${ordEnsure().length?` <button type="button" class="btn" id="ordReset" style="padding:1px 8px;font-size:11.5px">런칭일 순서로</button>`:""}${simST?(()=>{ const n=SIMREGS.reduce((a,[rg])=>a+((SIMS&&SIMS[rg]&&SIMS[rg].extra)||[]).filter(w=>w.aop||/ AOP \d+\.\d+-\d+$/.test(w.n||"")).length,0);
       return ` <button type="button" class="btn pri" id="oAopFill" style="padding:1px 10px;font-size:11.5px" title="AOP 내부 · 외부 연재 작품 수보다 부족한 달에만 임시 작품을 만들어요 · 연재가 목표보다 넘치지 않게 런칭 수를 맞춤 (JP · KR · GW · 작품을 고른 파이프라인은 유지)">AOP 연재 수에 맞춰 임시 파이프라인 다시 만들기</button>${n?` <button type="button" class="btn" id="oAopClear" style="padding:1px 8px;font-size:11.5px">임시 작품 지우기 (${n})</button>`:""}`; })():""}</span></h2>
@@ -2684,6 +2701,8 @@ function renderOpen(){ aopAutoGen();
   document.querySelectorAll("#v-open table.cal tbody").forEach(rowDrag);
   if($("ordReset")) $("ordReset").onclick=()=>{ ORD=[]; ordSave(); render(); toast("런칭일 순서로 되돌렸어요"); };
   if($("oAopFill")) $("oAopFill").onclick=()=>simAopFill();
+  { const tp=document.querySelector("header.top"); if(tp) document.documentElement.style.setProperty("--toph",tp.offsetHeight+"px"); }
+  document.querySelectorAll("#v-open details.monfold").forEach(d=>d.ontoggle=()=>{ window.__MONOPEN=d.open; });
   document.querySelectorAll("#v-open select.aopPick").forEach(sel=>{ sel.onclick=(e)=>e.stopPropagation(); sel.onchange=()=>aopAssign(sel.dataset.aopk,sel.value); });
   if((WL===null||WL===undefined)&&!window.__wlOpenLoad){ window.__wlOpenLoad=true; wlLoad().then(()=>{ if(TAB==="open") safeRender(); }).catch(()=>{}); }
   if($("oAopClear")) $("oAopClear").onclick=()=>{ if(confirm("AOP 맞춤으로 만든 임시 작품을 JP · KR · GW에서 모두 지울까요?")) simAopClear(); };
@@ -2784,11 +2803,13 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
   for(const [rg] of SIMREGS){ simUse(rg); if(!SIM.extra) SIM.extra=[];
     // 아직 작품을 고르지 않은 임시 파이프라인은 새로 계산 (작품을 고른 것은 그대로 둠)
     SIM.extra=SIM.extra.filter(w=>{ if(isAopW(w)&&!w.aopPick){ delete SIM.rows[w.id]; removed++; return false; } return true; });
-    const cnt={int:{},ext:{}}, used={};
-    const addSpan=(ln,P)=>{ if(!P||!P.L) return; let mk=mkOf(P.L); const end=mkOf(P.end||P.L); let g=0; while(mk<=end&&g++<60){ cnt[ln][mk]=(cnt[ln][mk]||0)+1; mk=mAdd(mk,1); } };
+    const cnt={int:{},ext:{},all:{}}, used={};
+    const addSpan=(ln,P)=>{ if(!P||!P.L) return; let mk=mkOf(P.L); const end=mkOf(P.end||P.L); let g=0; while(mk<=end&&g++<60){ cnt[ln][mk]=(cnt[ln][mk]||0)+1; cnt.all[mk]=(cnt.all[mk]||0)+1; mk=mAdd(mk,1); } };
+    const totTg=(mk)=>{ const j=L3_M.indexOf(mk); const t=j>=0&&L3.target?L3.target[j]:null; return t!=null&&t!==""?+t:null; };
     SIM_WL().forEach(w=>{ const r=SIM.rows[w.id]; if(!r||r.inc===false) return; const S=schedule(simX(w,r)); if(S.held) return; addSpan(lineOf(w)==="ext"?"ext":"int",planOpens(S,r)); });
     L3_M.forEach(mk=>{ if(mk<nowMk) return; ["int","ext"].forEach(ln=>{ const tg=aopLineTarget(ln,mk); if(tg==null) return; let guard=0;
-      while((cnt[ln][mk]||0)<tg&&guard++<12){ const k=(used[ln+mk]=(used[ln+mk]||0)+1)-1;
+      const TT=totTg(mk);
+      while((cnt[ln][mk]||0)<tg&&(TT==null||(cnt.all[mk]||0)<TT)&&guard++<12){   /* 라인 목표 · 전체 목표 둘 다 넘지 않게 */ const k=(used[ln+mk]=(used[ln+mk]||0)+1)-1;
         let mon=D(mk+"-01"); while(mon.getUTCDay()!==1) mon=addDays(mon,1); const L=addDays(mon,7*(k%4)); const [yy,mm]=mk.split("-");
         const id="a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), nm=`${ln==="ext"?"외부":"내부"} AOP ${+yy%100}.${+mm}-${k+1}`;
         const w=normW({id,line:ln,n:nm,voice:"human",done:0,start:key(addDays(L,-7*26)),total:SEASON_N,b1:BATCH,simOnly:true,aop:true,aopKey:nm,
@@ -2796,7 +2817,7 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
         w.rate=defRate(w); const r=SIM_R0(w); r.launchMode="fixed"; r.launch=key(L); r.openK=3; r.pgap=""; r.name=nm; r.inc=true;
         let P=null; for(let t=0;t<30;t++){ const S=schedule(simX(w,r)); P=planOpens(S,r); if(P&&P.L&&key(P.L)===key(L)&&!P.hiatus) break; w.start=key(addDays(D(w.start),-14)); }
         SIM.extra.push(w); SIM.rows[id]=r; made++; addSpan(ln,P); } }); });
-    SIM.aopGen="onair-1106"; SIMS[rg]=SIM; }
+    SIM.aopGen="onair2-1106"; SIMS[rg]=SIM; }
   simUse(cur); simRegSaveSoon(); render();
   toast(`AOP 연재 작품 수에 맞춰 임시 파이프라인을 다시 만들었어요 · ${made}개 (작품을 고른 파이프라인은 그대로)${opt.auto?" · 자동":""}`);
 }
@@ -2880,7 +2901,7 @@ function renderSim(){
       ${simTzs().map((t,ix)=>`<tr class="${t.on?"":"off"}"><td><input type="checkbox" data-tzi="${ix}" data-tzk="on"${t.on?" checked":""}></td>
         <td><input class="in" data-tzi="${ix}" data-tzk="name" value="${esc(t.name||"")}" placeholder="예: 1차 프리티징"></td>
         <td><input type="date" class="in" data-tzi="${ix}" data-tzk="date" value="${esc(t.date||"")}"></td>
-        <td class="tzw">${SIM_WL().filter(w=>w.n&&(LN(w)!=="e"||(t.works||[]).includes(w.n))).map(w=>`<label class="tzc${(t.works||[]).includes(w.n)?" on":""}"><input type="checkbox" data-tzi="${ix}" data-tzw="${esc(w.n)}"${(t.works||[]).includes(w.n)?" checked":""}>${esc(w.n)}</label>`).join("")}</td>
+        <td class="tzw">${SIM_WL().filter(w=>w.n&&w.n!=="미정"&&!(isAopW(w)&&!w.aopPick)&&(LN(w)!=="e"||(t.works||[]).includes(w.n))||(t.works||[]).includes(w.n)).map(w=>`<label class="tzc${(t.works||[]).includes(w.n)?" on":""}"><input type="checkbox" data-tzi="${ix}" data-tzw="${esc(w.n)}"${(t.works||[]).includes(w.n)?" checked":""}>${esc(w.n)}</label>`).join("")}</td>
         <td><input class="in" data-tzi="${ix}" data-tzk="memo" value="${esc(t.memo||"")}" placeholder="예: 묶음 PV 1 + 단독 PV 4 · SNS"></td>
         <td><button type="button" class="btn danger" style="padding:1px 8px;font-size:12px" data-tzdel="${ix}">삭제</button></td></tr>`).join("")}
       </tbody></table><button type="button" class="btn" id="tzAdd" style="margin-top:6px">+ 티저 추가</button></div>
@@ -3182,9 +3203,21 @@ function toggleDone(w,S,k,sk){
 /* 회차별 제작 중단 / 활성화 */
 function epCtl(w,S,k){
   const p=(w.pauses||[]).find(x=>x.ep===k);
+  if(p&&p.season){ const sn=(w.pauses||[]).filter(x=>x.season&&x.ep<=k).length+1;
+    return `<span class="epz ssn" title="${k}화부터 시즌 ${sn} · 1화 착수일 ${p.resume?ymd(D(p.resume)):"미정"}">시즌 ${sn} 1화 · 착수 ${p.resume?md(D(p.resume)):"미정"}</span><button type="button" class="epb" data-sseason="${k}" title="시즌 ${sn} 1화 착수일 바꾸기">착수일</button><button type="button" class="epb" data-unpause="${k}" title="시즌 구분을 없애고 이어서 계산">취소</button>`; }
   if(p&&p.resume) return `<span class="epz" title="${esc(pauseTxt(w))}">중단→${md(D(p.resume))} 재개</span><button type="button" class="epb" data-resume="${k}" title="재개일 바꾸기 · 지우기">재개일</button><button type="button" class="epb" data-unpause="${k}" title="중단 자체를 없애고 원래 일정으로">취소</button>`;
   if(k<=(+w.done||0)||S.held) return "";
-  return `<button type="button" class="epb" data-pause="${k}" title="${k}화부터 제작 중단">중단</button>`;
+  return `<button type="button" class="epb" data-pause="${k}" title="${k}화부터 제작 중단">중단</button>${k<S.N&&!(w.pauses||[]).some(x=>x.ep===k+1)?`<button type="button" class="epb sse" data-send="${k}" title="${k}화에서 시즌을 끝내고 ${k+1}화부터 다음 시즌으로 계산">시즌 종료</button>`:""}`;
+}
+function openSeason(w,k,anchor){   // 11/06: 다음 시즌 1화 착수일
+  const pop=$("pop"), p=(w.pauses||[]).find(x=>x.ep===k)||{}, sn=(w.pauses||[]).filter(x=>x.season&&x.ep<k).length+2;
+  pop.innerHTML=`<h4>시즌 ${sn} 1화 착수일</h4><p class="ps">${esc(w.n)} · ${k-1}화에서 시즌 종료 → ${k}화가 시즌 ${sn} 1화</p>
+    <div class="row"><span>착수일</span><input class="in" type="date" id="ssD" value="${esc(p.resume||key(nextBD(TODAY)))}"></div>
+    <div class="row" style="justify-content:flex-end;gap:8px"><button type="button" class="btn" id="ssX">닫기</button><button type="button" class="btn pri" id="ssA">저장</button></div>`;
+  pop.hidden=false; const r=anchor.getBoundingClientRect(), cw=document.documentElement.clientWidth;
+  pop.style.left=Math.max(8,Math.min(r.left+window.scrollX,window.scrollX+cw-356))+"px"; pop.style.top=(r.bottom+window.scrollY+6)+"px";
+  $("ssX").onclick=closePop;
+  $("ssA").onclick=()=>{ const v=$("ssD").value; if(!v) return; const list=(w.pauses||[]).filter(x=>x.ep!==k); list.push({ep:k,from:p.from||key(TODAY),resume:key(snapBD(D(v))),season:true}); edit(w.id,[{p:["pauses"],v:list}]); closePop(); };
 }
 function openResume(w,k,anchor){
   const pop=$("pop"), p=(w.pauses||[]).find(x=>x.ep===k)||{};
@@ -3659,6 +3692,8 @@ function renderProd(){
     if(!confirm(`${k}화부터 제작을 중단합니다. 재개일을 정할 때까지 런칭은 '미정'으로 표시됩니다.`)) return;
     const others=(w.pauses||[]).filter(p=>p.ep<k&&p.resume);
     edit(w.id,[{p:["pauses"],v:[...others,{ep:k,from:key(from),resume:null}]}]); });
+  document.querySelectorAll("#v-prod [data-send]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openSeason(w,+b.dataset.send+1,b); });
+  document.querySelectorAll("#v-prod [data-sseason]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openSeason(w,+b.dataset.sseason,b); });
   document.querySelectorAll("#v-prod [data-resume]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openResume(w,+b.dataset.resume,b);});
   document.querySelectorAll("#v-prod [data-unpause]").forEach(b=>b.onclick=(e)=>{e.stopPropagation();
     if(!confirm("중단 표시를 없애고 원래 일정대로 계산할까요?")) return;
