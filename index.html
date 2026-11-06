@@ -2502,7 +2502,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-AA";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-AC";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -2613,7 +2613,19 @@ function aopCut28(){   // 11/06: 이미 만든 임시 작품 중 2028년 착수�
   SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||!st.extra||st.aopCut28) return; any=true;
     st.extra=st.extra.filter(w=>{ if(isAopW(w)&&!w.aopPick&&(w.start||"")>AOP_START_MAX){ delete st.rows[w.id]; n++; return false; } return true; }); st.aopCut28=1; st.aopSig=aopSig(st); });
   if(any){ simRegSaveSoon(); if(n) toast(`2028년 착수 AOP 임시 작품 ${n}개를 지웠어요 (JP · KR · GW)`); } }
-function aopAutoGen(){ aopCut28();   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
+function aopFixPicks(st){   // 11/06: 작품을 고른 임시 파이프라인 정리 — 회차가 짧으면 20화로 · 같은 작품이 두 번 들어가 있으면 하나만 남김
+  if(!st||!st.extra) return 0; let ch=0; const seen=new Set();
+  st.extra=st.extra.filter(w=>{ if(!(isAopW(w)&&w.aopPick)) return true;
+    if(seen.has(w.n)){ delete st.rows[w.id]; ch++; return false; } seen.add(w.n);
+    if((+w.total||0)<AOP_NEP){ w.total=AOP_NEP; ch++; } return true; });
+  return ch; }
+function aopFixPicksAll(){ if(!SIMS) return; let n=0, any=false;
+  SIMREGS.forEach(([rg])=>{ const st=SIMS[rg]; if(!st||st.aopFixP) return; any=true; n+=aopFixPicks(st); st.aopFixP=1; st.aopSig=aopSig(st); });
+  if(any&&n){ simRegSaveSoon(); toast(`작품을 고른 임시 파이프라인 ${n}곳을 정리했어요 (20화 · 중복 제거)`); if(TAB==="open") safeRender(); } else if(any) simRegSaveSoon(); }
+function krLaunch1106(){   // 11/06: 한국 KR 1화 오픈일 — 소녀바둑 · 냐한 남자 · 용사가 돌아왔다 3/15, 나이트런 3/29 (한 번만)
+  const st=SIMS&&SIMS.KR; if(!st||st.krL1106) return; const map={"소녀바둑":"2027-03-15","냐한 남자":"2027-03-15","용사가 돌아왔다":"2027-03-15","나이트런":"2027-03-29"};
+  WORKS.forEach(w=>{ const d=map[w.n], r=st.rows&&st.rows[w.id]; if(d&&r){ r.launchMode="fixed"; r.launch=d; } }); st.krL1106=1; simRegSaveSoon(); }
+function aopAutoGen(){ aopCut28(); aopFixPicksAll(); krLaunch1106();   // 11/05: AOP v.5에 맞춘 임시 파이프라인을 처음 한 번 자동으로 만듦 (공유 저장 · 이후 다시 만들지 않음)
   if(window.__aopAuto||!SIMS) return;
   const need=SIMREGS.some(([rg])=>!(SIMS[rg]&&SIMS[rg].aopGen2==="yod-1106"));
   const changed=false;   // 일정이 바뀐 경우는 오픈 일정 안내 → 버튼으로 다시 맞춤 (자동 재조정은 무거워서 끔)
@@ -2885,6 +2897,7 @@ async function simAopFill(opt){ opt=opt||{};   // 11/06: AOP '연재 작품 수'
   for(const [rg] of SIMREGS){ simUse(rg); if(!SIM.extra) SIM.extra=[];
     // 아직 작품을 고르지 않은 임시 파이프라인은 새로 계산 (작품을 고른 것은 그대로 둠)
     SIM.extra=SIM.extra.filter(w=>{ if(isAopW(w)&&!w.aopPick){ delete SIM.rows[w.id]; removed++; return false; } return true; });
+    aopFixPicks(SIM);
     const cnt={int:{},ext:{},all:{}}, used={};
     const addSpan=(ln,P)=>{ if(!P||!P.L) return; let mk=mkOf(P.L); const end=mkOf(P.end||P.L); let g=0; while(mk<=end&&g++<60){ cnt[ln][mk]=(cnt[ln][mk]||0)+1; cnt.all[mk]=(cnt.all[mk]||0)+1; mk=mAdd(mk,1); } };
     const totTg=(mk)=>{ const j=L3_M.indexOf(mk); const t=j>=0&&L3.target?L3.target[j]:null; return t!=null&&t!==""?+t:null; };
@@ -3022,12 +3035,14 @@ function renderSim(){
     const cell=(rg,z)=>{ const r=SIMS[rg].rows[z.w.id]; if(!r) return `<td class="sor" colspan="3"></td>`;
       const P=z.held?null:planOpens(z.S,r); const fx=r.launchMode==="fixed"&&r.launch;
       let save=0; if(P&&P.L){ const K=Math.max(1,+r.openK||3); for(let k=K+1;k<=z.S.N;k++){ if(z.S.eps[k]&&z.S.eps[k].need<=P.L) save++; else break; } }
-      const bt=Math.max(0,+r.buf||0), bOk=save>=bt;
+      const bt=Math.max(0,r.buf==null||r.buf===""?1:+r.buf||0), bOk=save>=bt;   // 11/06: 버퍼 기본 1
       const bufTxt=P?` · <span class="${bt&&!bOk?"sorh":"sook"}" title="1화 오픈일에 오픈 회차 외에 미리 완성돼 있는 회차">세이브 ${save}화${bt?(bOk?` ✓`:` · 버퍼 ${bt} 부족`):""}</span>`:"";
-      const res=z.held?`<span class="sorr">제작 일정 탭에서 착수일을 정하면 계산돼요</span>`:`<span class="sorr">${fx?"":"자동 · "}${fm(P&&P.L)} 오픈 · 완결 ${fm(P&&P.end)}${P&&P.hiatus?` · <b class="sorh">휴재 ${P.hiatus}주</b>`:""}${bufTxt}</span>`;
+      const res=z.held?`<span class="sorr">제작 일정 탭에서 착수일을 정하면 계산돼요</span>`:`<span class="sorr">${fx?"":"자동 · "}${fm(P&&P.L)} 오픈 · 완결 ${fm(P&&P.end)}${(()=>{ if(!P||!P.opens) return ""; const sg=z.S.seasons&&z.S.seasons.length>1?z.S.seasons[0].b:z.S.N, rs=new Set((P.restW||[]).map(key)); let hz=0;   // 11/06: 시즌 1 안의 휴재만
+          for(let k=2;k<=sg;k++){ const a=P.opens[k-1], b=P.opens[k]; if(!a||!b) continue; for(let x=addDays(a,7);x<b;x=addDays(x,7)) if(!rs.has(key(x))) hz++; }
+          return hz?` · <b class="sorh" title="${sg<z.S.N?`시즌 1(1~${sg}화) 기준 · 시즌 사이 쉬는 기간 제외`:"전체 회차 기준"}">휴재 ${hz}주${sg<z.S.N?" (시즌 1)":""}</b>`:""; })()}${bufTxt}</span>`;
       return `<td class="sod"><input type="date" class="in" data-so="${rg}|${z.w.id}|launch" value="${fx?esc(r.launch):""}" aria-label="${rg} 1화 오픈일">${fx?`<button type="button" class="sox" data-soa="${rg}|${z.w.id}" title="자동(휴재 없는 가장 빠른 날)으로">자동</button>`:""}${res}</td>
         <td class="son"><input type="number" class="in n" min="1" max="10" data-so="${rg}|${z.w.id}|openK" value="${esc(r.openK||3)}" aria-label="${rg} 오픈 회차 수"></td>
-        <td class="son sol"><input type="number" class="in n" min="0" max="30" data-so="${rg}|${z.w.id}|buf" value="${esc(r.buf||0)}" aria-label="${rg} 버퍼 회차 수"></td>`; };
+        <td class="son sol"><input type="number" class="in n" min="0" max="30" data-so="${rg}|${z.w.id}|buf" value="${esc(r.buf==null||r.buf===""?1:r.buf)}" aria-label="${rg} 버퍼 회차 수"></td>`; };
     const rowsH=GR.map(([k,l,list])=>list.length?`<tr class="sogrp so-${k}"><td colspan="10"><i class="sodot"></i>${l} <span class="hint">${list.length}</span></td></tr>`+list.map(z=>`<tr class="so-${k}"><td class="sonm"><b>${esc(z.w.n||"미정")}</b></td>${SIMREGS.map(([rg])=>cell(rg,z)).join("")}</tr>`).join(""):"").join("");
     const aopN=SIMREGS.reduce((a,[rg])=>a+((SIMS[rg]&&SIMS[rg].extra)||[]).filter(w=>w.aop||/ AOP \d+\.\d+-\d+$/.test(w.n||"")).length,0);
     h+=`<div class="card sobox"><div class="sohd"><h2>작품별 오픈 설정</h2><button type="button" class="btn pri" id="aopFill" title="AOP 제작플랜의 내부 · 외부 런칭 작품 수보다 부족한 달에 임시 작품을 만들어요 (시뮬레이션에만 · 실제 작품 일정은 그대로)">AOP 런칭 수만큼 임시 작품 만들기</button>${aopN?`<button type="button" class="btn" id="aopClear">임시 작품 지우기 (${aopN})</button>`:""}<span class="hint">지역마다 1화 오픈일 · 오픈 회차 수 · 버퍼 회차 수만 정해요 · 날짜를 비우면 휴재 없는 가장 빠른 날 · 버퍼 = 1화 오픈 때 오픈 회차 외에 미리 완성해 둘 회차 (세이브가 버퍼 이상이면 ✓)</span></div>
