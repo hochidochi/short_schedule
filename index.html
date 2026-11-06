@@ -1290,6 +1290,9 @@ table.vt2 .c-nt{min-width:240px}
 .szx{margin-left:auto;border:none;background:none;color:#9AA1AE;cursor:pointer} .szb{display:flex;gap:10px;margin-top:4px;font-size:11.5px;color:var(--ink2)}
 .winfo .szb label,.szb label{display:flex;flex-direction:row;align-items:center;gap:4px;white-space:nowrap;margin:0} .szb .in.n{width:56px} .szb input[type=date]{width:128px}
 .szadd{align-self:center;border-style:dashed;color:#5B3FB0;border-color:#C9B8F0}
+
+.wtitle select.wtsel{font:inherit;font-size:22px;font-weight:800;border:1.5px solid var(--line);border-radius:10px;padding:2px 30px 2px 10px;background:#fff;max-width:420px}
+.wtitle select.wtsel:focus{border-color:#1E40AF;outline:none}
 </style>
 </head>
 <body>
@@ -2495,7 +2498,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-U";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-W";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3615,7 +3618,14 @@ function renderProd(){
   };
   const CE=S.held?null:S.eps[S.crit];
   h+=`<div class="whead">
-    <div class="wtitle">${LANG==="ja"?`<input data-f="nJa" value="${esc(jaName(w))}" size="${Math.max(6,jaName(w).length+2)}" aria-label="作品名 (日本語)" title="日本語名 · 韓国語名: ${esc(w.n)}">`:`<input data-f="n" value="${esc(w.n)}" size="${Math.max(6,w.n.length+2)}" aria-label="작품명">`}
+    <div class="wtitle">${LANG==="ja"?`<input data-f="nJa" value="${esc(jaName(w))}" size="${Math.max(6,jaName(w).length+2)}" aria-label="作品名 (日本語)" title="日本語名 · 韓国語名: ${esc(w.n)}">`:(()=>{   // 11/06: 작품명은 직접 쓰지 않고 작가 동의 확보(판권 계약 완료 포함) 작품 중에서 고르기
+      if((WL===null||WL===undefined)&&!window.__wlProdLoad){ window.__wlProdLoad=true; wlLoad().then(()=>{ if(TAB==="prod") safeRender(); }).catch(()=>{}); }
+      const ok=(WL||[]).filter(r=>r&&!Array.isArray(r)&&(/작가 동의|판권 계약/.test(r.rights||"")||r.cat==="제작 중")).map(r=>r.name).filter(Boolean);
+      const used=new Set(WORKS.filter(x=>x.id!==w.id).map(x=>x.n)), names=[...new Set(ok)];
+      const cur=w.n||"미정", inList=names.includes(cur)||cur==="미정";
+      return `<select class="wtsel" data-f="n" aria-label="작품명 (작가 동의 확보 작품 중 선택)" title="작가 동의 확보 · 판권 계약 완료 작품 중에서 골라요 (숏리스트 기준)">
+        <option value="미정"${cur==="미정"?" selected":""}>미정</option>${inList?"":`<option value="${esc(cur)}" selected>${esc(cur)} (목록에 없음)</option>`}
+        ${names.map(n=>`<option value="${esc(n)}"${n===cur?" selected":""}${used.has(n)&&n!==cur?" disabled":""}>${esc(n)}${used.has(n)&&n!==cur?" · 이미 제작 일정 있음":""}</option>`).join("")}</select>`; })()}
       ${ageBadge(w)}<span class="ln ${lineOf(w)}" style="font-size:11px;padding:1px 7px">${LINE_LABEL[lineOf(w)]}</span>${tbdTag(w)}${pauseOf(w)?`<span class="tag pzt">${esc(pauseShort(w))}</span>`:""}<span class="vo ${w.voice==="ai"?"ai":"human"}">${w.voice==="ai"?"AI 성우":"인간 성우"}</span>
       <span class="sp"></span><span class="winfo-sum">${S.held?"런칭 미정":`예상 런칭 <b>${ymd(S.L)}</b> · 완결 ${ymd(S.end)}`} · ${S.N}화 · 회차당 ${w.rate||"–"}영업일</span>
       <button type="button" class="btn" id="winfoT" style="padding:3px 10px">${PINFO?"작품 정보 접기 ▴":"작품 정보 펼치기 ▾"}</button>
@@ -4153,8 +4163,16 @@ async function sb(method,table,q="",body,prefer){
 }
 let MIGRATING=false, LAST_EDIT=null, TOAST_T=null;
 function toast(html){ const t=$("toast"); t.innerHTML=html; t.hidden=false; clearTimeout(TOAST_T); TOAST_T=setTimeout(()=>t.hidden=true,6000); }
+let AOP_REFIT_T=null;
+function aopRefitSoon(){   // 11/06: 작품 일정(시즌 2 추가 · 회차 · 착수일 등)이 바뀌면 바로 임시 파이프라인을 다시 맞춰 연재 · 런칭 수를 AOP에 맞춤
+  clearTimeout(AOP_REFIT_T); AOP_REFIT_T=setTimeout(()=>{ try{
+    if(!SIMS||MIGRATING) return; const any=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopGen2==="cap2-1106"); if(!any) return;   // 임시 파이프라인을 쓰는 중일 때만
+    const changed=SIMREGS.some(([rg])=>SIMS[rg]&&SIMS[rg].aopSig&&SIMS[rg].aopSig!==aopSig(SIMS[rg])); if(!changed) return;
+    if(window.__aopAuto) return; window.__aopAuto=true;
+    simAopFill({auto:true,why:"changed"}).catch(e=>console.warn(e)).finally(()=>{ setTimeout(()=>{ window.__aopAuto=false; },800); }); }catch(e){ console.warn(e); } },1200); }
 function edit(id,patches,quiet){
   const w=WORKS.find(x=>x.id===id); if(!w) return;
+  if(!quiet&&patches.some(p=>["pauses","total","rate","start","done","launch","launchAuto","line"].includes(p.p&&p.p[0]))) aopRefitSoon();
   const before=MIGRATING||quiet?null:schedule(w);   // quiet: 일정에 영향 없는 변경 (캘린더 메모 등) — 알림 없이 저장
   patches.forEach(p=>applyPatch(w,p));
   if(before){   // 고친 결과가 오픈 일정에 어떻게 반영됐는지 바로 알려줌
