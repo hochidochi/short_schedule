@@ -1284,6 +1284,12 @@ table.vt2 .c-nt{min-width:240px}
 
 .vco{display:inline-block;font-size:10px;font-weight:700;color:#8A4A12;background:#FFF;border:1px solid #F0C9A6;border-radius:5px;padding:0 5px;margin-right:4px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
 .vco.none{color:#A9B0BD;border-style:dashed;border-color:#D5DBE5;font-weight:600}
+
+.sznf{gap:10px;align-items:stretch} .szc{border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff;min-width:200px}
+.szc.s2{border-color:#C9B8F0;background:#FAF7FF} .szh{display:flex;align-items:center;gap:8px;font-size:12px} .szh b{font-size:12.5px} .szh span{color:var(--ink2)}
+.szx{margin-left:auto;border:none;background:none;color:#9AA1AE;cursor:pointer} .szb{display:flex;gap:10px;margin-top:4px;font-size:11.5px;color:var(--ink2)}
+.winfo .szb label,.szb label{display:flex;flex-direction:row;align-items:center;gap:4px;white-space:nowrap;margin:0} .szb .in.n{width:56px} .szb input[type=date]{width:128px}
+.szadd{align-self:center;border-style:dashed;color:#5B3FB0;border-color:#C9B8F0}
 </style>
 </head>
 <body>
@@ -2489,7 +2495,7 @@ function txApply(){
   });
 }
 function render(){ render0(); if(LANG==="ja") trNode(document.body); txApply(); }
-const BUILD="11.06-T";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
+const BUILD="11.06-U";   // 배포 확인용: 화면 왼쪽 위 날짜 옆에 보여요
 function render0(){
   DEFER=false;
   $("today").textContent=`오늘 ${ymd(TODAY)} (${WD[TODAY.getUTCDay()]}) · 버전 ${BUILD}`;
@@ -3634,6 +3640,12 @@ function renderProd(){
         <label>오픈 방식<span class="in" style="border-color:transparent;padding-left:0;color:var(--ink2)">런칭 ${OPEN_K}화 · 이후 매주 ${S.L?WD[S.L.getUTCDay()]:"월"}요일 1회 · 휴재 없음</span></label>
         
       </div>
+      <div class="gl">시즌</div><div class="fields one sznf">${(()=>{ const sg=(S.seasons&&S.seasons.length)?S.seasons:[{sn:1,a:1,b:S.N,L:S.L}];
+        const ps=(w.pauses||[]).filter(p=>p.season).sort((a,b)=>a.ep-b.ep);
+        return sg.map((x,i)=>{ const p=i?ps[i-1]:null, rt=i?(+p.rate||+w.rate||defRate(w)):(+w.rate||defRate(w));
+          return `<div class="szc${i?" s2":""}"><div class="szh"><b>시즌 ${x.sn}</b><span>${x.a}~${x.b}화 · ${x.L?md(x.L)+" 오픈":"오픈 미정"}</span>${i?`<button type="button" class="szx" data-unpause="${p.ep}" title="시즌 구분 없애기">✕</button>`:""}</div>
+            <div class="szb"><label>회차당 제작<input class="in n" type="number" min="1" max="60" data-szr="${i?p.ep:1}" value="${rt}"> 영업일</label>${i?`<label>1화 착수<input class="in" type="date" data-szs="${p.ep}" value="${esc(p.resume||"")}"></label>`:""}</div></div>`; }).join("")
+          +`<button type="button" class="btn szadd" id="szAdd" title="마지막 회차에서 시즌을 끝내고 다음 시즌 회차를 추가">+ 시즌 ${sg.length+1} 추가</button>`; })()}</div>
     </div>
     <div class="stats">${S.held?`
       <div class="stat"><div class="sl">예상 런칭</div><div class="sv">미정 <small style="color:var(--ink2)">${S.held.ep}화부터 제작 중단 · 재개 미정</small></div></div>
@@ -3641,9 +3653,9 @@ function renderProd(){
       <div class="stat"><div class="sl">적용 공정</div><div class="sv" style="font-size:14px">${VAR_LABEL[VARIANT(w)]}</div></div>`:`
       <div class="stat"><div class="sl">예상 런칭 (휴재 없는 최단)</div><div class="sv">${ymd(S.L)} (${WD[S.L.getUTCDay()]})</div></div>
       <div class="stat"><div class="sl">런칭일을 정하는 조건</div><div class="sv">${S.critGate?`${esc(S.critGate.s.n)} <small style="color:var(--ink2)">완료 ${ymd(S.critGate.e)} → 런칭 ${ymd(S.L)}</small>`:`${S.crit}화 <small style="color:var(--ink2)">최종본 ${ymd(CE.ready)} → 오픈 ${ymd(CE.open)}</small>`}</div></div>
-      <div class="stat"><div class="sl">시즌 1 완결 (${S.N}화)</div><div class="sv">${ymd(S.end)}</div></div>
-      ${(()=>{const x=saveInfo(w); if(!x) return ""; return `<div class="stat"><div class="sl">런칭 시 세이브</div><div class="sv">${x.save}화 <small style="color:var(--ink2)">완료 ${x.ready}화 · ${S.K}화 동시 오픈</small></div></div>
-        <div class="stat"><div class="sl">시즌 2를 같은 속도로 이어가면</div><div class="sv">${x.cont?"휴재 없이 이어가기 가능":x.last>=x.N?`시즌 휴재 약 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`} <small style="color:var(--ink2)">${x.cont?"주 1회보다 빠름":x.last>=x.N?`${x.N+1}화(시즌 2 첫 화)가 ${x.gapW}주 늦게 준비됨`:"시즌 1 안에서 휴재 발생"}</small></div></div>`;})()}
+      <div class="stat"><div class="sl">${S.seasons&&S.seasons.length>1?`완결 (시즌 ${S.seasons.length} · ${S.N}화)`:`시즌 1 완결 (${S.N}화)`}</div><div class="sv">${ymd(S.end)}</div></div>
+      ${(()=>{const x=saveInfo(w); if(!x) return ""; const multi=S.seasons&&S.seasons.length>1; return `<div class="stat"><div class="sl">런칭 시 세이브</div><div class="sv">${x.save}화 <small style="color:var(--ink2)">완료 ${x.ready}화 · ${S.K}화 동시 오픈</small></div></div>
+        ${multi?"":`<div class="stat"><div class="sl">시즌 2를 같은 속도로 이어가면</div><div class="sv">${x.cont?"휴재 없이 이어가기 가능":x.last>=x.N?`시즌 휴재 약 ${x.gapW}주 필요`:`${x.last+1}화부터 ${x.gapW}주 부족`} <small style="color:var(--ink2)">${x.cont?"주 1회보다 빠름":x.last>=x.N?`${x.N+1}화(시즌 2 첫 화)가 ${x.gapW}주 늦게 준비됨`:"시즌 1 안에서 휴재 발생"}</small></div></div>`}`;})()}
       ${lenStatHtml(w)}
       <div class="stat"><div class="sl">적용 공정</div><div class="sv" style="font-size:14px">${VAR_LABEL[VARIANT(w)]}</div></div>`}
     </div></div>
@@ -3770,6 +3782,11 @@ function renderProd(){
     if(!confirm(`${k}화부터 제작을 중단합니다. 재개일을 정할 때까지 런칭은 '미정'으로 표시됩니다.`)) return;
     const others=(w.pauses||[]).filter(p=>p.ep<k&&p.resume);
     edit(w.id,[{p:["pauses"],v:[...others,{ep:k,from:key(from),resume:null}]}]); });
+  document.querySelectorAll("#v-prod [data-szr]").forEach(el=>el.onchange=()=>{ const ep=+el.dataset.szr, v=Math.max(1,Math.min(60,+el.value||1));
+    if(ep===1) edit(w.id,[{p:["rate"],v}]); else edit(w.id,[{p:["pauses"],v:(w.pauses||[]).map(x=>x.season&&+x.ep===ep?{...x,rate:v}:x)}]); });
+  document.querySelectorAll("#v-prod [data-szs]").forEach(el=>el.onchange=()=>{ const ep=+el.dataset.szs; if(!el.value) return;
+    edit(w.id,[{p:["pauses"],v:(w.pauses||[]).map(x=>x.season&&+x.ep===ep?{...x,resume:key(snapBD(D(el.value)))}:x)}]); });
+  if($("szAdd")) $("szAdd").onclick=(e)=>{ e.stopPropagation(); openSeason(w,(+w.total||1)+1,$("szAdd")); };
   if($("ssGo")) $("ssGo").onclick=(e)=>{ e.stopPropagation(); const k=+$("ssEp").value; if(k) openSeason(w,k+1,$("ssGo")); };
   document.querySelectorAll("#v-prod [data-sseason]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openSeason(w,+b.dataset.sseason,b); });
   document.querySelectorAll("#v-prod [data-resume]").forEach(b=>b.onclick=(e)=>{e.stopPropagation(); openResume(w,+b.dataset.resume,b);});
